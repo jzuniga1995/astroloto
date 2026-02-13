@@ -265,15 +265,15 @@ function crearCardJuego(key, datos) {
     let nombreLimpio = datos.nombre_juego;
     const nombreBase = nombreLimpio.replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '').trim();
     
-    const logoHTML = datos.logo_url ? 
-        `<img src="${datos.logo_url}" 
-             alt="${nombreBase}" 
-             class="game-logo" 
-             width="52" 
-             height="52" 
-             loading="lazy" 
-             decoding="async">` : 
-        '';
+  const logoHTML = datos.logo_url ? 
+    `<img src="${datos.logo_url}" 
+         alt="${nombreBase}" 
+         class="game-logo" 
+         width="72" 
+         height="72" 
+         loading="lazy" 
+         decoding="async">` : 
+    '';
     
     let contenidoPrincipal = '';
     
@@ -755,6 +755,29 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+function cerrarRuleta() {
+    const overlay = document.getElementById('ruletaOverlay');
+    const tooltip = document.getElementById('ruletaTooltip');
+    const display = document.getElementById('ruletaDisplay');
+    
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+    
+    if (tooltip) {
+        tooltip.style.opacity = '1';
+        tooltip.style.display = 'block';
+    }
+    
+    // Resetear el display para la próxima vez
+    if (display) {
+        display.innerHTML = `
+            <div style="font-size: 3.75rem; font-weight: 700; color: #8B5CF6; margin-bottom: 1rem; padding: 2rem; background: linear-gradient(to right, #EDE9FE, #F3E8FF); border-radius: 0.75rem; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);">000</div>
+            <p style="color: #6B7280; text-align: center;">Haz clic en "Girar" para descubrir tus números</p>
+        `;
+    }
+}
 
 // Exponer funciones globalmente para que puedan ser llamadas desde HTML
 window.mostrarRuleta = mostrarRuleta;
