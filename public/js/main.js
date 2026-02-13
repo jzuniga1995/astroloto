@@ -3,7 +3,7 @@
 // ============================================
 
 
-const JSON_URL = '/api/resultados-v2';
+const JSON_URL = 'https://loteria-api.jose-zuniga1145.workers.dev';
 
 const DATOS_EMBEBIDOS = null;
 
@@ -252,12 +252,19 @@ function preloadLogos(sorteos) {
 
 function crearCardJuego(key, datos) {
     const card = document.createElement('div');
-    card.className = 'game-card';
+    
+    // ✅ DETECTAR SI ES RESULTADO ANTERIOR
+    const fechaHoy = new Date();
+    const [dia, mes, año] = datos.fecha_sorteo.split('-').map(Number);
+    const fechaSorteo = new Date(año || fechaHoy.getFullYear(), mes - 1, dia);
+    
+    const esAnterior = fechaSorteo < new Date(fechaHoy.getFullYear(), fechaHoy.getMonth(), fechaHoy.getDate());
+    
+    card.className = esAnterior ? 'game-card resultado-anterior' : 'game-card';
     
     let nombreLimpio = datos.nombre_juego;
     const nombreBase = nombreLimpio.replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '').trim();
     
-    // ✅ Logo optimizado con width/height fijos y loading="lazy"
     const logoHTML = datos.logo_url ? 
         `<img src="${datos.logo_url}" 
              alt="${nombreBase}" 
@@ -327,6 +334,7 @@ function crearCardJuego(key, datos) {
     
     return card;
 }
+
 
 // ============================================
 // ORDENAR SORTEOS
@@ -496,8 +504,12 @@ async function cargarResultados() {
                     header.innerHTML = `${iconoHTML}${nombresHorario[horario]} - ${horario}`;
                 }
                 
-                const grid = document.createElement('div');
-                grid.className = 'sorteo-grid';
+           const grid = document.createElement('div');
+
+// ✅ DETECTAR SI HAY 3 O MENOS CARDS → LAYOUT HORIZONTAL
+const cantidadCards = sorteosDeLaHora.length;
+grid.className = cantidadCards <= 3 ? 'sorteo-grid horizontal' : 'sorteo-grid';
+
                 
                 sorteosDeLaHora.forEach(([key, datos]) => {
                     grid.appendChild(crearCardJuego(key, datos));
@@ -595,34 +607,10 @@ if (document.getElementById('contenido') || document.readyState === 'loading') {
     }
 }
 
-// ============================================
-// RULETA DE NÚMEROS
-// ============================================
 
-// Tooltip auto-hide
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            const tooltip = document.getElementById('ruletaTooltip');
-            if (tooltip) {
-                tooltip.style.opacity = '0';
-                setTimeout(() => {
-                    tooltip.style.display = 'none';
-                }, 300);
-            }
-        }, 10000);
-    });
-} else {
-    setTimeout(() => {
-        const tooltip = document.getElementById('ruletaTooltip');
-        if (tooltip) {
-            tooltip.style.opacity = '0';
-            setTimeout(() => {
-                tooltip.style.display = 'none';
-            }, 300);
-        }
-    }, 10000);
-}
+// ============================================
+// RULETA DE NÚMEROS - VERSIÓN CORREGIDA
+// ============================================
 
 function mostrarRuleta() {
     const overlay = document.getElementById('ruletaOverlay');
@@ -637,16 +625,10 @@ function mostrarRuleta() {
     
     if (display) {
         display.innerHTML = `
-            <div class="text-6xl font-bold text-violet-600 mb-4 py-8 bg-gradient-to-r from-violet-100 to-purple-100 rounded-xl shadow-inner">000</div>
-            <p class="text-gray-500">Haz clic en "Girar" para descubrir tus números</p>
+            <div style="font-size: 3.75rem; font-weight: 700; color: #8B5CF6; margin-bottom: 1rem; padding: 2rem; background: linear-gradient(to right, #EDE9FE, #F3E8FF); border-radius: 0.75rem; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);">000</div>
+            <p style="color: #6B7280; text-align: center;">Haz clic en "Girar" para descubrir tus números</p>
         `;
     }
-}
-
-function cerrarRuleta(event) {
-    if (event && event.target !== event.currentTarget) return;
-    const overlay = document.getElementById('ruletaOverlay');
-    if (overlay) overlay.classList.add('hidden');
 }
 
 function girarRuleta() {
@@ -662,7 +644,7 @@ function girarRuleta() {
         lucide.createIcons();
     }
     
-    display.innerHTML = '<div class="text-6xl font-bold text-violet-600 mb-4 py-8 bg-gradient-to-r from-violet-100 to-purple-100 rounded-xl shadow-inner" id="spinningNum">000</div>';
+    display.innerHTML = '<div style="font-size: 3.75rem; font-weight: 700; color: #8B5CF6; margin-bottom: 1rem; padding: 2rem; background: linear-gradient(to right, #EDE9FE, #F3E8FF); border-radius: 0.75rem; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);" id="spinningNum">000</div>';
     
     let counter = 0;
     const spinInterval = setInterval(() => {
@@ -691,7 +673,8 @@ function girarRuleta() {
 function mostrarNumerosSuerte() {
     const numeros = [];
     
-    while(numeros.length < 4) {
+    // ✅ CAMBIADO: Ahora genera 6 números
+    while(numeros.length < 6) {
         const num = Math.floor(Math.random() * 100);
         if (!numeros.includes(num)) {
             numeros.push(num);
@@ -711,15 +694,16 @@ function mostrarNumerosSuerte() {
     
     const display = document.getElementById('ruletaDisplay');
     if (display) {
+        // ✅ ESTILOS INLINE para que funcionen siempre
         display.innerHTML = `
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
                 ${numeros.map(num => `
-                    <div class="bg-gradient-to-br from-violet-500 to-purple-600 text-white text-4xl font-bold rounded-2xl p-6 shadow-xl transform hover:scale-105 transition-transform">
+                    <div style="background: linear-gradient(to bottom right, #8B5CF6, #9333EA); color: white; font-size: 2.25rem; font-weight: 700; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                         ${num.toString().padStart(2, '0')}
                     </div>
                 `).join('')}
             </div>
-            <div class="flex items-center justify-center gap-2 text-lg font-semibold text-violet-600">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.125rem; font-weight: 600; color: #8B5CF6;">
                 <i data-lucide="sparkles" class="w-5 h-5"></i>
                 <span>${mensajeAleatorio}</span>
                 <i data-lucide="sparkles" class="w-5 h-5"></i>
@@ -731,6 +715,8 @@ function mostrarNumerosSuerte() {
         }
     }
 }
+
+
 
 function crearConfetti() {
     const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#ffd700', '#00ff88'];
