@@ -3,7 +3,7 @@
 // ============================================
 
 
-const API_URL = 'https://loteria-api.jose-zuniga1145.workers.dev';
+const JSON_URL = 'https://loteria-api.jose-zuniga1145.workers.dev';
 
 const DATOS_EMBEBIDOS = null;
 
