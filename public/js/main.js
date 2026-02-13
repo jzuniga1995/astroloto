@@ -2,8 +2,7 @@
 // CONFIGURACIÓN
 // ============================================
 
-
-const JSON_URL = 'https://loteria-api.jose-zuniga1145.workers.dev';
+const JSON_URL = '/api/resultados-v2';
 
 const DATOS_EMBEBIDOS = null;
 
