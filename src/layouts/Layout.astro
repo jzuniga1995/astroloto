@@ -35,6 +35,9 @@ const { bodyClass = '' } = Astro.props;
     <link rel="preload" href="/logos/premia2.png" as="image">
     <link rel="preload" href="/logos/la_diaria.png" as="image">
     <link rel="preload" href="/logos/super_premio.png" as="image">
+
+    <!-- Estilos dinámicos (cards, bolas, skeleton, etc.) -->
+    <link rel="stylesheet" href="/styles_dinamicos.css">
     
     <!-- Slot para SEO de cada página -->
     <slot name="head" />
@@ -56,7 +59,7 @@ const { bodyClass = '' } = Astro.props;
     <Footer />
     
     <!-- Scripts globales -->
-<script is:inline src="/js/main.js"></script>
+    <script is:inline src="/js/main.js"></script>
 </body>
 </html>
 
@@ -76,3 +79,4 @@ const { bodyClass = '' } = Astro.props;
         animation: pulse-scale 2s ease-in-out infinite;
     }
 </style>
+
