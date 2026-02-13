@@ -383,6 +383,10 @@ function ordenarPorFechaYHora(sorteos) {
 // CARGAR RESULTADOS - OPTIMIZADO
 // ============================================
 
+// ============================================
+// CARGAR RESULTADOS - OPTIMIZADO
+// ============================================
+
 async function cargarResultados() {
     const contenido = document.getElementById('contenido');
     if (!contenido) {
@@ -486,6 +490,9 @@ async function cargarResultados() {
             'super': 'SÚPER PREMIO'
         };
         
+        // ✅ NUEVO: Detectar si es página individual
+        const esPaginaIndividual = tipoJuego !== 'todos';
+        
         horarios.forEach(horario => {
             const sorteosDeLaHora = gruposPorHorario[horario];
             
@@ -504,12 +511,16 @@ async function cargarResultados() {
                     header.innerHTML = `${iconoHTML}${nombresHorario[horario]} - ${horario}`;
                 }
                 
-           const grid = document.createElement('div');
+                const grid = document.createElement('div');
 
-// ✅ DETECTAR SI HAY 3 O MENOS CARDS → LAYOUT HORIZONTAL
-const cantidadCards = sorteosDeLaHora.length;
-grid.className = cantidadCards <= 3 ? 'sorteo-grid horizontal' : 'sorteo-grid';
-
+                // ✅ MODIFICADO: En páginas individuales SIEMPRE usa horizontal
+                if (esPaginaIndividual) {
+                    grid.className = 'sorteo-grid horizontal';
+                } else {
+                    // En página principal, solo horizontal si hay 3 o menos cards
+                    const cantidadCards = sorteosDeLaHora.length;
+                    grid.className = cantidadCards <= 3 ? 'sorteo-grid horizontal' : 'sorteo-grid';
+                }
                 
                 sorteosDeLaHora.forEach(([key, datos]) => {
                     grid.appendChild(crearCardJuego(key, datos));
