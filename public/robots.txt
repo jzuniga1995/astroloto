@@ -1,0 +1,57 @@
+# robots.txt para LotoHN.com
+# Resultados de Loto Honduras
+
+# Permitir acceso a todos los motores de búsqueda
+User-agent: *
+Allow: /
+
+# Páginas principales - Alta prioridad para crawling
+Allow: /index
+Allow: /juga-3
+Allow: /pega-3
+Allow: /premia-2
+Allow: /la-diaria
+Allow: /loto-super-premio
+Allow: /contacto
+Allow: /sobre-nosotros
+
+# Páginas legales - Permitidas pero menor prioridad
+Allow: /terminos
+Allow: /privacidad
+
+# Bloquear archivos innecesarios
+Disallow: /resultados_hoy.json
+Disallow: /*.json$
+
+# Bloquear carpetas de sistema (si las hay)
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /.github/
+
+# Motores de búsqueda específicos
+
+# Google
+User-agent: Googlebot
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+
+# Yahoo
+User-agent: Slurp
+Allow: /
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+
+# Yandex (Rusia)
+User-agent: Yandex
+Allow: /
+
+# Sitemap location
+Sitemap: https://lotohn.com/sitemap.xml
+
+# Crawl-delay (opcional - para ser amable con los servidores)
+# Crawl-delay: 1

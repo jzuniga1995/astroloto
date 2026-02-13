@@ -1,0 +1,325 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Contacto | LotoHN Honduras">
+  <Fragment slot="head">
+    <meta name="description" content="¿Tienes preguntas sobre los resultados de lotería en Honduras? Contacta con LotoHN. Respondemos todas las consultas en 24-48 horas.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://lotohn.com/contacto">
+  </Fragment>
+
+  <div class="container">
+    <a href="index" class="back-button">
+      ← Volver al inicio
+    </a>
+
+    <div class="header">
+      <h1>📧 Contacto</h1>
+      <p>¿Tienes preguntas? Estamos aquí para ayudarte</p>
+    </div>
+
+    <div class="content">
+      <p style="text-align: center; font-size: 1.1em; margin-bottom: 30px;">
+        Si tienes alguna pregunta, sugerencia o necesitas ayuda, no dudes en contactarnos. 
+        Respondemos todas las consultas en un plazo de 24-48 horas.
+      </p>
+
+      <div class="contact-cards">
+        <div class="contact-card">
+          <div class="icon">📧</div>
+          <h3>Email</h3>
+          <p><a href="mailto:codezun@gmail.com">codezun@gmail.com</a></p>
+          <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.9;">
+            Respuesta en 24-48 horas
+          </p>
+        </div>
+
+        <div class="contact-card">
+          <div class="icon">⏰</div>
+          <h3>Horario</h3>
+          <p>Lunes a Domingo</p>
+          <p style="font-weight: 600;">24/7</p>
+          <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.9;">
+            Servicio automatizado
+          </p>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h3>📝 Antes de contactarnos, verifica:</h3>
+        <ul>
+          <li>Los resultados se actualizan 3 veces al día (11 AM, 3 PM, 9 PM)</li>
+          <li>Siempre verifica los resultados con los canales oficiales de Loto Honduras</li>
+          <li>Los números de la suerte son generados aleatoriamente con fines de entretenimiento</li>
+          <li>Lee nuestros Términos y Condiciones y Política de Privacidad</li>
+        </ul>
+      </div>
+
+      <div class="faq-section">
+        <h2 style="color: #2c3e50; margin-bottom: 25px; text-align: center;">
+          ❓ Preguntas Frecuentes Rápidas
+        </h2>
+
+        <div class="faq-item">
+          <h4>¿Los resultados son oficiales?</h4>
+          <p>
+            No, nuestros resultados son informativos. Siempre verifica con los canales oficiales 
+            de Loto Honduras para confirmar los resultados ganadores.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>¿Cuándo se actualizan los resultados?</h4>
+          <p>
+            Los resultados se actualizan automáticamente 3 veces al día después de cada sorteo: 
+            11:00 AM, 3:00 PM y 9:00 PM (hora de Honduras).
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>¿Cómo funcionan los números de la suerte?</h4>
+          <p>
+            Es una herramienta de entretenimiento que genera números aleatorios. No predice 
+            ganadores ni tiene base matemática. Úsala solo por diversión.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>¿Puedo reportar un error en los resultados?</h4>
+          <p>
+            Sí, si encuentras algún error, por favor envíanos un email a 
+            <a href="mailto:codezun@gmail.com" style="color: #667eea; text-decoration: none;">
+              codezun@gmail.com
+            </a> 
+            con la fecha, juego y resultado incorrecto. Lo corregiremos lo antes posible.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>¿Tienen app móvil?</h4>
+          <p>
+            Por el momento solo tenemos sitio web, pero está completamente optimizado para 
+            dispositivos móviles. Puedes guardar el sitio en tu pantalla de inicio para 
+            acceso rápido.
+          </p>
+        </div>
+
+        <div class="faq-item">
+          <h4>¿Puedo sugerir una mejora?</h4>
+          <p>
+            ¡Por supuesto! Nos encanta recibir sugerencias. Envíanos un email con tu idea 
+            y la evaluaremos para futuras actualizaciones.
+          </p>
+        </div>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                  color: white; padding: 30px; border-radius: 20px; text-align: center; 
+                  margin-top: 40px;">
+        <h3 style="margin-bottom: 15px;">💬 ¡Escríbenos!</h3>
+        <p style="margin-bottom: 20px;">
+          Estamos aquí para ayudarte. Tu opinión es muy importante para nosotros.
+        </p>
+        <a href="mailto:codezun@gmail.com" 
+           style="display: inline-block; background: white; color: #667eea; 
+                  padding: 15px 40px; border-radius: 50px; text-decoration: none; 
+                  font-weight: 700; transition: transform 0.3s ease;">
+          Enviar Email
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 25px;
+    padding: 50px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: fadeIn 0.6s ease;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 3px solid #f0f0f0;
+  }
+
+  .header h1 {
+    font-size: 2.5em;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    color: #666;
+    font-size: 1.1em;
+  }
+
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  .back-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  }
+
+  .content {
+    color: #333;
+    line-height: 1.8;
+  }
+
+  .contact-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin: 40px 0;
+  }
+
+  .contact-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+  }
+
+  .contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+  }
+
+  .contact-card .icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+  }
+
+  .contact-card h3 {
+    margin-bottom: 10px;
+    font-size: 1.3em;
+  }
+
+  .contact-card a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    word-break: break-word;
+  }
+
+  .contact-card a:hover {
+    text-decoration: underline;
+  }
+
+  .info-box {
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 30px 0;
+  }
+
+  .info-box h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+
+  .info-box ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .info-box li {
+    padding: 8px 0;
+    color: #555;
+  }
+
+  .info-box li::before {
+    content: "✓ ";
+    color: #667eea;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  .faq-section {
+    margin-top: 40px;
+  }
+
+  .faq-item {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+  .faq-item h4 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+  }
+
+  .faq-item p {
+    color: #666;
+    line-height: 1.6;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 30px 20px;
+    }
+
+    .header h1 {
+      font-size: 2em;
+    }
+
+    .contact-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,687 @@
+---
+// src/pages/la-diaria.astro
+import Layout from '../layouts/Layout.astro';
+import { Star, Calendar, Clock, Target, Zap, CheckCircle, Sparkles, CircleDollarSign, BarChart3, Gem, HelpCircle, Gift, GraduationCap, MapPin, AlertTriangle, TrendingUp, Award, Heart, RefreshCw, Phone, Check, Clover, X, BarChart2 } from 'lucide-astro';
+---
+
+<Layout>
+    <!-- ============== SEO ULTRA AGRESIVO - LA DIARIA ============== -->
+    <Fragment slot="head">
+        <title> LA DIARIA Honduras HOY en VIVO | Resultados Actualizados 11AM 3PM 9PM | Números Ganadores Signo Multiplicador | LotoHN Oficial 2026</title>
+        
+        <meta name="description" content="⭐ RESULTADOS OFICIALES La Diaria Honduras HOY ACTUALIZADOS ✅ Números ganadores, signo zodiacal y multiplicador ⏰ Sorteos 11AM, 3PM, 9PM | Consulta GRATIS | Histórico completo | Estadísticas | Tips para ganar La Diaria | LotoHN #1">
+        <meta name="keywords" content="la diaria honduras, resultados la diaria hoy, la diaria honduras en vivo, numeros ganadores la diaria, signo la diaria, multiplicador la diaria, sorteos la diaria honduras, loteria la diaria, resultados loteria la diaria, la diaria hn, la diaria honduras 11am, la diaria honduras 3pm, la diaria honduras 9pm, como ganar la diaria, cuanto paga la diaria, donde jugar la diaria, estrategias la diaria, probabilidades la diaria, historico la diaria, premios la diaria, signos zodiacales la diaria, numeros de la suerte la diaria, la diaria resultados ayer, la diaria resultados semana, consultar la diaria, verificar boleto la diaria">
+        
+        <!-- ============== SEO TÉCNICO AVANZADO ============== -->
+        <link rel="canonical" href="https://lotohn.com/la-diaria">
+        <meta name="author" content="LotoHN - Portal Oficial de Resultados">
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+        <meta name="bingbot" content="index, follow">
+        <meta http-equiv="content-language" content="es-HN">
+        <meta name="revisit-after" content="1 hour">
+        <meta name="rating" content="general">
+        <meta name="distribution" content="global">
+        <meta name="language" content="Spanish">
+        <meta name="coverage" content="Worldwide">
+        <meta name="target" content="all">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        
+        <!-- ============== GEOLOCALIZACIÓN ============== -->
+        <meta name="geo.region" content="HN">
+        <meta name="geo.placename" content="Honduras, Tegucigalpa, San Pedro Sula, La Ceiba">
+        <meta name="geo.position" content="14.0650;-87.2172">
+        <meta name="ICBM" content="14.0650, -87.2172">
+        
+        <!-- ============== OPEN GRAPH ============== -->
+        <meta property="og:type" content="website">
+        <meta property="og:site_name" content="LotoHN - La Diaria Honduras">
+        <meta property="og:title" content="🎲 La Diaria Honduras HOY - Números Ganadores en VIVO">
+        <meta property="og:description" content="⭐ RESULTADOS ACTUALIZADOS de La Diaria Honduras. Números, signo zodiacal y multiplicador. Sorteos 11AM, 3PM y 9PM. Consulta GRATIS.">
+        <meta property="og:url" content="https://lotohn.com/la-diaria">
+        <meta property="og:image" content="https://lotohn.com/favicon.png">
+        <meta property="og:locale" content="es_HN">
+        
+        <!-- ============== TWITTER CARD ============== -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="🎲 La Diaria Honduras HOY - Números Ganadores">
+        <meta name="twitter:description" content="Consulta los números ganadores, signo y multiplicador de La Diaria. Actualización en tiempo real 3 veces al día.">
+        <meta name="twitter:image" content="https://lotohn.com/favicon.png">
+        
+        <!-- ============== TEMA ============== -->
+        <meta name="theme-color" content="#667eea">
+        
+        <!-- ============== SCHEMA.ORG JSON-LD ============== -->
+        <script type="application/ld+json" is:inline>
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "La Diaria Honduras - LotoHN",
+          "alternateName": ["La Diaria Honduras", "Resultados La Diaria", "La Diaria Hoy"],
+          "url": "https://lotohn.com/la-diaria",
+          "description": "Resultados oficiales de La Diaria Honduras. Números ganadores, signo zodiacal y multiplicador actualizados en tiempo real 3 veces al día.",
+          "inLanguage": "es-HN"
+        }
+        </script>
+        
+        <script type="application/ld+json" is:inline>
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "¿Qué es La Diaria Honduras?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "La Diaria es un sorteo especial de Loto Honduras que combina números ganadores con signos zodiacales y un multiplicador. Se realizan 3 sorteos diarios (11 AM, 3 PM y 9 PM) con premios especiales y acumulados."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Cómo se juega La Diaria?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Para jugar La Diaria debes seleccionar un número, tu signo zodiacal y apostar. Si tu número y signo coinciden con los ganadores del sorteo, y activas el multiplicador, puedes ganar premios mayores. Los premios varían según el multiplicador sorteado."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿A qué hora salen los resultados de La Diaria?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Los resultados de La Diaria se publican 3 veces al día: 11:00 AM, 3:00 PM y 9:00 PM hora de Honduras. En LotoHN actualizamos automáticamente 5 minutos después de cada sorteo oficial."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "¿Cuánto paga La Diaria si gano?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Los premios de La Diaria dependen del tipo de acierto, el monto apostado y el multiplicador. Acertar el número directo puede pagar hasta 500:1, y con multiplicador activo los premios pueden duplicarse o triplicarse."
+              }
+            }
+          ]
+        }
+        </script>
+    </Fragment>
+
+    <!-- ============== CONTENIDO SEO OCULTO PARA CRAWLERS ============== -->
+    <div class="absolute left-[-9999px] w-px h-px overflow-hidden" aria-hidden="true">
+        <h1>La Diaria Honduras - Resultados Actualizados en Tiempo Real</h1>
+        <h2>Sorteos Diarios La Diaria 11AM 3PM 9PM Honduras</h2>
+        <p>Consulta GRATIS los resultados oficiales de La Diaria Honduras. Números ganadores, signo zodiacal y multiplicador actualizados automáticamente después de cada sorteo. Portal #1 de Honduras para verificar tu boleto ganador de La Diaria.</p>
+        
+        <h3>¿Qué es La Diaria Honduras?</h3>
+        <p>La Diaria es un sorteo especial de la lotería nacional de Honduras que combina elementos tradicionales con innovación. A diferencia de los juegos clásicos, La Diaria incluye tres componentes ganadores: un número principal, un signo zodiacal y un multiplicador que puede incrementar tus ganancias hasta 3 veces.</p>
+        
+        <h3>Horarios de Sorteos La Diaria</h3>
+        <ul>
+            <li>Sorteo Matutino La Diaria: 11:00 AM hora de Honduras - Primer sorteo del día</li>
+            <li>Sorteo Vespertino La Diaria: 3:00 PM hora de Honduras - Sorteo de la tarde</li>
+            <li>Sorteo Nocturno La Diaria: 9:00 PM hora de Honduras - Sorteo principal con premios mayores</li>
+        </ul>
+        
+        <h3>Palabras clave La Diaria</h3>
+        <p>la diaria honduras resultados, numeros ganadores la diaria, sorteos la diaria hoy, signo zodiacal la diaria, multiplicador la diaria, como ganar la diaria, cuanto paga la diaria, donde jugar la diaria honduras, agencias la diaria, boleto ganador la diaria, verificar la diaria, historico la diaria, premios la diaria, estrategias la diaria.</p>
+    </div>
+
+    <!-- Botón de ruleta de números de la suerte -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button onclick="mostrarRuleta()" class="relative bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl hover:shadow-purple-500/50 hover:scale-105 transition-all flex items-center gap-2 animate-pulse-scale" aria-label="Generar números de la suerte">
+            <span class="absolute -top-2 -right-2 bg-fuchsia-500 text-white text-xs px-2 py-1 rounded-full font-bold animate-pulse">NUEVO</span>
+            <Clover class="w-5 h-5" />
+            <span>Números de la Suerte</span>
+        </button>
+    </div>
+
+    <!-- Overlay de la ruleta -->
+    <div id="ruletaOverlay" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 hidden" onclick="cerrarRuleta(event)">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <Sparkles class="w-7 h-7 text-violet-600" />
+                    Tus Números de la Suerte
+                </h2>
+                <button onclick="cerrarRuleta()" class="text-gray-500 hover:text-gray-700 transition-colors" aria-label="Cerrar">
+                    <X class="w-6 h-6" />
+                </button>
+            </div>
+            
+            <div id="ruletaDisplay" class="text-center mb-6">
+                <div class="text-6xl font-bold text-violet-600 mb-4 py-8 bg-gradient-to-r from-violet-100 to-purple-100 rounded-xl shadow-inner">00</div>
+                <p class="text-gray-500">Haz clic en "Girar" para descubrir tus números</p>
+            </div>
+            
+            <button onclick="girarRuleta()" class="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:from-violet-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl" aria-label="Girar ruleta">
+                <RefreshCw class="w-5 h-5" />
+                Girar Ruleta
+            </button>
+        </div>
+    </div>
+
+    <header class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center justify-center gap-3 flex-wrap">
+            <Star class="w-10 h-10 text-violet-600" />
+            La Diaria Honduras
+        </h1>
+        <div id="fechaActual" class="text-lg text-gray-700 mb-3 flex items-center justify-center gap-2">
+            <Calendar class="w-5 h-5 text-violet-600" />
+            <span>Cargando...</span>
+        </div>
+        <div class="flex items-center justify-center gap-2 text-2xl font-mono text-violet-600">
+            <Clock class="w-6 h-6" />
+            <time id="relojHonduras" datetime="">--:--:--</time>
+        </div>
+    </header>
+    
+    <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
+        <div class="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>
+        <p class="text-gray-600 text-lg">Cargando resultados de La Diaria...</p>
+    </div>
+
+    <section id="contenido" aria-label="Resultados de La Diaria"></section>
+
+    <!-- ============== CONTENIDO SEO ESPECÍFICO LA DIARIA ============== -->
+    <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <Star class="w-7 h-7 text-violet-600" />
+            La Diaria Honduras - El Sorteo Especial con Más Premios
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-4">
+            Bienvenido a la página oficial de resultados de <strong>La Diaria Honduras</strong>, el sorteo más innovador y emocionante de Loto Honduras. <strong>La Diaria</strong> no es un juego ordinario: combina números ganadores con <strong>signos zodiacales</strong> y un poderoso <strong>multiplicador</strong> que puede incrementar tus premios hasta 3 veces su valor original.
+        </p>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Con <strong>3 sorteos diarios</strong> (11:00 AM, 3:00 PM y 9:00 PM), La Diaria te ofrece múltiples oportunidades cada día para convertirte en ganador. Nuestro sistema actualiza los resultados automáticamente 5 minutos después de cada sorteo oficial, para que siempre tengas la información más reciente.
+        </p>
+
+        <div class="bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl p-6 text-white mb-8 shadow-lg">
+            <h3 class="text-xl font-bold mb-3 flex items-center gap-2 text-white">
+                <Zap class="w-6 h-6" />
+                ¿Por Qué La Diaria es Diferente?
+            </h3>
+            <ul class="text-white mb-0 space-y-2">
+                <li class="flex items-start gap-2"><CheckCircle class="w-5 h-5 flex-shrink-0 mt-0.5" /><span><strong>Tres Elementos Ganadores:</strong> Número + Signo + Multiplicador</span></li>
+                <li class="flex items-start gap-2"><CheckCircle class="w-5 h-5 flex-shrink-0 mt-0.5" /><span><strong>Premios Multiplicados:</strong> Gana hasta 3X más con el multiplicador</span></li>
+                <li class="flex items-start gap-2"><CheckCircle class="w-5 h-5 flex-shrink-0 mt-0.5" /><span><strong>Conexión Astrológica:</strong> Tu signo zodiacal puede ser tu boleto ganador</span></li>
+                <li class="flex items-start gap-2"><CheckCircle class="w-5 h-5 flex-shrink-0 mt-0.5" /><span><strong>Sorteos Especiales:</strong> Premios acumulados y jackpots extraordinarios</span></li>
+                <li class="flex items-start gap-2"><CheckCircle class="w-5 h-5 flex-shrink-0 mt-0.5" /><span><strong>Mayor Emoción:</strong> Más formas de ganar que en sorteos tradicionales</span></li>
+            </ul>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <Target class="w-7 h-7 text-violet-600" />
+            ¿Cómo Funciona La Diaria Honduras?
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-4">
+            La Diaria Honduras es un juego único que combina la emoción de los números con el misticismo de los signos zodiacales y la posibilidad de multiplicar tus ganancias. Aquí te explicamos paso a paso cómo funciona:
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-4 mt-6">Componentes de La Diaria:</h3>
+        <ol class="list-decimal list-inside space-y-3 text-gray-700 mb-6">
+            <li>
+                <strong>Número Principal (2 dígitos):</strong> Selecciona un número del 00 al 99. Este es tu número de la suerte que debe coincidir con el número ganador del sorteo.
+            </li>
+            <li>
+                <strong>Signo Zodiacal:</strong> Elige tu signo del zodiaco. Si el signo sorteado coincide con el tuyo, ¡ganas un premio adicional! Los 12 signos tienen igual probabilidad.
+            </li>
+            <li>
+                <strong>Multiplicador (1X, 2X o 3X):</strong> En cada sorteo se sortea un multiplicador que puede ser 1X, 2X o 3X. Si activas el multiplicador en tu boleto y resultas ganador, tu premio se multiplica automáticamente.
+            </li>
+        </ol>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-4 mt-6">Formas de Ganar en La Diaria:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-violet-50 to-purple-50 border-2 border-violet-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Target class="w-6 h-6 text-violet-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Premio Mayor</h4>
+                </div>
+                <p class="text-gray-700 text-sm">Acierta número + signo + multiplicador activo = Premio multiplicado hasta 3X</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border-2 border-purple-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <CircleDollarSign class="w-6 h-6 text-purple-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Premio Estándar</h4>
+                </div>
+                <p class="text-gray-700 text-sm">Acierta número + signo = Premio base según tabla de pagos</p>
+            </div>
+            <div class="bg-gradient-to-br from-fuchsia-50 to-pink-50 border-2 border-fuchsia-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Sparkles class="w-6 h-6 text-fuchsia-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Premio por Número</h4>
+                </div>
+                <p class="text-gray-700 text-sm">Acierta solo el número = Premio menor pero más frecuente</p>
+            </div>
+            <div class="bg-gradient-to-br from-indigo-50 to-violet-50 border-2 border-indigo-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Star class="w-6 h-6 text-indigo-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Premio por Signo</h4>
+                </div>
+                <p class="text-gray-700 text-sm">Acierta solo el signo = Premio especial astrológico</p>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <BarChart3 class="w-7 h-7 text-violet-600" />
+            Estrategias para Ganar en La Diaria
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Aunque La Diaria es un juego de azar, hay estrategias inteligentes que puedes aplicar para maximizar tus oportunidades:
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-4 mt-6">Estrategia 1: El Poder de tu Signo</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Muchos jugadores veteranos de La Diaria juegan consistentemente con su propio signo zodiacal. La teoría es que tu signo tiene una "conexión especial" contigo. Además, jugar siempre el mismo signo te permite acumular experiencia y reconocer patrones.
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-4 mt-6">Estrategia 2: Activar Siempre el Multiplicador</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Aunque activar el multiplicador cuesta un poco más, vale la pena. Si ganas con multiplicador 3X, tu premio se triplica. Para jugadores que apuestan regularmente, esto puede significar la diferencia entre un premio modesto y uno que cambie tu vida.
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-4 mt-6">Estrategia 3: Diversificar en los 3 Sorteos</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Con 3 sorteos diarios, puedes distribuir tu presupuesto. Por ejemplo, juega números "calientes" en la mañana, números "fríos" en la tarde, y tus números favoritos en la noche. Esta diversificación aumenta tus posibilidades estadísticas.
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-4 mt-6">Estrategia 4: Análisis del Historial</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Revisa los resultados históricos de La Diaria en LotoHN. Identifica qué signos han salido más frecuentemente en el último mes, qué multiplicadores son más comunes, y qué números tienen mayor frecuencia. Esta información te ayuda a tomar decisiones más informadas.
+        </p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <Gem class="w-7 h-7 text-violet-600" />
+            Tabla de Premios Aproximados - La Diaria
+        </h2>
+        <div class="overflow-x-auto mb-6">
+            <table class="min-w-full bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+                <thead class="bg-gradient-to-r from-violet-600 to-purple-600 text-white">
+                    <tr>
+                        <th class="px-6 py-3 text-left font-semibold">Tipo de Acierto</th>
+                        <th class="px-6 py-3 text-left font-semibold">Premio Base</th>
+                        <th class="px-6 py-3 text-left font-semibold">Con Multiplicador 2X</th>
+                        <th class="px-6 py-3 text-left font-semibold">Con Multiplicador 3X</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <tr class="hover:bg-violet-50 transition-colors">
+                        <td class="px-6 py-4"><strong>Número + Signo</strong></td>
+                        <td class="px-6 py-4">L. 5,000</td>
+                        <td class="px-6 py-4">L. 10,000</td>
+                        <td class="px-6 py-4">L. 15,000</td>
+                    </tr>
+                    <tr class="hover:bg-violet-50 transition-colors">
+                        <td class="px-6 py-4"><strong>Solo Número</strong></td>
+                        <td class="px-6 py-4">L. 500</td>
+                        <td class="px-6 py-4">L. 1,000</td>
+                        <td class="px-6 py-4">L. 1,500</td>
+                    </tr>
+                    <tr class="hover:bg-violet-50 transition-colors">
+                        <td class="px-6 py-4"><strong>Solo Signo</strong></td>
+                        <td class="px-6 py-4">L. 200</td>
+                        <td class="px-6 py-4">L. 400</td>
+                        <td class="px-6 py-4">L. 600</td>
+                    </tr>
+                    <tr class="hover:bg-violet-50 transition-colors">
+                        <td class="px-6 py-4"><strong>Jackpot Especial</strong></td>
+                        <td colspan="3" class="px-6 py-4 text-center">Variable (Acumulado)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-sm text-gray-600 italic mb-6"><em>Nota: Los premios son aproximados y varían según la apuesta. Consulta siempre las condiciones en tu agencia.</em></p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <Sparkles class="w-7 h-7 text-violet-600" />
+            Los Signos Zodiacales en La Diaria
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Uno de los elementos más fascinantes de La Diaria es la integración de los signos zodiacales. Cada sorteo incluye uno de los 12 signos del zodiaco como parte del resultado ganador. Aquí te explicamos cada signo:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♈</span>
+                    Aries (Mar 21 - Abr 19)
+                </h4>
+                <p class="text-gray-700 text-sm">El carnero. Signo de fuego, energía y valentía. Popular entre jugadores audaces.</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♉</span>
+                    Tauro (Abr 20 - May 20)
+                </h4>
+                <p class="text-gray-700 text-sm">El toro. Signo de tierra, estabilidad y perseverancia. Favorito de jugadores constantes.</p>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♊</span>
+                    Géminis (May 21 - Jun 20)
+                </h4>
+                <p class="text-gray-700 text-sm">Los gemelos. Signo de aire, versatilidad y adaptación. Ideal para estrategias múltiples.</p>
+            </div>
+            <div class="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♋</span>
+                    Cáncer (Jun 21 - Jul 22)
+                </h4>
+                <p class="text-gray-700 text-sm">El cangrejo. Signo de agua, intuición y sensibilidad. Conecta con la suerte emocional.</p>
+            </div>
+            <div class="bg-gradient-to-br from-orange-50 to-red-50 border-2 border-orange-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♌</span>
+                    Leo (Jul 23 - Ago 22)
+                </h4>
+                <p class="text-gray-700 text-sm">El león. Signo de fuego, liderazgo y confianza. Preferido por jugadores optimistas.</p>
+            </div>
+            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♍</span>
+                    Virgo (Ago 23 - Sep 22)
+                </h4>
+                <p class="text-gray-700 text-sm">La virgen. Signo de tierra, análisis y precisión. Elegido por jugadores metódicos.</p>
+            </div>
+            <div class="bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♎</span>
+                    Libra (Sep 23 - Oct 22)
+                </h4>
+                <p class="text-gray-700 text-sm">La balanza. Signo de aire, equilibrio y armonía. Popular para estrategias balanceadas.</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-50 to-violet-50 border-2 border-purple-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♏</span>
+                    Escorpio (Oct 23 - Nov 21)
+                </h4>
+                <p class="text-gray-700 text-sm">El escorpión. Signo de agua, intensidad y misterio. Favorito de jugadores apasionados.</p>
+            </div>
+            <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♐</span>
+                    Sagitario (Nov 22 - Dic 21)
+                </h4>
+                <p class="text-gray-700 text-sm">El arquero. Signo de fuego, aventura y optimismo. Ideal para riesgos calculados.</p>
+            </div>
+            <div class="bg-gradient-to-br from-slate-50 to-gray-50 border-2 border-slate-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♑</span>
+                    Capricornio (Dic 22 - Ene 19)
+                </h4>
+                <p class="text-gray-700 text-sm">La cabra. Signo de tierra, disciplina y ambición. Elegido por jugadores estratégicos.</p>
+            </div>
+            <div class="bg-gradient-to-br from-cyan-50 to-sky-50 border-2 border-cyan-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♒</span>
+                    Acuario (Ene 20 - Feb 18)
+                </h4>
+                <p class="text-gray-700 text-sm">El aguador. Signo de aire, innovación y originalidad. Para jugadores creativos.</p>
+            </div>
+            <div class="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 rounded-xl p-5 hover:shadow-lg transition-shadow">
+                <h4 class="text-lg font-bold text-gray-800 mb-2 flex items-center gap-2">
+                    <span class="text-2xl">♓</span>
+                    Piscis (Feb 19 - Mar 20)
+                </h4>
+                <p class="text-gray-700 text-sm">Los peces. Signo de agua, intuición y sueños. Conecta con la suerte intuitiva.</p>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <Clock class="w-7 h-7 text-violet-600" />
+            Horarios Detallados de La Diaria
+        </h2>
+        <div class="overflow-x-auto mb-6">
+            <table class="min-w-full bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+                <thead class="bg-gradient-to-r from-violet-600 to-purple-600 text-white">
+                    <tr>
+                        <th class="px-6 py-3 text-left font-semibold">Sorteo</th>
+                        <th class="px-6 py-3 text-left font-semibold">Hora Oficial</th>
+                        <th class="px-6 py-3 text-left font-semibold">Cierre de Ventas</th>
+                        <th class="px-6 py-3 text-left font-semibold">Resultados en LotoHN</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <tr class="hover:bg-violet-50 transition-colors">
+                        <td class="px-6 py-4"><strong>Matutino</strong></td>
+                        <td class="px-6 py-4">11:00 AM</td>
+                        <td class="px-6 py-4">10:50 AM</td>
+                        <td class="px-6 py-4">11:05 AM</td>
+                    </tr>
+                    <tr class="hover:bg-violet-50 transition-colors">
+                        <td class="px-6 py-4"><strong>Vespertino</strong></td>
+                        <td class="px-6 py-4">3:00 PM</td>
+                        <td class="px-6 py-4">2:50 PM</td>
+                        <td class="px-6 py-4">3:05 PM</td>
+                    </tr>
+                    <tr class="hover:bg-violet-50 transition-colors">
+                        <td class="px-6 py-4"><strong>Nocturno</strong></td>
+                        <td class="px-6 py-4">9:00 PM</td>
+                        <td class="px-6 py-4">8:50 PM</td>
+                        <td class="px-6 py-4">9:05 PM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 mt-8 flex items-center gap-2">
+            <HelpCircle class="w-7 h-7 text-violet-600" />
+            Preguntas Frecuentes - La Diaria Honduras
+        </h2>
+        
+        <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">¿Puedo elegir cualquier signo o solo el mío?</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Puedes elegir <strong>cualquier signo zodiacal</strong>, no necesariamente el tuyo. Muchos jugadores experimentan con diferentes signos basándose en estadísticas históricas o corazonadas. Algunos incluso juegan múltiples boletos con diferentes signos en el mismo sorteo.
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">¿El multiplicador se activa automáticamente?</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            No, debes <strong>activar el multiplicador</strong> al comprar tu boleto. Esto tiene un costo adicional pequeño, pero si ganas, tu premio se multiplica por 2X o 3X según el multiplicador sorteado. Muchos jugadores consideran que vale completamente la pena.
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">¿Qué pasa si solo acierto el signo pero no el número?</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Aún ganas un premio menor. La Diaria premia <strong>aciertos parciales</strong>, lo que significa que acertar solo el signo, solo el número, o ambos, tiene diferentes niveles de premio. Esto hace que La Diaria sea más generosa que otros sorteos.
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">¿Los signos salen con igual frecuencia?</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Teóricamente sí, cada signo tiene la misma probabilidad estadística (1 en 12). Sin embargo, en períodos cortos puede haber variaciones aleatorias. Te recomendamos revisar nuestro histórico de La Diaria para ver qué signos han salido recientemente.
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">¿Puedo ver los resultados de La Diaria de días anteriores?</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Sí, en LotoHN mantenemos un <strong>historial completo</strong> de todos los sorteos de La Diaria. Puedes consultar números, signos y multiplicadores de semanas y meses pasados para identificar patrones y tendencias que te ayuden a elegir mejor.
+        </p>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 mt-8 flex items-center gap-2">
+            <Gift class="w-7 h-7 text-violet-600" />
+            Consejos de Jugadores Expertos de La Diaria
+        </h2>
+        <ol class="list-decimal list-inside space-y-3 text-gray-700 mb-8">
+            <li><strong>Juega con Constancia:</strong> Los jugadores más exitosos juegan regularmente, no esporádicamente. Establece una rutina.</li>
+            <li><strong>Activa Siempre el Multiplicador:</strong> El costo extra es mínimo comparado con el potencial de triplicar tu premio.</li>
+            <li><strong>Combina Tu Signo con Números Calientes:</strong> Usa tu signo zodiacal pero selecciona números que hayan salido frecuentemente.</li>
+            <li><strong>Aprovecha los 3 Sorteos:</strong> No te limites a un solo sorteo. Distribuye tu presupuesto en las 3 oportunidades diarias.</li>
+            <li><strong>Registra Tus Jugadas:</strong> Lleva un registro de qué has jugado y cuándo. Esto te ayuda a identificar qué estrategias funcionan mejor.</li>
+            <li><strong>Juega en Grupo:</strong> Forma una peña con amigos donde cada uno juegue un signo diferente pero compartan premios.</li>
+            <li><strong>Usa el Generador de Números:</strong> Nuestra herramienta "Números de la Suerte" puede darte combinaciones aleatorias sin sesgos.</li>
+            <li><strong>Revisa Inmediatamente:</strong> Verifica tus boletos en LotoHN justo después del sorteo para no perder tiempo.</li>
+        </ol>
+
+        <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl p-6 text-white mb-8 shadow-lg">
+            <h3 class="text-xl font-bold mb-3 flex items-center gap-2 text-white">
+                <Sparkles class="w-6 h-6" />
+                Dato Curioso de La Diaria
+            </h3>
+            <p class="text-white mb-0">
+                La Diaria fue creada para jugadores que creen en la influencia astrológica en la suerte. El sistema de signos zodiacales no es solo decorativo: está diseñado para que sientas una conexión personal con tu jugada. Muchos ganadores reportan haber soñado con su número o signo antes de ganar.
+            </p>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <MapPin class="w-7 h-7 text-violet-600" />
+            ¿Dónde Jugar La Diaria en Honduras?
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-4">
+            La Diaria está disponible en todas las agencias autorizadas de Loto Honduras a lo largo del país. Las principales ciudades con mayor cobertura son:
+        </p>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">Principales Ubicaciones:</h3>
+        <ul class="list-disc list-inside space-y-2 text-gray-700 mb-6">
+            <li><strong>Tegucigalpa:</strong> Más de 100 agencias. Oficinas centrales en Blvd. Morazán para premios mayores.</li>
+            <li><strong>San Pedro Sula:</strong> Amplia red en todos los sectores. Atención especial para La Diaria en agencias grandes.</li>
+            <li><strong>La Ceiba:</strong> Agencias en centro comercial y zonas turísticas.</li>
+            <li><strong>Choloma:</strong> Puntos de venta en mercados populares.</li>
+            <li><strong>El Progreso:</strong> Múltiples agencias en avenidas principales.</li>
+            <li><strong>Choluteca:</strong> Cobertura completa en el sur.</li>
+        </ul>
+
+        <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">Cómo Cobrar Premios de La Diaria:</h3>
+        <ol class="list-decimal list-inside space-y-3 text-gray-700 mb-6">
+            <li><strong>Premios menores (hasta L. 5,000):</strong> Cobra directamente en cualquier agencia con tu boleto original.</li>
+            <li><strong>Premios con multiplicador (L. 5,000 - L. 20,000):</strong> Algunas agencias grandes. Lleva identificación.</li>
+            <li><strong>Premios mayores y jackpots:</strong> Oficinas centrales de Loto Honduras con boleto original, identidad y formularios.</li>
+        </ol>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <GraduationCap class="w-7 h-7 text-violet-600" />
+            Glosario de Términos - La Diaria
+        </h2>
+        <ul class="list-disc list-inside space-y-2 text-gray-700 mb-8">
+            <li><strong>Número Principal:</strong> El número de 2 dígitos (00-99) que seleccionas para el sorteo.</li>
+            <li><strong>Signo Zodiacal:</strong> Uno de los 12 signos del horóscopo que forma parte del resultado ganador.</li>
+            <li><strong>Multiplicador:</strong> Factor (1X, 2X o 3X) que aumenta el premio si está activo en tu boleto.</li>
+            <li><strong>Activar Multiplicador:</strong> Pagar extra al comprar el boleto para que el multiplicador se aplique si ganas.</li>
+            <li><strong>Acierto Completo:</strong> Coincidir número + signo con multiplicador activo = Premio máximo.</li>
+            <li><strong>Acierto Parcial:</strong> Coincidir solo número o solo signo = Premio menor.</li>
+            <li><strong>Jackpot Acumulado:</strong> Premio especial que se incrementa cuando no hay ganador del premio mayor.</li>
+            <li><strong>Sorteo Especial:</strong> Sorteos con premios extraordinarios en fechas festivas.</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <TrendingUp class="w-7 h-7 text-violet-600" />
+            Estadísticas Útiles de La Diaria
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-6">
+            Basándonos en el análisis histórico de La Diaria, aquí hay datos estadísticos que pueden ayudarte:
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <BarChart2 class="w-6 h-6 text-blue-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Multiplicadores</h4>
+                </div>
+                <p class="text-gray-700 text-sm">Históricamente, el multiplicador 1X sale ~50%, 2X ~35%, y 3X ~15% de las veces.</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-50 to-violet-50 border-2 border-purple-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Sparkles class="w-6 h-6 text-purple-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Signos Populares</h4>
+                </div>
+                <p class="text-gray-700 text-sm">Leo, Aries y Escorpio son los signos más jugados por su reputación de "suerte".</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Target class="w-6 h-6 text-green-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Números Frecuentes</h4>
+                </div>
+                <p class="text-gray-700 text-sm">Los números terminados en 7 y 3 aparecen con mayor frecuencia en La Diaria.</p>
+            </div>
+            <div class="bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Clock class="w-6 h-6 text-orange-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Mejor Horario</h4>
+                </div>
+                <p class="text-gray-700 text-sm">El sorteo nocturno (9 PM) tiene históricamente los premios acumulados más altos.</p>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 mt-8 flex items-center gap-2">
+            <Award class="w-7 h-7 text-violet-600" />
+            Por Qué Elegir La Diaria
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-violet-50 to-purple-50 border-2 border-violet-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Sparkles class="w-6 h-6 text-violet-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Más Formas de Ganar</h4>
+                </div>
+                <p class="text-gray-700 text-sm">A diferencia de otros sorteos, puedes ganar con aciertos parciales (solo número o solo signo).</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-50 to-fuchsia-50 border-2 border-purple-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <CircleDollarSign class="w-6 h-6 text-purple-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Premios Multiplicados</h4>
+                </div>
+                <p class="text-gray-700 text-sm">El sistema de multiplicadores puede triplicar tu premio sin costo significativo.</p>
+            </div>
+            <div class="bg-gradient-to-br from-fuchsia-50 to-pink-50 border-2 border-fuchsia-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Heart class="w-6 h-6 text-fuchsia-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Conexión Personal</h4>
+                </div>
+                <p class="text-gray-700 text-sm">El elemento astrológico crea una conexión emocional con tu jugada.</p>
+            </div>
+            <div class="bg-gradient-to-br from-indigo-50 to-violet-50 border-2 border-indigo-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center gap-2 mb-3">
+                    <Gift class="w-6 h-6 text-indigo-600" />
+                    <h4 class="text-lg font-bold text-gray-800">Premios Acumulados</h4>
+                </div>
+                <p class="text-gray-700 text-sm">Los jackpots no reclamados se acumulan para sorteos futuros.</p>
+            </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <AlertTriangle class="w-7 h-7 text-violet-600" />
+            Juego Responsable - Importante
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-4">
+            La Diaria es entretenimiento, no una inversión. Sigue estos consejos para jugar responsablemente:
+        </p>
+        <ul class="list-none space-y-2 text-gray-700 mb-6">
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" /><span>Establece un presupuesto semanal/mensual que puedas permitirte perder</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" /><span>Nunca persigas pérdidas apostando más de lo planeado</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" /><span>Juega por diversión, no como forma de resolver problemas financieros</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" /><span>Si sientes que el juego está afectando tu vida, busca ayuda profesional</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" /><span>Recuerda: la lotería es aleatoria, no hay sistemas garantizados</span></li>
+        </ul>
+
+        <div class="bg-gradient-to-r from-red-500 to-rose-600 rounded-xl p-6 text-white mb-8 shadow-lg">
+            <h3 class="text-xl font-bold mb-3 flex items-center gap-2 text-white">
+                <Phone class="w-6 h-6" />
+                Línea de Ayuda para Ludopatía
+            </h3>
+            <p class="text-white mb-0">
+                Si necesitas apoyo: <strong>105 (Línea Nacional de Ayuda - Honduras)</strong><br>
+                Confidencial, gratuita, disponible 24/7. No estás solo.
+            </p>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+            <RefreshCw class="w-7 h-7 text-violet-600" />
+            Actualizaciones Futuras de La Diaria
+        </h2>
+        <p class="text-gray-700 leading-relaxed mb-4">
+            Estamos trabajando en nuevas funcionalidades exclusivas para La Diaria en LotoHN:
+        </p>
+        <ul class="list-none space-y-2 text-gray-700 mb-8">
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-violet-600 flex-shrink-0 mt-0.5" /><span>Calculadora de premios con multiplicadores</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-violet-600 flex-shrink-0 mt-0.5" /><span>Estadísticas avanzadas por signo zodiacal</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-violet-600 flex-shrink-0 mt-0.5" /><span>Alertas personalizadas cuando salga tu signo</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-violet-600 flex-shrink-0 mt-0.5" /><span>Análisis predictivo basado en históricos</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-violet-600 flex-shrink-0 mt-0.5" /><span>Comparador de frecuencia de signos y números</span></li>
+            <li class="flex items-start gap-2"><Check class="w-5 h-5 text-violet-600 flex-shrink-0 mt-0.5" /><span>Gráficos interactivos de tendencias</span></li>
+        </ul>
+
+        <p class="text-center text-xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mt-10 flex items-center justify-center gap-2">
+            <span>¡Que tu signo te traiga suerte!</span>
+            <Star class="w-6 h-6 text-violet-600" />
+            <span>¡Mucha fortuna en La Diaria!</span>
+            <Clover class="w-6 h-6 text-green-600" />
+        </p>
+    </article>
+</Layout>
+
