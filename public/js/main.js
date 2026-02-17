@@ -251,37 +251,51 @@ function preloadLogos(sorteos) {
 
 function crearCardJuego(key, datos) {
     const card = document.createElement('div');
-    
-    // ✅ DETECTAR SI ES RESULTADO ANTERIOR
+
+    // ✅ Guard contra fecha_sorteo null
+    if (!datos.fecha_sorteo) {
+        card.className = 'game-card';
+        card.innerHTML = `
+            <div class="game-header">
+                <div class="game-title-row">
+                    <div class="game-name">${datos.nombre_juego}</div>
+                </div>
+            </div>
+            <div class="pendiente">
+                <i data-lucide="clock" class="w-5 h-5 inline-block mr-2"></i>Próximamente
+            </div>`;
+        return card;
+    }
+
+    // ✅ Detecta resultado anterior por estado O por fecha
     const fechaHoy = new Date();
     const [dia, mes, año] = datos.fecha_sorteo.split('-').map(Number);
     const fechaSorteo = new Date(año || fechaHoy.getFullYear(), mes - 1, dia);
-    
-    const esAnterior = fechaSorteo < new Date(fechaHoy.getFullYear(), fechaHoy.getMonth(), fechaHoy.getDate());
-    
+    const esAnterior = datos.estado === 'anterior' ||
+                       fechaSorteo < new Date(fechaHoy.getFullYear(), fechaHoy.getMonth(), fechaHoy.getDate());
+
     card.className = esAnterior ? 'game-card resultado-anterior' : 'game-card';
-    
-    let nombreLimpio = datos.nombre_juego;
-    const nombreBase = nombreLimpio.replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '').trim();
-    
-  const logoHTML = datos.logo_url ? 
-    `<img src="${datos.logo_url}" 
-         alt="${nombreBase}" 
-         class="game-logo" 
-         width="72" 
-         height="72" 
-         loading="lazy" 
-         decoding="async">` : 
-    '';
-    
+
+    const nombreBase = datos.nombre_juego.replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '').trim();
+
+    const logoHTML = datos.logo_url ?
+        `<img src="${datos.logo_url}" 
+             alt="${nombreBase}" 
+             class="game-logo" 
+             width="72" 
+             height="72" 
+             loading="lazy" 
+             decoding="async">` :
+        '';
+
     let contenidoPrincipal = '';
-    
+
     if (key.includes('juga3')) {
         contenidoPrincipal = datos.numero_ganador ? `
             <div class="juga3-numero">
                 <div class="numeros-titulo">NÚMEROS GANADORES</div>
                 <div class="numeros-individuales">
-                    ${datos.numeros_individuales.map((num, index) => 
+                    ${datos.numeros_individuales.map((num, index) =>
                         `<div class="bola" style="animation-delay: ${index * 0.1}s">${num}</div>`
                     ).join('')}
                 </div>
@@ -291,7 +305,7 @@ function crearCardJuego(key, datos) {
         if (datos.numeros_adicionales && datos.numeros_adicionales.length > 0) {
             let titulo = 'NÚMEROS GANADORES';
             if (key.includes('diaria')) titulo = 'NÚMERO · SIGNO · MULTIPLICADOR';
-            
+
             contenidoPrincipal = `
                 <div class="numeros-container">
                     <div class="numeros-titulo">${titulo}</div>
@@ -321,18 +335,19 @@ function crearCardJuego(key, datos) {
                 ${datos.hora_sorteo ? `<div class="game-time"><i data-lucide="clock" class="w-4 h-4 inline-block mr-1"></i>${datos.hora_sorteo}</div>` : ''}
             </div>
         </div>
-        
+
         ${contenidoPrincipal}
-        
+
         ${!datos.numero_ganador && (!datos.numeros_adicionales || datos.numeros_adicionales.length === 0) ? `
             <div style="text-align:center;">
                 <span class="estado-badge"><i data-lucide="clock" class="w-4 h-4 inline-block mr-1"></i>Próximamente</span>
             </div>
         ` : ''}
     `;
-    
+
     return card;
 }
+
 
 
 // ============================================
