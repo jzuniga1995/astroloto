@@ -349,6 +349,9 @@ function ordenarPorFechaYHora(sorteos) {
     return Object.entries(sorteos).sort((a, b) => {
         const [keyA, datosA] = a;
         const [keyB, datosB] = b;
+
+        // ✅ Guard contra fecha_sorteo null o undefined
+        if (!datosA.fecha_sorteo || !datosB.fecha_sorteo) return 0;
         
         const partesA = datosA.fecha_sorteo.split('-').map(Number);
         const partesB = datosB.fecha_sorteo.split('-').map(Number);
@@ -378,9 +381,9 @@ function ordenarPorFechaYHora(sorteos) {
     });
 }
 
-// ============================================
-// CARGAR RESULTADOS - OPTIMIZADO
-// ============================================
+
+
+
 
 // ============================================
 // CARGAR RESULTADOS - OPTIMIZADO
