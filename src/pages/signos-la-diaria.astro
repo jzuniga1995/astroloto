@@ -1,0 +1,592 @@
+---
+// src/pages/signos-la-diaria.astro
+import Layout from '../layouts/Layout.astro';
+import { Star, Search, Hash, BookOpen, Sparkles, HelpCircle, TrendingUp, Lightbulb, Target, Flame, Zap } from 'lucide-astro';
+
+const signos = [
+  [0,"Avión"],[1,"Pies"],[2,"Mujer"],[3,"Muerto"],[4,"Tigre"],
+  [5,"Embarazada"],[6,"Elefante"],[7,"Navaja"],[8,"Conejo"],[9,"Hombre"],
+  [10,"Anillo"],[11,"Perro"],[12,"Caballo"],[13,"Gato"],[14,"Boda"],
+  [15,"Ratón"],[16,"Niña"],[17,"Joven"],[18,"Ángel"],[19,"Mariposa"],
+  [20,"Espejo"],[21,"Pájaro"],[22,"Ataúd"],[23,"Mono"],[24,"Sapo"],
+  [25,"Balanza"],[26,"Bandera"],[27,"Juego"],[28,"Gallo"],[29,"Padre"],
+  [30,"Bolo"],[31,"Alacrán"],[32,"Culebra"],[33,"Carpintero"],[34,"Música"],
+  [35,"Virgen"],[36,"Ciejita"],[37,"Suerte"],[38,"Pistola"],[39,"Jabón"],
+  [40,"Cielo"],[41,"Novia"],[42,"Madre"],[43,"Pantera"],[44,"Mesas"],
+  [45,"Iglesia"],[46,"Familia"],[47,"Banco"],[48,"Estrella"],[49,"Sombra"],
+  [50,"Luna Nueva"],[51,"Policía"],[52,"Zorrillo"],[53,"Llanta"],[54,"Licor"],
+  [55,"Olas"],[56,"Árbol"],[57,"Cuchillo"],[58,"Venado"],[59,"Selva"],
+  [60,"Dragón"],[61,"Guerra"],[62,"Lagarto"],[63,"Coco"],[64,"Mueble"],
+  [65,"Pintura"],[66,"Diablo"],[67,"Vaca"],[68,"Ladrón"],[69,"Soldado"],
+  [70,"Oro"],[71,"Zapatos"],[72,"Arco"],[73,"Fuego"],[74,"Edificio"],
+  [75,"Reina"],[76,"Palomas"],[77,"Humo"],[78,"Tienda"],[79,"Flores"],
+  [80,"Café"],[81,"Rieles"],[82,"Escuela"],[83,"Bote"],[84,"Coronas"],
+  [85,"Casa"],[86,"Reloj"],[87,"León"],[88,"Platos"],[89,"Búho"],
+  [90,"Lentes"],[91,"Tortuga"],[92,"Águila"],[93,"Cartero"],[94,"Carro"],
+  [95,"Costurera"],[96,"Dinero"],[97,"Viejito"],[98,"Bailes"],[99,"Aretes"]
+];
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>SIGNOS DE LA DIARIA Honduras 2026 | Tabla COMPLETA 00-99 | Sueños y Números Ganadores | LotoHN Oficial</title>
+
+    <meta name="description" content="⭐ TABLA COMPLETA Signos La Diaria Honduras 2026 ✅ Los 100 sueños del 00 al 99 ACTUALIZADOS | Flores=79, Familia=46, Policía=51, Madre=42, Dinero=96 | Busca tu sueño y gana HOY | LotoHN #1 Honduras">
+    <meta name="keywords" content="signos la diaria honduras, tabla signos la diaria, sueños la diaria honduras, numeros sueños la diaria, que numero es flores la diaria, que numero es familia la diaria, que numero es policia la diaria, que numero es madre la diaria, que numero es dinero la diaria, que numero es estrella la diaria, que numero es caballo la diaria, que numero es angel la diaria, que numero es muerto la diaria, que numero es culebra la diaria, que numero es oro la diaria, que numero es casa la diaria, que numero es fuego la diaria, que numero es dragon la diaria, que numero es leon la diaria, que numero es aguila la diaria, tabla completa la diaria 2026, significado numeros la diaria, interpretar sueños loteria honduras, numeros sueños loto hn, la diaria signos 00 99, tabla sueños honduras, sueños numeros de la suerte honduras, signos diaria loto honduras, tabla oficial signos diaria, signos la diaria tegucigalpa, signos la diaria san pedro sula, signos diaria ceiba, tabla sueños loto honduras, como ganar la diaria con sueños, interpretar sueños para loto, numeros suerte segun sueños honduras, la diaria sueños numeros, loteria sueños honduras, sueños numeros ganar diaria, flores 79 la diaria, familia 46 la diaria, policia 51 la diaria, madre 42 la diaria, dinero 96 la diaria, signos diaria hn 2026">
+
+    <!-- ============== SEO TÉCNICO AVANZADO ============== -->
+    <link rel="canonical" href="https://lotohn.com/signos-la-diaria">
+    <meta name="author" content="LotoHN - Portal Oficial de Resultados Honduras">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow">
+    <meta http-equiv="content-language" content="es-HN">
+    <meta name="revisit-after" content="1 day">
+    <meta name="rating" content="general">
+    <meta name="distribution" content="global">
+    <meta name="language" content="Spanish">
+    <meta name="coverage" content="Worldwide">
+    <meta name="target" content="all">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <!-- ============== GEOLOCALIZACIÓN MEJORADA ============== -->
+    <meta name="geo.region" content="HN">
+    <meta name="geo.placename" content="Honduras, Tegucigalda, San Pedro Sula, La Ceiba, Choloma, El Progreso, Choluteca">
+    <meta name="geo.position" content="14.0650;-87.2172">
+    <meta name="ICBM" content="14.0650, -87.2172">
+    <meta name="DC.title" content="Signos de La Diaria Honduras - Tabla Completa 00 al 99">
+
+    <!-- ============== OPEN GRAPH ============== -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LotoHN - Signos La Diaria Honduras">
+    <meta property="og:title" content="⭐ Signos de La Diaria Honduras 2026 - Tabla COMPLETA 00 al 99">
+    <meta property="og:description" content="Tabla completa de los 100 signos y sueños de La Diaria Honduras. Flores=79, Familia=46, Policía=51, Madre=42, Dinero=96. Busca tu sueño y gana HOY. GRATIS.">
+    <meta property="og:url" content="https://lotohn.com/signos-la-diaria">
+    <meta property="og:image" content="https://lotohn.com/favicon.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Tabla Signos La Diaria Honduras - 100 sueños del 00 al 99">
+    <meta property="og:locale" content="es_HN">
+    <meta property="og:locale:alternate" content="es_ES">
+
+    <!-- ============== TWITTER CARD ============== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@LotoHN">
+    <meta name="twitter:creator" content="@LotoHN">
+    <meta name="twitter:title" content="⭐ Signos La Diaria Honduras 2026 - Tabla 00-99 COMPLETA">
+    <meta name="twitter:description" content="Tabla completa de signos de La Diaria Honduras. Flores=79, Familia=46, Dinero=96. Busca tu sueño y encuentra tu número ganador.">
+    <meta name="twitter:image" content="https://lotohn.com/favicon.png">
+
+    <!-- ============== TEMA ============== -->
+    <meta name="theme-color" content="#8B5CF6">
+    <meta name="msapplication-TileColor" content="#8B5CF6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Signos La Diaria - LotoHN">
+
+    <!-- ============== SCHEMA.ORG JSON-LD COMPLETO ============== -->
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Signos de La Diaria Honduras - Tabla Completa 00-99",
+      "url": "https://lotohn.com/signos-la-diaria",
+      "description": "Tabla completa de los 100 signos y sueños de La Diaria Honduras del 00 al 99. Encuentra el número que corresponde a cada sueño o signo sorteado.",
+      "inLanguage": "es-HN",
+      "dateModified": "2026-01-01T00:00:00-06:00",
+      "publisher": {
+        "@type": "Organization",
+        "name": "LotoHN",
+        "url": "https://lotohn.com",
+        "logo": { "@type": "ImageObject", "url": "https://lotohn.com/logo.png" }
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://lotohn.com/" },
+          { "@type": "ListItem", "position": 2, "name": "La Diaria", "item": "https://lotohn.com/la-diaria" },
+          { "@type": "ListItem", "position": 3, "name": "Signos La Diaria", "item": "https://lotohn.com/signos-la-diaria" }
+        ]
+      }
+    }
+    </script>
+
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "¿Qué número es Flores en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Flores corresponde al número 79 en La Diaria Honduras. Es uno de los signos más populares y buscados por los jugadores hondureños." } },
+        { "@type": "Question", "name": "¿Qué número es Familia en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Familia corresponde al número 46 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Policía en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Policía corresponde al número 51 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Madre en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Madre corresponde al número 42 en La Diaria Honduras. Es el signo más jugado por los hondureños." } },
+        { "@type": "Question", "name": "¿Qué número es Dinero en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Dinero corresponde al número 96 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Estrella en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Estrella corresponde al número 48 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Caballo en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Caballo corresponde al número 12 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Ángel en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Ángel corresponde al número 18 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Muerto en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Muerto corresponde al número 3 en La Diaria Honduras. Soñar con un muerto o difunto se juega con el 03." } },
+        { "@type": "Question", "name": "¿Qué número es Culebra en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Culebra corresponde al número 32 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Oro en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Oro corresponde al número 70 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Casa en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Casa corresponde al número 85 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es León en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "León corresponde al número 87 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Dragón en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Dragón corresponde al número 60 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Qué número es Suerte en La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "Suerte corresponde al número 37 en La Diaria Honduras." } },
+        { "@type": "Question", "name": "¿Cuántos signos tiene La Diaria Honduras?", "acceptedAnswer": { "@type": "Answer", "text": "La Diaria Honduras tiene 100 signos o sueños, numerados del 00 al 99. Cada número tiene asignado un nombre o imagen diferente." } },
+        { "@type": "Question", "name": "¿Cómo usar la tabla de signos de La Diaria para ganar?", "acceptedAnswer": { "@type": "Answer", "text": "Para usar la tabla de signos de La Diaria Honduras, recuerda el sueño que tuviste la noche anterior, búscalo en la tabla y juega ese número. Si soñaste con Flores juegas el 79, si soñaste con Madre juegas el 42, si soñaste con Dinero juegas el 96." } }
+      ]
+    }
+    </script>
+  </Fragment>
+
+  <!-- ============== SEO OCULTO ULTRA AGRESIVO PARA CRAWLERS ============== -->
+  <div class="absolute left-[-9999px] w-px h-px overflow-hidden" aria-hidden="true">
+    <h1>Signos de La Diaria Honduras 2026 - Tabla Completa Sueños y Números del 00 al 99</h1>
+    <h2>Todos los Signos Oficiales de La Diaria Loto Honduras - 100 Sueños Completos</h2>
+    <p>Consulta GRATIS la tabla completa de signos y sueños de La Diaria Honduras. Los 100 signos del 00 al 99 actualizados. Encuentra el número que corresponde a tu sueño y juégalo en el próximo sorteo. Portal #1 de Honduras para consultar signos de La Diaria gratis.</p>
+
+    <h3>Signos más buscados de La Diaria Honduras con sus números</h3>
+    <ul>
+      <li>Flores la diaria honduras numero 79 - que numero es flores la diaria</li>
+      <li>Familia la diaria honduras numero 46 - que numero es familia la diaria</li>
+      <li>Policía la diaria honduras numero 51 - que numero es policia la diaria</li>
+      <li>Madre la diaria honduras numero 42 - que numero es madre la diaria</li>
+      <li>Dinero la diaria honduras numero 96 - que numero es dinero la diaria</li>
+      <li>Estrella la diaria honduras numero 48 - que numero es estrella la diaria</li>
+      <li>Caballo la diaria honduras numero 12 - que numero es caballo la diaria</li>
+      <li>Ángel la diaria honduras numero 18 - que numero es angel la diaria</li>
+      <li>Muerto la diaria honduras numero 3 - que numero es muerto la diaria</li>
+      <li>Culebra la diaria honduras numero 32 - que numero es culebra la diaria</li>
+      <li>Oro la diaria honduras numero 70 - que numero es oro la diaria</li>
+      <li>León la diaria honduras numero 87 - que numero es leon la diaria</li>
+      <li>Dragón la diaria honduras numero 60 - que numero es dragon la diaria</li>
+      <li>Suerte la diaria honduras numero 37 - que numero es suerte la diaria</li>
+      <li>Casa la diaria honduras numero 85 - que numero es casa la diaria</li>
+      <li>Fuego la diaria honduras numero 73 - que numero es fuego la diaria</li>
+      <li>Carro la diaria honduras numero 94 - que numero es carro la diaria</li>
+      <li>Águila la diaria honduras numero 92 - que numero es aguila la diaria</li>
+      <li>Luna Nueva la diaria honduras numero 50 - que numero es luna nueva la diaria</li>
+      <li>Padre la diaria honduras numero 29 - que numero es padre la diaria</li>
+      <li>Novia la diaria honduras numero 41 - que numero es novia la diaria</li>
+      <li>Ataúd la diaria honduras numero 22 - que numero es ataud la diaria</li>
+      <li>Tigre la diaria honduras numero 4 - que numero es tigre la diaria</li>
+      <li>Boda la diaria honduras numero 14 - que numero es boda la diaria</li>
+      <li>Iglesia la diaria honduras numero 45 - que numero es iglesia la diaria</li>
+      <li>Perro la diaria honduras numero 11 - que numero es perro la diaria</li>
+      <li>Gato la diaria honduras numero 13 - que numero es gato la diaria</li>
+      <li>Avión la diaria honduras numero 0 - que numero es avion la diaria</li>
+      <li>Reina la diaria honduras numero 75 - que numero es reina la diaria</li>
+      <li>Banco la diaria honduras numero 47 - que numero es banco la diaria</li>
+    </ul>
+
+    <h3>Tabla completa signos La Diaria Honduras del 00 al 99</h3>
+    <p>00 Avión, 01 Pies, 02 Mujer, 03 Muerto, 04 Tigre, 05 Embarazada, 06 Elefante, 07 Navaja, 08 Conejo, 09 Hombre, 10 Anillo, 11 Perro, 12 Caballo, 13 Gato, 14 Boda, 15 Ratón, 16 Niña, 17 Joven, 18 Ángel, 19 Mariposa, 20 Espejo, 21 Pájaro, 22 Ataúd, 23 Mono, 24 Sapo, 25 Balanza, 26 Bandera, 27 Juego, 28 Gallo, 29 Padre, 30 Bolo, 31 Alacrán, 32 Culebra, 33 Carpintero, 34 Música, 35 Virgen, 36 Ciejita, 37 Suerte, 38 Pistola, 39 Jabón, 40 Cielo, 41 Novia, 42 Madre, 43 Pantera, 44 Mesas, 45 Iglesia, 46 Familia, 47 Banco, 48 Estrella, 49 Sombra, 50 Luna Nueva, 51 Policía, 52 Zorrillo, 53 Llanta, 54 Licor, 55 Olas, 56 Árbol, 57 Cuchillo, 58 Venado, 59 Selva, 60 Dragón, 61 Guerra, 62 Lagarto, 63 Coco, 64 Mueble, 65 Pintura, 66 Diablo, 67 Vaca, 68 Ladrón, 69 Soldado, 70 Oro, 71 Zapatos, 72 Arco, 73 Fuego, 74 Edificio, 75 Reina, 76 Palomas, 77 Humo, 78 Tienda, 79 Flores, 80 Café, 81 Rieles, 82 Escuela, 83 Bote, 84 Coronas, 85 Casa, 86 Reloj, 87 León, 88 Platos, 89 Búho, 90 Lentes, 91 Tortuga, 92 Águila, 93 Cartero, 94 Carro, 95 Costurera, 96 Dinero, 97 Viejito, 98 Bailes, 99 Aretes.</p>
+
+    <h3>Interpretar sueños para jugar La Diaria Honduras</h3>
+    <p>soñé con flores que numero juego la diaria, soñé con mi madre que numero es, soñé con dinero que numero juego, soñé con un muerto que numero es en la diaria, soñé con culebra que numero es, soñé con un caballo que numero es la diaria, soñé con fuego que numero es, soñé con agua que numero es, soñé con mi familia que numero juego, soñé con la policía que numero es la diaria, soñé con un ángel que numero es, soñé con oro que numero juego, interpretar sueños loto honduras, sueños numeros la diaria 2026, como ganar la diaria con mis sueños, libro de los sueños la diaria honduras, números de la suerte según sueños honduras.</p>
+
+    <h3>Palabras clave SEO signos La Diaria</h3>
+    <p>signos la diaria honduras 2026, tabla signos diaria completa, sueños la diaria loto hn, numeros sueños diaria honduras, que numero corresponde a flores, que numero corresponde a familia, interpretar sueños para loteria, libro sueños honduras, numeros suerte segun sueños, tabla completa diaria tegucigalpa, tabla signos diaria san pedro sula, signos diaria la ceiba, signos diaria choloma, signos diaria el progreso, signos diaria choluteca, signos diaria comayagua, tabla sueños loto honduras gratis, buscar signo la diaria, buscador signos diaria, numero de mi sueño la diaria, signos loto honduras, sueños numeros ganadores honduras.</p>
+
+    <h3>Ciudades donde consultan signos La Diaria</h3>
+    <p>Tegucigalpa, San Pedro Sula, La Ceiba, Choloma, El Progreso, Choluteca, Comayagua, Puerto Cortés, La Lima, Danlí, Siguatepeque, Juticalpa, Tocoa, Villanueva, Cofradía, Tela, Santa Rosa de Copán, Olanchito, Santa Bárbara, Potrerillos, Catacamas, La Entrada, Marcala, Gracias, Nacaome.</p>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6 text-center">
+    <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-3 flex items-center justify-center gap-3 flex-wrap">
+      <Star class="w-10 h-10 text-violet-600" />
+      Signos de La Diaria Honduras
+    </h1>
+    <p class="text-gray-600 text-lg mb-2">Tabla completa de los <strong>100 sueños</strong> y sus números del <strong>00 al 99</strong></p>
+    <div class="inline-flex items-center gap-2 bg-violet-100 text-violet-700 px-4 py-2 rounded-full text-sm font-semibold">
+      <Sparkles class="w-4 h-4" />
+      ¿Soñaste con algo? Busca tu número y juégalo hoy
+    </div>
+  </header>
+
+  <!-- Buscador -->
+  <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+      <Search class="w-5 h-5 text-violet-600" />
+      Busca tu Sueño o Número al Instante
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">🔍 Por sueño o signo</label>
+        <input
+          type="text"
+          id="buscarSueno"
+          placeholder="Ej: Flores, Madre, Policía, Caballo..."
+          class="w-full px-4 py-3 border-2 border-violet-200 rounded-xl focus:outline-none focus:border-violet-500 text-gray-700 text-base"
+          oninput="filtrarTabla()"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">🔢 Por número (00-99)</label>
+        <input
+          type="number"
+          id="buscarNumero"
+          placeholder="Ej: 46, 79, 51, 42..."
+          min="0"
+          max="99"
+          class="w-full px-4 py-3 border-2 border-violet-200 rounded-xl focus:outline-none focus:border-violet-500 text-gray-700 text-base"
+          oninput="filtrarTabla()"
+        />
+      </div>
+    </div>
+    <div id="resultadoDestacado" class="hidden mt-4 p-5 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl text-white text-center shadow-lg">
+      <p class="text-sm opacity-80 mb-1">✨ Tu número encontrado</p>
+      <p id="textoResultado" class="text-3xl font-bold"></p>
+    </div>
+  </div>
+
+  <!-- Signos populares rápidos -->
+  <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+      <Flame class="w-5 h-5 text-red-500" />
+      Signos Más Buscados — Toca para ver tu número
+    </h2>
+    <div class="flex flex-wrap gap-2">
+      {[
+        [79,"🌸 Flores"],[46,"👨‍👩‍👧 Familia"],[51,"👮 Policía"],[42,"👩 Madre"],[96,"💰 Dinero"],
+        [48,"⭐ Estrella"],[12,"🐴 Caballo"],[87,"🦁 León"],[18,"😇 Ángel"],[37,"🍀 Suerte"],
+        [70,"🥇 Oro"],[85,"🏠 Casa"],[60,"🐉 Dragón"],[94,"🚗 Carro"],[73,"🔥 Fuego"],
+        [3,"💀 Muerto"],[32,"🐍 Culebra"],[92,"🦅 Águila"],[45,"⛪ Iglesia"],[14,"💒 Boda"]
+      ].map(([num, nombre]) => (
+        <button
+          onclick={`resaltarSigno(${num}, '${nombre}')`}
+          class="px-3 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 font-semibold rounded-lg text-sm transition-colors border border-violet-200"
+        >
+          <span class="font-bold">{String(num).padStart(2,'0')}</span> {nombre}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Tabla principal -->
+  <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+        <Hash class="w-6 h-6 text-violet-600" />
+        Tabla Completa — 100 Signos (00 al 99)
+      </h2>
+      <span id="contadorResultados" class="text-sm text-gray-500 bg-violet-100 px-3 py-1 rounded-full font-medium">
+        100 signos
+      </span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full" id="tablaSignos">
+        <thead>
+          <tr class="bg-gradient-to-r from-violet-600 to-purple-600 text-white">
+            <th class="px-4 py-3 text-center font-semibold rounded-tl-lg w-16">#</th>
+            <th class="px-4 py-3 text-left font-semibold">Sueño / Signo</th>
+            <th class="px-4 py-3 text-center font-semibold w-16">#</th>
+            <th class="px-4 py-3 text-left font-semibold rounded-tr-lg">Sueño / Signo</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoTabla">
+          {Array.from({ length: 50 }, (_, i) => (
+            <tr
+              class="border-b border-gray-100 hover:bg-violet-50 transition-colors fila-signo"
+              data-numero1={i}
+              data-sueno1={signos[i][1]}
+              data-numero2={i + 50}
+              data-sueno2={signos[i + 50][1]}
+            >
+              <td class="px-4 py-3 text-center">
+                <span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 text-white font-bold rounded-lg text-sm">
+                  {String(i).padStart(2, '0')}
+                </span>
+              </td>
+              <td class="px-4 py-3 font-medium text-gray-800 text-base">{signos[i][1]}</td>
+              <td class="px-4 py-3 text-center">
+                <span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white font-bold rounded-lg text-sm">
+                  {i + 50}
+                </span>
+              </td>
+              <td class="px-4 py-3 font-medium text-gray-800 text-base">{signos[i + 50][1]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div id="sinResultados" class="hidden text-center py-12 text-gray-500">
+      <Star class="w-12 h-12 mx-auto mb-3 text-gray-300" />
+      <p class="text-lg font-medium">No se encontró ese signo</p>
+      <p class="text-sm">Intenta con otro término de búsqueda</p>
+    </div>
+  </div>
+
+  <!-- ============== CONTENIDO SEO VISIBLE ULTRA AGRESIVO ============== -->
+  <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+      <BookOpen class="w-7 h-7 text-violet-600" />
+      Signos de La Diaria Honduras 2026 — La Guía Definitiva
+    </h2>
+    <p class="text-gray-700 leading-relaxed mb-4">
+      Los <strong>signos de La Diaria Honduras</strong> son la tabla más importante que todo jugador hondureño debe conocer. Esta tabla contiene <strong>100 sueños o imágenes</strong>, cada uno con su número del <strong>00 al 99</strong>. En cada sorteo de La Diaria, el sistema anuncia tanto el número ganador como el nombre del signo que le corresponde según esta tabla oficial.
+    </p>
+    <p class="text-gray-700 leading-relaxed mb-4">
+      Desde hace décadas, los jugadores de Honduras utilizan esta tabla para <strong>convertir sus sueños en números de la suerte</strong>. Si soñaste con <strong>Flores</strong>, tu número es el <strong>79</strong>. Si soñaste con tu <strong>Madre</strong>, es el <strong>42</strong>. Si soñaste con <strong>Dinero</strong>, es el <strong>96</strong>. Esta es la guía que miles de hondureños usan cada día para elegir sus jugadas en La Diaria.
+    </p>
+    <p class="text-gray-700 leading-relaxed mb-6">
+      En <strong>LotoHN</strong> somos el único portal que tiene la tabla completa de los <strong>100 signos de La Diaria</strong> con buscador interactivo, completamente gratis. Busca tu sueño, encuentra tu número y juégalo en el próximo sorteo de las <strong>11 AM, 3 PM o 9 PM</strong>.
+    </p>
+
+    <div class="bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl p-6 text-white mb-8 shadow-lg">
+      <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+        <Zap class="w-6 h-6" />
+        Los 20 Signos Más Populares de La Diaria Honduras
+      </h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          [79,"🌸 Flores"],[46,"👨‍👩‍👧 Familia"],[51,"👮 Policía"],[42,"👩 Madre"],
+          [96,"💰 Dinero"],[48,"⭐ Estrella"],[12,"🐴 Caballo"],[87,"🦁 León"],
+          [18,"😇 Ángel"],[37,"🍀 Suerte"],[70,"🥇 Oro"],[85,"🏠 Casa"],
+          [60,"🐉 Dragón"],[94,"🚗 Carro"],[73,"🔥 Fuego"],[3,"💀 Muerto"],
+          [32,"🐍 Culebra"],[92,"🦅 Águila"],[45,"⛪ Iglesia"],[14,"💒 Boda"]
+        ].map(([num, nombre]) => (
+          <div class="bg-white bg-opacity-20 rounded-lg p-2 text-center hover:bg-opacity-30 transition-all">
+            <span class="text-xl font-bold block">{String(num).padStart(2,'0')}</span>
+            <span class="text-xs">{nombre}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+      <Lightbulb class="w-7 h-7 text-violet-600" />
+      ¿Cómo Usar los Signos de La Diaria para Ganar?
+    </h2>
+    <p class="text-gray-700 leading-relaxed mb-4">
+      Hay tres formas principales en que los jugadores hondureños usan la tabla de signos de La Diaria para elegir sus números:
+    </p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">1. Interpretar los Sueños de la Noche Anterior</h3>
+    <p class="text-gray-700 leading-relaxed mb-4">
+      La forma más popular y tradicional es <strong>recordar tus sueños al despertar</strong> y buscarlos en la tabla. Miles de hondureños ganan así cada semana. Ejemplos de los más comunes:
+    </p>
+    <ul class="list-disc list-inside space-y-1 text-gray-700 mb-4">
+      <li>Soñaste con <strong>Flores</strong> → juega el <strong>79</strong></li>
+      <li>Soñaste con tu <strong>Madre</strong> → juega el <strong>42</strong></li>
+      <li>Soñaste con <strong>Dinero</strong> → juega el <strong>96</strong></li>
+      <li>Soñaste con un <strong>Caballo</strong> → juega el <strong>12</strong></li>
+      <li>Soñaste con un <strong>Muerto o Difunto</strong> → juega el <strong>03</strong></li>
+      <li>Soñaste con una <strong>Culebra</strong> → juega el <strong>32</strong></li>
+      <li>Soñaste con <strong>Fuego</strong> → juega el <strong>73</strong></li>
+      <li>Soñaste con un <strong>Ángel</strong> → juega el <strong>18</strong></li>
+      <li>Soñaste con tu <strong>Familia</strong> → juega el <strong>46</strong></li>
+      <li>Soñaste con la <strong>Policía</strong> → juega el <strong>51</strong></li>
+      <li>Soñaste con <strong>Oro</strong> → juega el <strong>70</strong></li>
+      <li>Soñaste con una <strong>Boda</strong> → juega el <strong>14</strong></li>
+    </ul>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">2. Leer el Signo del Sorteo Anterior</h3>
+    <p class="text-gray-700 leading-relaxed mb-4">
+      Cuando consultas los <strong>resultados de La Diaria en LotoHN</strong>, ves el número ganador y su signo. Por ejemplo, si ayer salió el número <strong>79</strong>, el signo anunciado fue <strong>Flores</strong>. Muchos jugadores analizan qué signos han salido recientemente para elegir mejor su próxima jugada.
+    </p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-3 mt-6">3. Señales del Día a Día</h3>
+    <p class="text-gray-700 leading-relaxed mb-4">
+      Otros jugadores interpretan <strong>señales que ocurren durante el día</strong>: si viste un perro hoy, juegas el <strong>11</strong>. Si alguien te habló de una boda, juegas el <strong>14</strong>. Si pasaste frente a una iglesia, juegas el <strong>45</strong>. Esta es la tradición hondureña de leer el entorno para encontrar la suerte.
+    </p>
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-6 mt-8 flex items-center gap-2">
+      <Target class="w-7 h-7 text-violet-600" />
+      Grupos de Signos por Categoría
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div class="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-200 rounded-xl p-5">
+        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">💰 Signos de Riqueza y Abundancia</h4>
+        <ul class="space-y-1 text-gray-700 text-sm">
+          <li><strong>70 - Oro:</strong> Máxima riqueza</li>
+          <li><strong>96 - Dinero:</strong> Billete y prosperidad</li>
+          <li><strong>75 - Reina:</strong> Poder y abundancia</li>
+          <li><strong>47 - Banco:</strong> Finanzas y ahorro</li>
+          <li><strong>84 - Coronas:</strong> Realeza y triunfo</li>
+          <li><strong>10 - Anillo:</strong> Valor y compromiso</li>
+        </ul>
+      </div>
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5">
+        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">🙏 Signos Espirituales y Religiosos</h4>
+        <ul class="space-y-1 text-gray-700 text-sm">
+          <li><strong>18 - Ángel:</strong> Protección divina</li>
+          <li><strong>35 - Virgen:</strong> Fe y esperanza</li>
+          <li><strong>45 - Iglesia:</strong> Religiosidad</li>
+          <li><strong>40 - Cielo:</strong> Paz celestial</li>
+          <li><strong>48 - Estrella:</strong> Guía del destino</li>
+          <li><strong>50 - Luna Nueva:</strong> Nuevos comienzos</li>
+        </ul>
+      </div>
+      <div class="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-5">
+        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">🦁 Signos de Animales Fuertes</h4>
+        <ul class="space-y-1 text-gray-700 text-sm">
+          <li><strong>04 - Tigre:</strong> Ferocidad y poder</li>
+          <li><strong>87 - León:</strong> Rey de la selva</li>
+          <li><strong>43 - Pantera:</strong> Agilidad y fuerza</li>
+          <li><strong>92 - Águila:</strong> Visión y libertad</li>
+          <li><strong>60 - Dragón:</strong> Fuerza mítica</li>
+          <li><strong>32 - Culebra:</strong> Astucia y misterio</li>
+        </ul>
+      </div>
+      <div class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-5">
+        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">❤️ Signos de Amor y Familia</h4>
+        <ul class="space-y-1 text-gray-700 text-sm">
+          <li><strong>42 - Madre:</strong> El amor más puro</li>
+          <li><strong>46 - Familia:</strong> Unión y hogar</li>
+          <li><strong>14 - Boda:</strong> Amor y compromiso</li>
+          <li><strong>41 - Novia:</strong> Romance e ilusión</li>
+          <li><strong>29 - Padre:</strong> Autoridad y cariño</li>
+          <li><strong>16 - Niña:</strong> Inocencia y alegría</li>
+        </ul>
+      </div>
+      <div class="bg-gradient-to-br from-purple-50 to-violet-50 border-2 border-purple-200 rounded-xl p-5">
+        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">🏠 Signos del Hogar y Ciudad</h4>
+        <ul class="space-y-1 text-gray-700 text-sm">
+          <li><strong>85 - Casa:</strong> Hogar y seguridad</li>
+          <li><strong>74 - Edificio:</strong> Ciudad y progreso</li>
+          <li><strong>82 - Escuela:</strong> Educación y futuro</li>
+          <li><strong>44 - Mesas:</strong> Hogar y reunión</li>
+          <li><strong>78 - Tienda:</strong> Comercio y abundancia</li>
+          <li><strong>94 - Carro:</strong> Transporte y libertad</li>
+        </ul>
+      </div>
+      <div class="bg-gradient-to-br from-slate-50 to-gray-50 border-2 border-slate-200 rounded-xl p-5">
+        <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">⚡ Signos de Naturaleza y Cosmos</h4>
+        <ul class="space-y-1 text-gray-700 text-sm">
+          <li><strong>73 - Fuego:</strong> Pasión y energía</li>
+          <li><strong>55 - Olas:</strong> Mar y movimiento</li>
+          <li><strong>56 - Árbol:</strong> Vida y naturaleza</li>
+          <li><strong>59 - Selva:</strong> Aventura y misterio</li>
+          <li><strong>40 - Cielo:</strong> Infinito y libertad</li>
+          <li><strong>77 - Humo:</strong> Transformación</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
+      <HelpCircle class="w-7 h-7 text-violet-600" />
+      Preguntas Frecuentes — Signos de La Diaria Honduras
+    </h2>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Qué número es Flores en La Diaria?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4"><strong>Flores = número 79.</strong> Es uno de los signos más populares de La Diaria Honduras. Cada vez que salió Flores en el sorteo, el número ganador fue el 79.</p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Qué número es Familia en La Diaria?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4"><strong>Familia = número 46.</strong> Si soñaste con tu familia o si salió el signo Familia en el sorteo, el número correspondiente es el 46.</p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Qué número es Policía en La Diaria?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4"><strong>Policía = número 51.</strong> Si tuviste alguna experiencia con la policía o soñaste con ella, juegas el 51 en La Diaria.</p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Qué número es Madre en La Diaria?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4"><strong>Madre = número 42.</strong> El signo Madre es históricamente el más jugado por los hondureños. Si soñaste con tu mamá, juegas el 42.</p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Qué número es Dinero en La Diaria?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4"><strong>Dinero = número 96.</strong> Soñar con dinero, billetes o riqueza se traduce en el número 96 en La Diaria Honduras.</p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Qué número es Muerto en La Diaria?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4"><strong>Muerto = número 03.</strong> En Honduras existe la creencia de que soñar con un difunto o muerto trae buena suerte. El número correspondiente en La Diaria es el 03.</p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Qué número es Culebra en La Diaria?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4"><strong>Culebra = número 32.</strong> Soñar con una serpiente o culebra es muy común y se juega con el 32 en La Diaria Honduras.</p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Son los mismos signos en todos los sorteos?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4">Sí. La tabla de los 100 signos es fija — siempre el mismo número corresponde al mismo signo. Lo que cambia en cada sorteo es <strong>qué número sale como ganador</strong>, pero la tabla de correspondencias entre número y nombre del signo nunca cambia.</p>
+
+    <h3 class="text-xl font-bold text-gray-800 mb-2 mt-6">¿Puedo ver en LotoHN qué signo salió en cada sorteo?</h3>
+    <p class="text-gray-700 leading-relaxed mb-4">Sí. En la <a href="/la-diaria" class="text-violet-600 font-semibold hover:underline">página de resultados de La Diaria</a> puedes ver el número ganador de cada sorteo y el signo que le corresponde, actualizado 5 minutos después de cada sorteo oficial.</p>
+
+    <div class="bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl p-6 text-white mb-8 mt-8 shadow-lg">
+      <h3 class="text-xl font-bold mb-3 flex items-center gap-2 text-white">
+        <TrendingUp class="w-6 h-6" />
+        Consejo de los Jugadores Expertos de Honduras
+      </h3>
+      <p class="text-white mb-2">
+        Los jugadores más experimentados de La Diaria en Honduras recomiendan <strong>anotar tus sueños al despertar</strong> antes de olvidarlos. Ten un cuaderno o usa tu celular para escribir inmediatamente qué soñaste, luego busca el número en esta tabla y juégalo en el sorteo de las 11 AM.
+      </p>
+      <p class="text-white mb-0 font-semibold">
+        Recuerda: La Diaria tiene sorteos a las 11 AM, 3 PM y 9 PM — ¡3 oportunidades cada día!
+      </p>
+    </div>
+
+    <p class="text-center text-xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mt-10 flex items-center justify-center gap-2 flex-wrap">
+      <Star class="w-6 h-6 text-violet-600" />
+      ¡Que tus sueños se conviertan en números ganadores!
+      <Star class="w-6 h-6 text-violet-600" />
+    </p>
+  </article>
+
+  <script is:inline>
+    const signos = ["Avión","Pies","Mujer","Muerto","Tigre","Embarazada","Elefante","Navaja","Conejo","Hombre","Anillo","Perro","Caballo","Gato","Boda","Ratón","Niña","Joven","Ángel","Mariposa","Espejo","Pájaro","Ataúd","Mono","Sapo","Balanza","Bandera","Juego","Gallo","Padre","Bolo","Alacrán","Culebra","Carpintero","Música","Virgen","Ciejita","Suerte","Pistola","Jabón","Cielo","Novia","Madre","Pantera","Mesas","Iglesia","Familia","Banco","Estrella","Sombra","Luna Nueva","Policía","Zorrillo","Llanta","Licor","Olas","Árbol","Cuchillo","Venado","Selva","Dragón","Guerra","Lagarto","Coco","Mueble","Pintura","Diablo","Vaca","Ladrón","Soldado","Oro","Zapatos","Arco","Fuego","Edificio","Reina","Palomas","Humo","Tienda","Flores","Café","Rieles","Escuela","Bote","Coronas","Casa","Reloj","León","Platos","Búho","Lentes","Tortuga","Águila","Cartero","Carro","Costurera","Dinero","Viejito","Bailes","Aretes"];
+
+    function resaltarSigno(num, nombre) {
+      document.getElementById('buscarNumero').value = num;
+      document.getElementById('buscarSueno').value = '';
+      const resultadoDiv   = document.getElementById('resultadoDestacado');
+      const textoResultado = document.getElementById('textoResultado');
+      resultadoDiv.classList.remove('hidden');
+      textoResultado.textContent = `${String(num).padStart(2,'0')} → ${signos[num]}`;
+      filtrarTabla();
+      document.getElementById('tablaSignos').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function filtrarTabla() {
+      const busquedaSueno  = document.getElementById('buscarSueno').value.toLowerCase().trim();
+      const busquedaNumero = document.getElementById('buscarNumero').value.trim();
+      const filas          = document.querySelectorAll('.fila-signo');
+      const resultadoDiv   = document.getElementById('resultadoDestacado');
+      const textoResultado = document.getElementById('textoResultado');
+      const sinResultados  = document.getElementById('sinResultados');
+      const contador       = document.getElementById('contadorResultados');
+
+      let visibles    = 0;
+      let matchExacto = null;
+
+      if (busquedaNumero !== '' && !busquedaSueno) {
+        const num = parseInt(busquedaNumero);
+        if (num >= 0 && num <= 99) {
+          matchExacto = `${String(num).padStart(2,'0')} → ${signos[num]}`;
+        }
+      }
+
+      if (busquedaSueno && !busquedaNumero) {
+        const encontrado = signos.findIndex(s => s.toLowerCase() === busquedaSueno);
+        if (encontrado !== -1) {
+          matchExacto = `${String(encontrado).padStart(2,'0')} → ${signos[encontrado]}`;
+        }
+      }
+
+      if (matchExacto) {
+        resultadoDiv.classList.remove('hidden');
+        textoResultado.textContent = matchExacto;
+      } else if (!busquedaSueno && !busquedaNumero) {
+        resultadoDiv.classList.add('hidden');
+      }
+
+      filas.forEach(fila => {
+        const sueno1  = fila.dataset.sueno1.toLowerCase();
+        const sueno2  = fila.dataset.sueno2.toLowerCase();
+        const num1    = fila.dataset.numero1;
+        const num2    = fila.dataset.numero2;
+
+        const matchSueno  = !busquedaSueno  || sueno1.includes(busquedaSueno)  || sueno2.includes(busquedaSueno);
+        const matchNumero = !busquedaNumero || num1 === busquedaNumero || num2 === busquedaNumero;
+
+        if (matchSueno && matchNumero) {
+          fila.classList.remove('hidden');
+          visibles++;
+        } else {
+          fila.classList.add('hidden');
+        }
+      });
+
+      const total = visibles * 2;
+      contador.textContent = `${total} signo${total !== 1 ? 's' : ''}`;
+      sinResultados.classList.toggle('hidden', visibles > 0);
+    }
+  </script>
+</Layout>
