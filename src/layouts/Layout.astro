@@ -11,7 +11,17 @@ const { bodyClass = '' } = Astro.props;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-adsense-account" content="ca-pub-2688311687703873">
+
+    <!-- Ezoic Privacy Scripts -->
+    <script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
+    <script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
+
+    <!-- Ezoic Header Script -->
+    <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+    <script is:inline>
+        window.ezstandalone = window.ezstandalone || {};
+        ezstandalone.cmd = ezstandalone.cmd || [];
+    </script>
     
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-B9L2HSP4B6"></script>
@@ -48,10 +58,6 @@ const { bodyClass = '' } = Astro.props;
     
     <div class="max-w-7xl mx-auto pt-4">
         <main class="p-4 md:p-6">
-            <!-- ANUNCIO NATIVE BANNER -->
-            <script async data-cfasync="false" src="https://pl28417320.effectivegatecpm.com/c053bb82e7e2a6d39cd34a6acda6a322/invoke.js"></script>
-            <div id="container-c053bb82e7e2a6d39cd34a6acda6a322"></div>
-            
             <!-- Contenido de cada página -->
             <slot />
         </main>
