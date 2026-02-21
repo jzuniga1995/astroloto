@@ -460,13 +460,7 @@ async function cargarResultados() {
             }
         }
         
-        // Última actualización
-        if (data.fecha_actualizacion) {
-            const actualizacionElement = document.getElementById('ultimaActualizacion');
-            if (actualizacionElement) {
-                actualizacionElement.textContent = data.fecha_actualizacion;
-            }
-        }
+ 
         
         const sorteos = data.sorteos || data;
         const tipoJuego = obtenerTipoJuego();
