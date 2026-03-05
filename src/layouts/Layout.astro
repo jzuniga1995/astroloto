@@ -103,6 +103,12 @@ const { bodyClass = '' } = Astro.props;
 </html>
 
 <style is:global>
+    /* ── Fix scroll horizontal en todo el sitio ── */
+    html, body {
+        overflow-x: hidden;
+        max-width: 100%;
+    }
+
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }

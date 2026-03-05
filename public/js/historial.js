@@ -221,29 +221,94 @@ function renderTabla() {
     });
 }
 
-// ── Exportar CSV ──────────────────────────────────────────────────────────────
+// ── Exportar XLSX ─────────────────────────────────────────────────────────────
 
-function exportar() {
+function loadXLSX() {
+    return new Promise((resolve, reject) => {
+        if (window.XLSX) { resolve(window.XLSX); return; }
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        s.onload  = () => resolve(window.XLSX);
+        s.onerror = () => reject(new Error('No se pudo cargar SheetJS'));
+        document.head.appendChild(s);
+    });
+}
+
+async function exportar() {
     const columnas   = getColumnas();
     const todasFilas = getFilas();
     if (!todasFilas.length) return;
 
-    const headers = ['Fecha', 'Tanda', ...columnas.map(c => JUEGOS_CONFIG[c].label)];
-    const rows = todasFilas.map(({ fechaKey, tanda, celdas }) => [
-        fechaKey,
-        TANDA_LABELS[tanda] || tanda,
-        ...columnas.map(c => formatearNums(celdas[c]))
-    ]);
+    // Feedback visual mientras carga SheetJS
+    const btn = document.getElementById('h-export');
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = `${ICONS.download} Generando…`;
+    btn.disabled  = true;
 
-    const csv  = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url  = URL.createObjectURL(blob);
-    const a    = Object.assign(document.createElement('a'), {
-        href: url,
-        download: `historial-loto-hn-${JUEGOS_CONFIG[filtroJuego].label.toLowerCase().replace(/\s+/g, '-')}.csv`
-    });
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+        const XLSX = await loadXLSX();
+
+        // ── Construir datos ──
+        const columnaLabels = columnas.map(c => JUEGOS_CONFIG[c].label);
+        const headers = ['Fecha', 'Día', 'Tanda', ...columnaLabels];
+
+        const aoa = [headers]; // array of arrays
+
+        todasFilas.forEach(({ fechaKey, tanda, celdas }) => {
+            const [y, m, d] = fechaKey.split('-').map(Number);
+            const fecha  = new Date(y, m - 1, d);
+            const dias   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+            aoa.push([
+                fechaKey,                          // Fecha ISO — se formateará como fecha Excel
+                dias[fecha.getDay()],              // Día de la semana
+                TANDA_LABELS[tanda] || tanda,      // Tanda (texto)
+                ...columnas.map(c => formatearNums(celdas[c]))
+            ]);
+        });
+
+        // ── Crear hoja ──
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+        // Convertir col "Fecha" (col 0) a tipo fecha real en Excel
+        for (let r = 1; r < aoa.length; r++) {
+            const cellAddr = XLSX.utils.encode_cell({ r, c: 0 });
+            const cell = ws[cellAddr];
+            if (cell && typeof cell.v === 'string') {
+                const [cy, cm, cd] = cell.v.split('-').map(Number);
+                const jsDate = new Date(cy, cm - 1, cd);
+                cell.t = 'd';
+                cell.v = jsDate;
+                cell.z = 'DD/MM/YYYY';
+            }
+        }
+
+        // ── Anchos de columna ──
+        const colWidths = headers.map((h, i) => {
+            if (i === 0) return { wch: 13 };   // Fecha
+            if (i === 1) return { wch: 12 };   // Día
+            if (i === 2) return { wch: 10 };   // Tanda
+            return { wch: Math.max(h.length + 2, 14) };
+        });
+        ws['!cols'] = colWidths;
+
+        // Fijar fila de encabezado (freeze top row)
+        ws['!freeze'] = { xSplit: 0, ySplit: 1, topLeftCell: 'A2', activeCell: 'A2', sqref: 'A2' };
+
+        // ── Crear libro y descargar ──
+        const wb   = XLSX.utils.book_new();
+        const nombre = `Historial ${JUEGOS_CONFIG[filtroJuego].label}`;
+        XLSX.utils.book_append_sheet(wb, ws, nombre.substring(0, 31));
+
+        const filename = `historial-loto-hn-${JUEGOS_CONFIG[filtroJuego].label.toLowerCase().replace(/\s+/g, '-')}.xlsx`;
+        XLSX.writeFile(wb, filename);
+
+    } catch (err) {
+        alert(`Error al exportar: ${err.message}`);
+    } finally {
+        btn.innerHTML = textoOriginal;
+        btn.disabled  = false;
+    }
 }
 
 // ── Render interfaz ───────────────────────────────────────────────────────────
@@ -270,6 +335,8 @@ function renderInterfaz() {
             --shadow:    0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(92,33,182,.07);
             font-family: 'DM Sans', system-ui, sans-serif;
             color: var(--c-text);
+            max-width: 100%;
+            overflow-x: clip;
         }
 
         /* ── Controles: mobile-first (columna) → desktop (fila) ── */
@@ -283,6 +350,8 @@ function renderInterfaz() {
             display: flex;
             flex-direction: column;
             gap: .625rem;
+            box-sizing: border-box;
+            max-width: 100%;
         }
         @media (min-width: 640px) {
             .h-controles {
@@ -392,7 +461,11 @@ function renderInterfaz() {
             border: 1px solid var(--c-border);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: visible;
+            /* Garantiza que la tabla no empuje el borde */
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         /* ══════════════════════════════════
@@ -478,10 +551,16 @@ function renderInterfaz() {
             .h-tabla thead { display: none; }
 
             /* Tabla y descendientes → bloques */
-            .h-tabla,
-            .h-tabla tbody,
-            .h-tabla tr,
-            .h-tabla td { display: block; width: 100%; box-sizing: border-box; }
+            .h-tabla {
+                display: block;
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+                box-sizing: border-box;
+            }
+            .h-tabla tbody { display: block; width: 100%; }
+            .h-tabla tr    { display: block; width: 100%; box-sizing: border-box; }
+            .h-tabla td    { display: flex;  width: 100%; box-sizing: border-box; }
 
             /* Cada fila → card con borde inferior */
             .h-tabla tbody tr {
@@ -497,8 +576,8 @@ function renderInterfaz() {
             .h-tabla td {
                 padding: .22rem 0;
                 border-bottom: none;
-                white-space: normal;
-                display: flex;
+                white-space: normal;        /* override del nowrap de desktop */
+                word-break: break-word;
                 align-items: center;
                 justify-content: space-between;
                 gap: .5rem;
@@ -548,6 +627,8 @@ function renderInterfaz() {
             flex-wrap: wrap;
             padding: .7rem 1rem;
             border-top: 1px solid #f3f4f6;
+            box-sizing: border-box;
+            max-width: 100%;
         }
         .h-pag-pages { display: flex; align-items: center; gap: .3rem; }
 
@@ -595,8 +676,8 @@ function renderInterfaz() {
                     <option value="3pm">Tarde</option>
                     <option value="9pm">Noche</option>
                 </select>
-                <button class="h-btn-csv" id="h-export" aria-label="Exportar CSV">
-                    ${ICONS.download} Exportar
+                <button class="h-btn-csv" id="h-export" aria-label="Exportar Excel">
+                    ${ICONS.download} Excel
                 </button>
                 <span class="h-contador" id="h-contador"></span>
             </div>

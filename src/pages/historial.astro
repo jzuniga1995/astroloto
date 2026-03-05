@@ -249,8 +249,9 @@ import { History, Calendar } from 'lucide-astro';
     </style>
 </Fragment>
 
-<!-- SEO oculto para crawlers -->
-<div class="absolute left-[-9999px] w-px h-px overflow-hidden" aria-hidden="true">
+
+<!-- SEO oculto para crawlers — sin coordenadas negativas para no romper el layout -->
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;" aria-hidden="true">
     <h1>Historial de Resultados Loto Honduras - Archivo Completo de Sorteos</h1>
     <h2>Consulta Resultados Anteriores de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio</h2>
     <p>Consulta el historial completo de resultados de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio Honduras. Archivo actualizado automáticamente después de cada sorteo. Disponible desde Honduras, Costa Rica y Estados Unidos.</p>
@@ -299,4 +300,3 @@ import { History, Calendar } from 'lucide-astro';
 
 <script is:inline src="/js/historial.js"></script>
 </Layout>
-
