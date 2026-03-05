@@ -276,7 +276,8 @@ async function exportar() {
             const cell = ws[cellAddr];
             if (cell && typeof cell.v === 'string') {
                 const [cy, cm, cd] = cell.v.split('-').map(Number);
-                const jsDate = new Date(cy, cm - 1, cd);
+                // UTC explícito para evitar desfase por zona horaria (Honduras = UTC-6)
+                const jsDate = new Date(Date.UTC(cy, cm - 1, cd));
                 cell.t = 'd';
                 cell.v = jsDate;
                 cell.z = 'DD/MM/YYYY';
@@ -745,4 +746,3 @@ if (document.readyState === 'loading') {
 } else {
     cargarHistorial();
 }
-
