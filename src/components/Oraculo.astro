@@ -1,0 +1,488 @@
+---
+// src/components/Oraculo.astro
+---
+
+<div id="oraculo-root" class="oraculo-root" aria-label="Oráculo del día">
+
+    <!-- Skeleton -->
+    <div class="oraculo-skeleton" id="oraculo-skeleton">
+        <div class="sk-header">
+            <div class="sk-orb"></div>
+            <div class="sk-header-lines">
+                <div class="sk-line sk-title"></div>
+                <div class="sk-line sk-subtitle"></div>
+            </div>
+        </div>
+        <div class="sk-line sk-body"></div>
+        <div class="sk-line sk-body short"></div>
+        <div class="sk-line sk-body shorter"></div>
+        <div class="sk-nums">
+            <div class="sk-num"></div>
+            <div class="sk-num"></div>
+            <div class="sk-num"></div>
+        </div>
+    </div>
+
+    <!-- Card -->
+    <div class="oraculo-card" id="oraculo-card" style="display:none">
+
+        <div class="oraculo-header">
+            <div class="oraculo-orb" aria-hidden="true">
+                <div class="orb-inner">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                </div>
+                <div class="orb-ring ring-1"></div>
+                <div class="orb-ring ring-2"></div>
+            </div>
+            <div class="oraculo-header-text">
+                <span class="oraculo-label">Cábala del Día</span>
+                <span class="oraculo-fecha" id="oraculo-fecha"></span>
+            </div>
+            <div class="oraculo-badge" id="oraculo-badge"></div>
+        </div>
+
+        <div class="oraculo-acertijo">
+            <div class="acertijo-comilla" aria-hidden="true">"</div>
+            <p class="acertijo-texto" id="oraculo-acertijo"></p>
+        </div>
+
+        <div class="oraculo-divider" aria-hidden="true">
+            <span class="div-line"></span>
+            <span class="div-icon">★</span>
+            <span class="div-line"></span>
+        </div>
+
+        <div class="oraculo-nums-wrap">
+            <span class="oraculo-nums-label">Números de la suerte</span>
+            <div class="oraculo-nums" id="oraculo-nums"></div>
+        </div>
+
+        <div class="oraculo-frase" id="oraculo-frase"></div>
+    </div>
+
+    <!-- Error -->
+    <div class="oraculo-error" id="oraculo-error" style="display:none">
+        <span class="error-icon">🍀</span>
+        No hay oráculo disponible hoy. Volvé más tarde.
+    </div>
+</div>
+
+<style>
+    .oraculo-root {
+        --c1:     #3db82a;
+        --c2:     #7eea68;
+        --c3:     #1a5c0e;
+        --cdark:  #0d2208;
+        --cbase1: #1e5c10;
+        --cbase2: #0f3a06;
+        --cborder: rgba(61,184,42,.3);
+        --ctext:  #7eea68;
+        --cink:   #0d2208;
+        font-family: 'Nunito', 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif;
+        width: 100%;
+    }
+
+    /* ── Skeleton ── */
+    .oraculo-skeleton {
+        background: linear-gradient(145deg, var(--cbase1) 0%, var(--cdark) 100%);
+        border-radius: clamp(.9rem,3vw,1.35rem);
+        padding: clamp(1rem,4vw,1.6rem);
+        border: 1px solid var(--cborder);
+    }
+    .sk-header { display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem; }
+    .sk-orb {
+        width:2.8rem; height:2.8rem; border-radius:50%;
+        background:rgba(255,255,255,.07); flex-shrink:0;
+        animation:sk-shimmer 1.6s ease-in-out infinite;
+    }
+    .sk-header-lines { flex:1; display:flex; flex-direction:column; gap:.4rem; }
+    .sk-line {
+        background: linear-gradient(90deg,
+            rgba(255,255,255,.04) 25%,
+            rgba(255,255,255,.13) 50%,
+            rgba(255,255,255,.04) 75%);
+        background-size:200% 100%;
+        border-radius:.5rem; height:.7rem;
+        animation:sk-shimmer 1.6s ease-in-out infinite;
+    }
+    .sk-title    { width:55%; height:.9rem; }
+    .sk-subtitle { width:35%; height:.6rem; }
+    .sk-body     { width:92%; margin-bottom:.65rem; }
+    .sk-body.short   { width:78%; }
+    .sk-body.shorter { width:55%; margin-bottom:0; }
+    .sk-nums { display:flex; gap:.75rem; margin-top:1.25rem; }
+    .sk-num {
+        width:clamp(2.4rem,10vw,3rem); height:clamp(2.4rem,10vw,3rem);
+        border-radius:50%; background:rgba(255,255,255,.07);
+        animation:sk-shimmer 1.6s ease-in-out infinite;
+    }
+    .sk-num:nth-child(2) { animation-delay:.2s; }
+    .sk-num:nth-child(3) { animation-delay:.4s; }
+    @keyframes sk-shimmer {
+        0%   { background-position:200% center; }
+        100% { background-position:-200% center; }
+    }
+
+    /* ── Card ── */
+    .oraculo-card {
+        background: linear-gradient(150deg, var(--cbase1) 0%, var(--cbase2) 55%, var(--cdark) 100%);
+        border-radius: clamp(.9rem,3vw,1.35rem);
+        border: 1px solid var(--cborder);
+        box-shadow:
+            0 0 0 1px rgba(255,255,255,.04),
+            0 8px 40px rgba(0,0,0,.55),
+            inset 0 1px 0 rgba(255,255,255,.15);
+        overflow: hidden;
+        position: relative;
+        animation: oraculo-appear .5s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes oraculo-appear {
+        from { opacity:0; transform:translateY(10px) scale(.99); }
+        to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+    .oraculo-card::before {
+        content:''; position:absolute; inset:0;
+        background-image:
+            radial-gradient(ellipse at 10% 15%, rgba(255,255,255,.06) 0%,transparent 55%),
+            radial-gradient(circle at 50% 0%, rgba(255,255,255,.04) 0%,transparent 40%);
+        pointer-events:none; z-index:0;
+    }
+
+    /* ── Header ── */
+    .oraculo-header {
+        display:flex; align-items:center;
+        gap:clamp(.5rem,2vw,.85rem);
+        padding:clamp(.85rem,3vw,1.2rem) clamp(.9rem,3.5vw,1.4rem) clamp(.65rem,2.5vw,.9rem);
+        border-bottom: 1px solid rgba(255,255,255,.1);
+        position:relative; z-index:1;
+    }
+
+    /* Orbe */
+    .oraculo-orb {
+        position:relative;
+        width:clamp(2.2rem,8vw,2.8rem);
+        height:clamp(2.2rem,8vw,2.8rem);
+        flex-shrink:0;
+    }
+    .orb-inner {
+        position:absolute; inset:0;
+        background: radial-gradient(circle at 38% 32%, var(--c2), var(--c3));
+        border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        color: var(--cink);
+        box-shadow:
+            0 0 14px var(--cborder),
+            0 0 35px var(--cborder),
+            inset 0 1px 0 rgba(255,255,255,.3);
+        z-index:2;
+    }
+    .orb-ring {
+        position:absolute; border-radius:50%;
+        border: 1.5px solid var(--cborder);
+        animation:orb-pulse 3s ease-in-out infinite;
+    }
+    .ring-1 { inset:-5px; }
+    .ring-2 { inset:-11px; opacity:.4; animation-delay:.9s; }
+    @keyframes orb-pulse {
+        0%,100% { opacity:.3; transform:scale(1); }
+        50%      { opacity:.85; transform:scale(1.05); }
+    }
+
+    .oraculo-header-text {
+        display:flex; flex-direction:column; gap:.1rem;
+        flex:1; min-width:0;
+    }
+    .oraculo-label {
+        font-size:clamp(.6rem,2.2vw,.72rem);
+        font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+        color:var(--ctext);
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .oraculo-fecha {
+        font-size:clamp(.58rem,2vw,.7rem);
+        color:rgba(255,255,255,.45); font-weight:600;
+    }
+    .oraculo-badge {
+        font-size:clamp(.5rem,1.8vw,.62rem);
+        font-weight:900; letter-spacing:.05em;
+        background: linear-gradient(135deg, var(--c2), var(--c1));
+        color:var(--cink);
+        padding:.22rem clamp(.35rem,1.5vw,.65rem);
+        border-radius:.35rem; flex-shrink:0;
+        white-space:nowrap; text-transform:uppercase;
+    }
+
+    /* ── Acertijo ── */
+    .oraculo-acertijo {
+        padding:clamp(.9rem,3.5vw,1.3rem) clamp(.9rem,3.5vw,1.4rem) clamp(.7rem,2.5vw,1rem);
+        position:relative; z-index:1;
+    }
+    .acertijo-comilla {
+        font-size:clamp(3rem,12vw,5rem); line-height:.6;
+        color:rgba(255,255,255,.07);
+        position:absolute; top:.65rem; left:.9rem;
+        font-family:Georgia,serif;
+        pointer-events:none; user-select:none;
+    }
+    .acertijo-texto {
+        font-size:clamp(.88rem,3.2vw,1.05rem);
+        line-height:1.68; color:rgba(255,255,255,.92);
+        font-style:italic; font-weight:400; margin:0;
+        padding-left:clamp(.4rem,1.5vw,.6rem);
+        position:relative; z-index:1;
+    }
+
+    /* ── Divisor ── */
+    .oraculo-divider {
+        display:flex; align-items:center; gap:.6rem;
+        padding:0 clamp(.9rem,3.5vw,1.4rem);
+        position:relative; z-index:1; margin-bottom:.15rem;
+    }
+    .div-line {
+        flex:1; height:1px;
+        background: linear-gradient(to right, transparent, rgba(255,255,255,.15), transparent);
+    }
+    .div-icon { font-size:.6rem; color:var(--ctext); opacity:.4; }
+
+    /* ── Números ── */
+    .oraculo-nums-wrap {
+        padding:.4rem clamp(.9rem,3.5vw,1.4rem) clamp(.9rem,3.5vw,1.1rem);
+        display:flex; align-items:center;
+        gap:clamp(.6rem,2.5vw,1rem);
+        flex-wrap:wrap; position:relative; z-index:1;
+    }
+    .oraculo-nums-label {
+        font-size:clamp(.58rem,2vw,.67rem);
+        font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+        color:rgba(255,255,255,.35); flex-shrink:0;
+    }
+    .oraculo-nums { display:flex; gap:clamp(.45rem,2vw,.7rem); flex-wrap:wrap; }
+
+    .oraculo-num {
+        width:clamp(2.4rem,9vw,3rem);
+        height:clamp(2.4rem,9vw,3rem);
+        border-radius:50%;
+        background: radial-gradient(circle at 38% 32%, var(--c1), var(--c3));
+        border: 2px solid var(--cborder);
+        display:flex; align-items:center; justify-content:center;
+        font-size:clamp(.85rem,3.2vw,1.05rem);
+        font-weight:900; color:#fff;
+        box-shadow:
+            0 0 12px var(--cborder),
+            inset 0 1px 0 rgba(255,255,255,.2);
+        animation:num-appear .45s cubic-bezier(.34,1.56,.64,1) both;
+        position:relative;
+    }
+    .oraculo-num::after {
+        content:''; position:absolute; inset:3px;
+        border-radius:50%; border:1px solid rgba(255,255,255,.1);
+    }
+    .oraculo-num:nth-child(1) { animation-delay:.15s; }
+    .oraculo-num:nth-child(2) { animation-delay:.28s; }
+    .oraculo-num:nth-child(3) { animation-delay:.41s; }
+    @keyframes num-appear {
+        from { opacity:0; transform:scale(.55) rotate(-8deg); }
+        to   { opacity:1; transform:scale(1) rotate(0); }
+    }
+
+    /* ── Frase ── */
+    .oraculo-frase {
+        margin: 0 clamp(.9rem,3.5vw,1.4rem) clamp(.9rem,3.5vw,1.3rem);
+        padding: clamp(.5rem,2vw,.7rem) clamp(.7rem,2.5vw,1rem);
+        background: rgba(255,255,255,.06);
+        border-left: 3px solid var(--cborder);
+        border-radius:0 .5rem .5rem 0;
+        font-size:clamp(.75rem,2.6vw,.84rem);
+        color:var(--ctext); font-style:italic; font-weight:600;
+        letter-spacing:.01em; position:relative; z-index:1;
+    }
+
+    /* ── Error ── */
+    .oraculo-error {
+        background:rgba(255,255,255,.04);
+        border:1px solid rgba(255,255,255,.1);
+        border-radius:clamp(.9rem,3vw,1.1rem);
+        padding:clamp(1.2rem,5vw,1.8rem);
+        text-align:center;
+        font-size:clamp(.78rem,2.8vw,.88rem);
+        color:rgba(255,255,255,.35); font-weight:600;
+        display:flex; flex-direction:column; align-items:center; gap:.5rem;
+    }
+    .error-icon { font-size:1.5rem; }
+</style>
+
+<script>
+(async () => {
+
+    /* ─────────────────────────────────────────
+       Paletas por día de semana (0=Dom…6=Sáb)
+       Basadas en los logos de la loto
+    ───────────────────────────────────────── */
+    const TEMAS: Record<number, {
+        badge: string;
+        c1:string; c2:string; c3:string;
+        cdark:string; cbase1:string; cbase2:string;
+        cborder:string; ctext:string; cink:string;
+    }> = {
+        0: { // Domingo — Super Premio (naranja fuego)
+            badge:  'Super Premio',
+            c1:     '#e8650a',
+            c2:     '#ffaa45',
+            c3:     '#8c3500',
+            cdark:  '#1f0800',
+            cbase1: '#3d1500',
+            cbase2: '#260d00',
+            cborder:'rgba(232,101,10,.35)',
+            ctext:  '#ffaa45',
+            cink:   '#1f0800',
+        },
+        1: { // Lunes — Jugá 3 (azul + magenta)
+            badge:  'Jugá 3',
+            c1:     '#1565c0',
+            c2:     '#ff4dd8',
+            c3:     '#0a3070',
+            cdark:  '#040c20',
+            cbase1: '#091a40',
+            cbase2: '#060f28',
+            cborder:'rgba(21,101,192,.35)',
+            ctext:  '#ff4dd8',
+            cink:   '#040c20',
+        },
+        2: { // Martes — Pega 3 (teal/cyan)
+            badge:  'Pega 3',
+            c1:     '#00838f',
+            c2:     '#40dde8',
+            c3:     '#004a52',
+            cdark:  '#001618',
+            cbase1: '#003038',
+            cbase2: '#001c22',
+            cborder:'rgba(0,131,143,.35)',
+            ctext:  '#40dde8',
+            cink:   '#001618',
+        },
+        3: { // Miércoles — Premia 2 (violeta)
+            badge:  'Premia 2',
+            c1:     '#8b24d4',
+            c2:     '#cc7aff',
+            c3:     '#4a0a80',
+            cdark:  '#0e0020',
+            cbase1: '#1e0040',
+            cbase2: '#120028',
+            cborder:'rgba(139,36,212,.35)',
+            ctext:  '#cc7aff',
+            cink:   '#0e0020',
+        },
+        4: { // Jueves — La Diaria (verde hoja)
+            badge:  'La Diaria',
+            c1:     '#3db82a',
+            c2:     '#7eea68',
+            c3:     '#1a5c0e',
+            cdark:  '#0d2208',
+            cbase1: '#1e5c10',
+            cbase2: '#0f3a06',
+            cborder:'rgba(61,184,42,.35)',
+            ctext:  '#7eea68',
+            cink:   '#0d2208',
+        },
+        5: { // Viernes — Jugá 3 (azul + magenta)
+            badge:  'Jugá 3',
+            c1:     '#1565c0',
+            c2:     '#ff4dd8',
+            c3:     '#0a3070',
+            cdark:  '#040c20',
+            cbase1: '#091a40',
+            cbase2: '#060f28',
+            cborder:'rgba(21,101,192,.35)',
+            ctext:  '#ff4dd8',
+            cink:   '#040c20',
+        },
+        6: { // Sábado — Super Premio (naranja fuego)
+            badge:  'Super Premio',
+            c1:     '#e8650a',
+            c2:     '#ffaa45',
+            c3:     '#8c3500',
+            cdark:  '#1f0800',
+            cbase1: '#3d1500',
+            cbase2: '#260d00',
+            cborder:'rgba(232,101,10,.35)',
+            ctext:  '#ffaa45',
+            cink:   '#1f0800',
+        },
+    };
+
+    function aplicarTema(dia: number) {
+        const t = TEMAS[dia] ?? TEMAS[4];
+        const root = document.getElementById('oraculo-root') as HTMLElement;
+        (Object.entries({
+            '--c1': t.c1, '--c2': t.c2, '--c3': t.c3,
+            '--cdark': t.cdark, '--cbase1': t.cbase1, '--cbase2': t.cbase2,
+            '--cborder': t.cborder, '--ctext': t.ctext, '--cink': t.cink,
+        }) as [string,string][]).forEach(([k,v]) => root.style.setProperty(k, v));
+        const badge = document.getElementById('oraculo-badge');
+        if (badge) badge.textContent = t.badge;
+    }
+
+    const skeleton = document.getElementById('oraculo-skeleton') as HTMLElement;
+    const card     = document.getElementById('oraculo-card')     as HTMLElement;
+    const error    = document.getElementById('oraculo-error')    as HTMLElement;
+
+    function mostrarError() {
+        skeleton.style.display = 'none';
+        error.style.display    = 'flex';
+    }
+
+    try {
+        const resp = await fetch('/api/oraculo', { cache: 'no-store' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (!data?.acertijo) throw new Error('Sin datos');
+
+        let diaSemana = new Date().getDay();
+
+        if (data.fecha) {
+            const [y, m, d] = (data.fecha as string).split('-').map(Number);
+            const fecha = new Date(y, m - 1, d);
+            diaSemana = fecha.getDay();
+            const dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+            const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            (document.getElementById('oraculo-fecha') as HTMLElement).textContent =
+                `${dias[fecha.getDay()]} ${d} de ${meses[m-1]}`;
+        }
+
+        aplicarTema(diaSemana);
+
+        (document.getElementById('oraculo-acertijo') as HTMLElement).textContent = data.acertijo;
+
+        const numsEl = document.getElementById('oraculo-nums') as HTMLElement;
+        ((data.numeros || []) as number[]).forEach((n: number) => {
+            const ball = document.createElement('div');
+            ball.className   = 'oraculo-num';
+            ball.textContent = String(n);
+            numsEl.appendChild(ball);
+        });
+
+        if (data.frase) {
+            (document.getElementById('oraculo-frase') as HTMLElement).textContent = data.frase;
+        }
+
+        skeleton.style.display = 'none';
+        card.style.display     = 'block';
+
+    } catch (e) {
+        aplicarTema(new Date().getDay());
+        console.warn('Oráculo:', (e as Error).message);
+        mostrarError();
+    }
+})();
+</script>
+
