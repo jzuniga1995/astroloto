@@ -1,7 +1,7 @@
 ---
 // src/pages/loto-super-premio.astro
 import Layout from '../layouts/Layout.astro';
-import { Trophy, Calendar, Clock, Gem, Target, Award, CheckCircle, BarChart3, Lightbulb, Users, Heart, ShieldCheck, TrendingUp, HelpCircle, Banknote, MapPin, GraduationCap, Percent, BookOpen, Car, Gift, Phone, AlertTriangle, Wrench, Dice6, Bell, Calculator, Smartphone, Scan, CalendarPlus, Star, Globe, Building, Mail, Share2, Sparkles, Clover, RefreshCw, X, XCircle, BarChart2, CalendarDays, Check } from 'lucide-astro';
+import { Trophy, Calendar, Clock, Gem, Target, Award, CheckCircle, BarChart3, Lightbulb, Users, Heart, ShieldCheck,HelpCircle, Gift, Phone, AlertTriangle, Dice3, Clover,  Check } from 'lucide-astro';
 ---
 
 <Layout>
@@ -229,54 +229,24 @@ import { Trophy, Calendar, Clock, Gem, Target, Award, CheckCircle, BarChart3, Li
     <p>Estados Unidos: Miami, Nueva York, Houston, Los Ángeles, New Orleans, Atlanta, Chicago, Dallas, Washington DC, Charlotte, Orlando, Tampa.</p>
 </div>
 
-    <!-- Botón de ruleta de números de la suerte -->
-    <div class="fixed bottom-6 right-6 z-40">
-        <button onclick="mostrarRuleta()" class="relative bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl hover:shadow-purple-500/50 hover:scale-105 transition-all flex items-center gap-2 animate-pulse-scale" aria-label="Generar números de la suerte">
-            <span class="absolute -top-2 -right-2 bg-fuchsia-500 text-white text-xs px-2 py-1 rounded-full font-bold animate-pulse">NUEVO</span>
-            <Clover class="w-5 h-5" />
-            <span>Números de la Suerte</span>
-        </button>
-    </div>
+   
 
-    <!-- Overlay de la ruleta -->
-    <div id="ruletaOverlay" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 hidden" onclick="cerrarRuleta(event)">
-        <div class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <Sparkles class="w-7 h-7 text-violet-600" />
-                    Combinación Millonaria
-                </h2>
-                <button onclick="cerrarRuleta()" class="text-gray-500 hover:text-gray-700 transition-colors" aria-label="Cerrar">
-                    <X class="w-6 h-6" />
-                </button>
-            </div>
-            
-            <div id="ruletaDisplay" class="text-center mb-6">
-                <div class="text-4xl font-bold text-violet-600 mb-4 py-8 bg-gradient-to-r from-violet-100 to-purple-100 rounded-xl shadow-inner">00 - 00 - 00 - 00 - 00 - 00</div>
-                <p class="text-gray-500">Haz clic en "Girar" para descubrir tu combinación millonaria</p>
-            </div>
-            
-            <button onclick="girarRuleta()" class="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white py-4 rounded-xl font-bold text-lg hover:from-violet-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl" aria-label="Girar ruleta">
-                <RefreshCw class="w-5 h-5" />
-                Girar Ruleta
-            </button>
-        </div>
-    </div>
-
-    <header class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6 text-center">
-        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center justify-center gap-3 flex-wrap">
-            <Trophy class="w-10 h-10 text-violet-600" />
-            Loto Súper Premio Honduras
-        </h1>
-        <div id="fechaActual" class="text-lg text-gray-700 mb-3 flex items-center justify-center gap-2">
-            <Calendar class="w-5 h-5 text-violet-600" />
+<header class="bg-white rounded-2xl shadow-sm px-5 py-3 mb-6 flex items-center justify-between flex-wrap gap-3">
+    <h1 class="text-lg md:text-xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
+        <Dice3 class="w-5 h-5 text-violet-600" />
+        Resultados Loto Honduras
+    </h1>
+    <div class="flex items-center gap-4 text-sm text-gray-500">
+        <div id="fechaActual" class="flex items-center gap-1.5">
+            <Calendar class="w-4 h-4 text-violet-400" />
             <span>Cargando...</span>
         </div>
-        <div class="flex items-center justify-center gap-2 text-2xl font-mono text-violet-600">
-            <Clock class="w-6 h-6" />
+        <div class="flex items-center gap-1.5 font-mono text-violet-600">
+            <Clock class="w-4 h-4" />
             <time id="relojHonduras" datetime="">--:--:--</time>
         </div>
-    </header>
+    </div>
+</header>
     
     <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
         <div class="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>

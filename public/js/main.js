@@ -37,7 +37,7 @@ function obtenerTipoJuego() {
 }
 
 // ============================================
-// RELOJ HONDURAS - OPTIMIZADO
+// RELOJ HONDURAS
 // ============================================
 
 let relojInterval;
@@ -48,7 +48,7 @@ function actualizarReloj() {
     const utc = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
     const horaHonduras = new Date(utc + (3600000 * offsetHonduras));
     
-    const horas = String(horaHonduras.getHours()).padStart(2, '0');
+    const horas   = String(horaHonduras.getHours()).padStart(2, '0');
     const minutos = String(horaHonduras.getMinutes()).padStart(2, '0');
     const segundos = String(horaHonduras.getSeconds()).padStart(2, '0');
     
@@ -80,7 +80,6 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-// Iniciar solo cuando el DOM esté listo
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', iniciarReloj);
 } else {
@@ -105,12 +104,11 @@ function formatearFechaSorteo(fechaSorteo) {
     
     const [dia, mes] = fechaSorteo.split('-').map(Number);
     const ahora = new Date();
-    const yearActual = ahora.getFullYear();
-    const mesActual = ahora.getMonth() + 1;
-    const diaActual = ahora.getDate();
+    const yearActual  = ahora.getFullYear();
+    const mesActual   = ahora.getMonth() + 1;
+    const diaActual   = ahora.getDate();
     
     let year = yearActual;
-    
     if (mes < mesActual || (mes === mesActual && dia < diaActual)) {
         year = yearActual;
     } else if (mes > mesActual || (mes === mesActual && dia > diaActual)) {
@@ -125,19 +123,14 @@ function formatearFechaSorteo(fechaSorteo) {
 // ============================================
 
 function filtrarSorteos(sorteos, tipoJuego) {
-    if (tipoJuego === 'todos') {
-        return sorteos;
-    }
+    if (tipoJuego === 'todos') return sorteos;
     
     const filtrados = {};
-    
     for (const [key, value] of Object.entries(sorteos)) {
-        const keyLower = key.toLowerCase();
-        if (keyLower.includes(tipoJuego)) {
+        if (key.toLowerCase().includes(tipoJuego)) {
             filtrados[key] = value;
         }
     }
-    
     return filtrados;
 }
 
@@ -148,30 +141,27 @@ function filtrarSorteos(sorteos, tipoJuego) {
 function agruparPorHorario(sorteos) {
     const grupos = {
         '11:00 AM': [],
-        '3:00 PM': [],
-        '9:00 PM': [],
-        'super': []
+        '3:00 PM':  [],
+        '9:00 PM':  [],
+        'super':    []
     };
     
     const mapeoHoras = {
         '11:00 AM': '11:00 AM',
         '10:00 AM': '11:00 AM',
-        '3:00 PM': '3:00 PM',
-        '2:00 PM': '3:00 PM',
-        '15:00': '3:00 PM',
-        '9:00 PM': '9:00 PM',
-        '21:00': '9:00 PM'
+        '3:00 PM':  '3:00 PM',
+        '2:00 PM':  '3:00 PM',
+        '15:00':    '3:00 PM',
+        '9:00 PM':  '9:00 PM',
+        '21:00':    '9:00 PM'
     };
     
     sorteos.forEach(([key, datos]) => {
         const keyLower = key.toLowerCase();
-        
         if (keyLower.includes('super')) {
             grupos['super'].push([key, datos]);
         } else {
-            const horaOriginal = datos.hora_sorteo;
-            const horaNormalizada = mapeoHoras[horaOriginal];
-            
+            const horaNormalizada = mapeoHoras[datos.hora_sorteo];
             if (horaNormalizada && grupos[horaNormalizada]) {
                 grupos[horaNormalizada].push([key, datos]);
             }
@@ -179,15 +169,10 @@ function agruparPorHorario(sorteos) {
     });
     
     const ordenJuegos = ['juga3', 'pega3', 'premia2', 'diaria', 'super'];
-    
     Object.keys(grupos).forEach(hora => {
         grupos[hora].sort((a, b) => {
-            const keyA = a[0].toLowerCase();
-            const keyB = b[0].toLowerCase();
-            
-            const tipoA = ordenJuegos.findIndex(tipo => keyA.includes(tipo));
-            const tipoB = ordenJuegos.findIndex(tipo => keyB.includes(tipo));
-            
+            const tipoA = ordenJuegos.findIndex(t => a[0].toLowerCase().includes(t));
+            const tipoB = ordenJuegos.findIndex(t => b[0].toLowerCase().includes(t));
             return tipoA - tipoB;
         });
     });
@@ -204,9 +189,9 @@ function crearSkeletonCards(cantidad = 3) {
     for (let i = 0; i < cantidad; i++) {
         html += `
             <div class="game-card skeleton">
-                <div class="skeleton-line" style="width: 60%; height: 24px;"></div>
-                <div class="skeleton-line" style="width: 40%; height: 16px; margin-top: 8px;"></div>
-                <div style="display: flex; justify-content: center; gap: 8px; margin-top: 20px;">
+                <div class="skeleton-line" style="width:60%;height:24px;"></div>
+                <div class="skeleton-line" style="width:40%;height:16px;margin-top:8px;"></div>
+                <div style="display:flex;justify-content:center;gap:8px;margin-top:20px;">
                     <div class="skeleton-circle"></div>
                     <div class="skeleton-circle"></div>
                     <div class="skeleton-circle"></div>
@@ -218,41 +203,37 @@ function crearSkeletonCards(cantidad = 3) {
 }
 
 // ============================================
-// 🚀 PRELOAD DE LOGOS
+// PRELOAD DE LOGOS
 // ============================================
 
 const logosPreloadCache = new Set();
 
 function preloadLogos(sorteos) {
     const logosUnicos = new Set();
-    
     Object.values(sorteos).forEach(datos => {
         if (datos.logo_url && datos.logo_url.startsWith('/logos/')) {
             logosUnicos.add(datos.logo_url);
         }
     });
-    
     logosUnicos.forEach(logoUrl => {
         if (!logosPreloadCache.has(logoUrl)) {
             const link = document.createElement('link');
-            link.rel = 'preload';
-            link.as = 'image';
+            link.rel  = 'preload';
+            link.as   = 'image';
             link.href = logoUrl;
             document.head.appendChild(link);
-            
             logosPreloadCache.add(logoUrl);
         }
     });
 }
 
 // ============================================
-// CREAR CARDS DE JUEGOS - OPTIMIZADO
+// CREAR CARDS DE JUEGOS
 // ============================================
 
 function crearCardJuego(key, datos) {
     const card = document.createElement('div');
 
-    // ✅ Guard contra fecha_sorteo null
     if (!datos.fecha_sorteo) {
         card.className = 'game-card';
         card.innerHTML = `
@@ -267,26 +248,22 @@ function crearCardJuego(key, datos) {
         return card;
     }
 
-    // ✅ Detecta resultado anterior por estado O por fecha
     const fechaHoy = new Date();
     const [dia, mes, año] = datos.fecha_sorteo.split('-').map(Number);
     const fechaSorteo = new Date(año || fechaHoy.getFullYear(), mes - 1, dia);
-    const esAnterior = datos.estado === 'anterior' ||
-                       fechaSorteo < new Date(fechaHoy.getFullYear(), fechaHoy.getMonth(), fechaHoy.getDate());
+    const esAnterior  = datos.estado === 'anterior' ||
+                        fechaSorteo < new Date(fechaHoy.getFullYear(), fechaHoy.getMonth(), fechaHoy.getDate());
 
     card.className = esAnterior ? 'game-card resultado-anterior' : 'game-card';
 
-    const nombreBase = datos.nombre_juego.replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '').trim();
+    const nombreBase = datos.nombre_juego
+        .replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '')
+        .trim();
 
-    const logoHTML = datos.logo_url ?
-        `<img src="${datos.logo_url}" 
-             alt="${nombreBase}" 
-             class="game-logo" 
-             width="72" 
-             height="72" 
-             loading="lazy" 
-             decoding="async">` :
-        '';
+    const logoHTML = datos.logo_url
+        ? `<img src="${datos.logo_url}" alt="${nombreBase}" class="game-logo"
+               width="72" height="72" loading="lazy" decoding="async">`
+        : '';
 
     let contenidoPrincipal = '';
 
@@ -295,24 +272,24 @@ function crearCardJuego(key, datos) {
             <div class="juga3-numero">
                 <div class="numeros-titulo">NÚMEROS GANADORES</div>
                 <div class="numeros-individuales">
-                    ${datos.numeros_individuales.map((num, index) =>
-                        `<div class="bola" style="animation-delay: ${index * 0.1}s">${num}</div>`
+                    ${datos.numeros_individuales.map((num, i) =>
+                        `<div class="bola" style="animation-delay:${i * 0.1}s">${num}</div>`
                     ).join('')}
                 </div>
             </div>
         ` : `<div class="pendiente"><i data-lucide="clock" class="w-5 h-5 inline-block mr-2"></i>Pendiente</div>`;
     } else {
         if (datos.numeros_adicionales && datos.numeros_adicionales.length > 0) {
-            let titulo = 'NÚMEROS GANADORES';
-            if (key.includes('diaria')) titulo = 'NÚMERO · SIGNO · MULTIPLICADOR';
-
+            const titulo = key.includes('diaria')
+                ? 'NÚMERO · SIGNO · MULTIPLICADOR'
+                : 'NÚMEROS GANADORES';
             contenidoPrincipal = `
                 <div class="numeros-container">
                     <div class="numeros-titulo">${titulo}</div>
                     <div class="numeros-grid">
-                        ${datos.numeros_adicionales.map((num, index) => {
+                        ${datos.numeros_adicionales.map((num, i) => {
                             const esTexto = isNaN(num);
-                            return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay: ${index * 0.1}s">${num}</div>`;
+                            return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
                         }).join('')}
                     </div>
                 </div>
@@ -331,24 +308,26 @@ function crearCardJuego(key, datos) {
                 ${logoHTML}
             </div>
             <div class="game-meta">
-                <div class="game-date"><i data-lucide="calendar" class="w-4 h-4 inline-block mr-1"></i>${fechaConAnio}</div>
-                ${datos.hora_sorteo ? `<div class="game-time"><i data-lucide="clock" class="w-4 h-4 inline-block mr-1"></i>${datos.hora_sorteo}</div>` : ''}
+                <div class="game-date">
+                    <i data-lucide="calendar" class="w-4 h-4 inline-block mr-1"></i>${fechaConAnio}
+                </div>
+                ${datos.hora_sorteo
+                    ? `<div class="game-time"><i data-lucide="clock" class="w-4 h-4 inline-block mr-1"></i>${datos.hora_sorteo}</div>`
+                    : ''}
             </div>
         </div>
-
         ${contenidoPrincipal}
-
         ${!datos.numero_ganador && (!datos.numeros_adicionales || datos.numeros_adicionales.length === 0) ? `
             <div style="text-align:center;">
-                <span class="estado-badge"><i data-lucide="clock" class="w-4 h-4 inline-block mr-1"></i>Próximamente</span>
+                <span class="estado-badge">
+                    <i data-lucide="clock" class="w-4 h-4 inline-block mr-1"></i>Próximamente
+                </span>
             </div>
         ` : ''}
     `;
 
     return card;
 }
-
-
 
 // ============================================
 // ORDENAR SORTEOS
@@ -357,115 +336,78 @@ function crearCardJuego(key, datos) {
 function ordenarPorFechaYHora(sorteos) {
     const ordenHoras = {
         '11:00 AM': 1, '10:00 AM': 1,
-        '3:00 PM': 2, '2:00 PM': 2, '15:00': 2,
-        '9:00 PM': 3, '21:00': 3
+        '3:00 PM':  2, '2:00 PM':  2, '15:00': 2,
+        '9:00 PM':  3, '21:00':    3
     };
 
     return Object.entries(sorteos).sort((a, b) => {
         const [keyA, datosA] = a;
         const [keyB, datosB] = b;
 
-        // ✅ Guard contra fecha_sorteo null o undefined
         if (!datosA.fecha_sorteo || !datosB.fecha_sorteo) return 0;
-        
-        const partesA = datosA.fecha_sorteo.split('-').map(Number);
-        const partesB = datosB.fecha_sorteo.split('-').map(Number);
-        
-        const diaA = partesA[0];
-        const mesA = partesA[1];
-        const yearA = partesA[2] || new Date().getFullYear();
-        
-        const diaB = partesB[0];
-        const mesB = partesB[1];
-        const yearB = partesB[2] || new Date().getFullYear();
-        
+
+        const [diaA, mesA, yearA = new Date().getFullYear()] = datosA.fecha_sorteo.split('-').map(Number);
+        const [diaB, mesB, yearB = new Date().getFullYear()] = datosB.fecha_sorteo.split('-').map(Number);
+
         if (yearA !== yearB) return yearB - yearA;
-        if (mesA !== mesB) return mesB - mesA;
-        if (diaA !== diaB) return diaB - diaA;
-        
+        if (mesA  !== mesB)  return mesB  - mesA;
+        if (diaA  !== diaB)  return diaB  - diaA;
+
         const horaA = ordenHoras[datosA.hora_sorteo] || 0;
         const horaB = ordenHoras[datosB.hora_sorteo] || 0;
-        
         if (horaA !== horaB) return horaA - horaB;
-        
+
         const ordenJuegos = ['juga3', 'pega3', 'premia2', 'diaria', 'super'];
-        const tipoA = ordenJuegos.findIndex(tipo => keyA.includes(tipo));
-        const tipoB = ordenJuegos.findIndex(tipo => keyB.includes(tipo));
-        
+        const tipoA = ordenJuegos.findIndex(t => keyA.includes(t));
+        const tipoB = ordenJuegos.findIndex(t => keyB.includes(t));
         return tipoA - tipoB;
     });
 }
 
-
-
-
-
 // ============================================
-// CARGAR RESULTADOS - OPTIMIZADO
+// CARGAR RESULTADOS
 // ============================================
 
 async function cargarResultados() {
     const contenido = document.getElementById('contenido');
-    if (!contenido) {
-        console.error('Elemento #contenido no encontrado');
-        return;
-    }
-    
-    // Mostrar skeletons inmediatamente
+    if (!contenido) return;
+
     contenido.innerHTML = `
         <div class="sorteo-section">
             <h2 class="sorteo-header">
                 <i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i>
                 CARGANDO RESULTADOS...
             </h2>
-            <div class="sorteo-grid">
-                ${crearSkeletonCards(3)}
-            </div>
+            <div class="sorteo-grid">${crearSkeletonCards(3)}</div>
         </div>
     `;
-    
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-    
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
     try {
         let data;
-        
+
         if (DATOS_EMBEBIDOS) {
             data = DATOS_EMBEBIDOS;
         } else {
-            const urlSinCache = `${JSON_URL}?t=${Date.now()}`;
-            
-            const response = await fetch(urlSinCache, {
+            const response = await fetch(`${JSON_URL}?t=${Date.now()}`, {
                 cache: 'no-store',
-                headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache'
-                }
+                headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
             });
-            
-            if (!response.ok) {
-                throw new Error('No se pudieron cargar los resultados.');
-            }
-            
+            if (!response.ok) throw new Error('No se pudieron cargar los resultados.');
             data = await response.json();
         }
-        
-        // Actualizar fecha
+
         const fechaElement = document.getElementById('fechaActual');
         if (fechaElement) {
             const span = fechaElement.querySelector('span');
-            if (span) {
-                span.textContent = formatearFecha();
-            }
+            if (span) span.textContent = formatearFecha();
         }
-        
- 
-        
-        const sorteos = data.sorteos || data;
-        const tipoJuego = obtenerTipoJuego();
+
+        const sorteos         = data.sorteos || data;
+        const tipoJuego       = obtenerTipoJuego();
         const sorteosFiltrados = filtrarSorteos(sorteos, tipoJuego);
-        
+
         if (Object.keys(sorteosFiltrados).length === 0) {
             contenido.innerHTML = `
                 <div class="error-message">
@@ -473,80 +415,52 @@ async function cargarResultados() {
                     No hay resultados disponibles todavía.
                 </div>
             `;
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
             return;
         }
-        
-        // ✅ PRELOAD DE LOGOS (antes de renderizar)
+
         preloadLogos(sorteosFiltrados);
-        
-        const sorteosOrdenados = ordenarPorFechaYHora(sorteosFiltrados);
-        const gruposPorHorario = agruparPorHorario(sorteosOrdenados);
-        
+
+        const sorteosOrdenados  = ordenarPorFechaYHora(sorteosFiltrados);
+        const gruposPorHorario  = agruparPorHorario(sorteosOrdenados);
+        const esPaginaIndividual = tipoJuego !== 'todos';
+
         contenido.innerHTML = '';
-        
+
         const horarios = ['11:00 AM', '3:00 PM', '9:00 PM', 'super'];
-        const iconosHorario = {
-            '11:00 AM': 'sunrise',
-            '3:00 PM': 'sun',
-            '9:00 PM': 'moon',
-            'super': 'trophy'
-        };
+        const iconosHorario  = { '11:00 AM':'sunrise', '3:00 PM':'sun', '9:00 PM':'moon', 'super':'trophy' };
         const nombresHorario = {
             '11:00 AM': 'SORTEO DE LA MAÑANA',
-            '3:00 PM': 'SORTEO DE LA TARDE',
-            '9:00 PM': 'SORTEO DE LA NOCHE',
-            'super': 'SÚPER PREMIO'
+            '3:00 PM':  'SORTEO DE LA TARDE',
+            '9:00 PM':  'SORTEO DE LA NOCHE',
+            'super':    'SÚPER PREMIO'
         };
-        
-        // ✅ NUEVO: Detectar si es página individual
-        const esPaginaIndividual = tipoJuego !== 'todos';
-        
+
         horarios.forEach(horario => {
             const sorteosDeLaHora = gruposPorHorario[horario];
-            
-            if (sorteosDeLaHora && sorteosDeLaHora.length > 0) {
-                const section = document.createElement('div');
-                section.className = 'sorteo-section';
-                
-                const header = document.createElement('h2');
-                header.className = 'sorteo-header';
-                
-                const iconoHTML = `<i data-lucide="${iconosHorario[horario]}" class="w-6 h-6 inline-block mr-2"></i>`;
-                
-                if (horario === 'super') {
-                    header.innerHTML = `${iconoHTML}${nombresHorario[horario]}`;
-                } else {
-                    header.innerHTML = `${iconoHTML}${nombresHorario[horario]} - ${horario}`;
-                }
-                
-                const grid = document.createElement('div');
+            if (!sorteosDeLaHora || sorteosDeLaHora.length === 0) return;
 
-                // ✅ MODIFICADO: En páginas individuales SIEMPRE usa horizontal
-                if (esPaginaIndividual) {
-                    grid.className = 'sorteo-grid horizontal';
-                } else {
-                    // En página principal, solo horizontal si hay 3 o menos cards
-                    const cantidadCards = sorteosDeLaHora.length;
-                    grid.className = cantidadCards <= 3 ? 'sorteo-grid horizontal' : 'sorteo-grid';
-                }
-                
-                sorteosDeLaHora.forEach(([key, datos]) => {
-                    grid.appendChild(crearCardJuego(key, datos));
-                });
-                
-                section.appendChild(header);
-                section.appendChild(grid);
-                contenido.appendChild(section);
-            }
+            const section = document.createElement('div');
+            section.className = 'sorteo-section';
+
+            const header = document.createElement('h2');
+            header.className = 'sorteo-header';
+            header.innerHTML = `<i data-lucide="${iconosHorario[horario]}" class="w-6 h-6 inline-block mr-2"></i>${nombresHorario[horario]}${horario !== 'super' ? ` - ${horario}` : ''}`;
+
+            const grid = document.createElement('div');
+            grid.className = esPaginaIndividual || sorteosDeLaHora.length <= 3
+                ? 'sorteo-grid horizontal'
+                : 'sorteo-grid';
+
+            sorteosDeLaHora.forEach(([key, datos]) => grid.appendChild(crearCardJuego(key, datos)));
+
+            section.appendChild(header);
+            section.appendChild(grid);
+            contenido.appendChild(section);
         });
-        
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-        
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
     } catch (error) {
         console.error('Error:', error);
         contenido.innerHTML = `
@@ -556,28 +470,19 @@ async function cargarResultados() {
                 <small>${error.message}</small>
             </div>
         `;
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     } finally {
         const loading = document.getElementById('loading');
-        if (loading) {
-            loading.style.display = 'none';
-        }
+        if (loading) loading.style.display = 'none';
     }
 }
 
-// Ejecutar solo si existe el elemento #contenido
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        if (document.getElementById('contenido')) {
-            cargarResultados();
-        }
+        if (document.getElementById('contenido')) cargarResultados();
     });
 } else {
-    if (document.getElementById('contenido')) {
-        cargarResultados();
-    }
+    if (document.getElementById('contenido')) cargarResultados();
 }
 
 // ============================================
@@ -586,222 +491,33 @@ if (document.readyState === 'loading') {
 
 function obtenerIntervaloActualizacion() {
     const ahora = new Date();
-    const offsetHonduras = -6;
-    const utc = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
-    const horaHonduras = new Date(utc + (3600000 * offsetHonduras));
-    
-    const hour = horaHonduras.getHours();
-    const minute = horaHonduras.getMinutes();
-    
+    const utc   = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
+    const horaHN = new Date(utc + (3600000 * -6));
+    const hour   = horaHN.getHours();
+    const minute = horaHN.getMinutes();
+
     if (
-        (hour === 11 && minute >= 0 && minute <= 30) ||
-        (hour === 15 && minute >= 0 && minute <= 30) ||
-        (hour === 21 && minute >= 0 && minute <= 30)
+        (hour === 11 && minute <= 30) ||
+        (hour === 15 && minute <= 30) ||
+        (hour === 21 && minute <= 30)
     ) {
-        return 1 * 60 * 1000; // 1 minuto
+        return 1 * 60 * 1000;  // cada 1 min cerca de los sorteos
     }
-    
-    return 5 * 60 * 1000; // 5 minutos
+    return 5 * 60 * 1000;      // cada 5 min el resto del día
 }
 
 function programarSiguienteActualizacion() {
-    const intervalo = obtenerIntervaloActualizacion();
     setTimeout(() => {
-        if (document.getElementById('contenido')) {
-            cargarResultados();
-        }
+        if (document.getElementById('contenido')) cargarResultados();
         programarSiguienteActualizacion();
-    }, intervalo);
+    }, obtenerIntervaloActualizacion());
 }
 
-// Solo programar actualizaciones si existe el contenedor
-if (document.getElementById('contenido') || document.readyState === 'loading') {
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            if (document.getElementById('contenido')) {
-                programarSiguienteActualizacion();
-            }
-        });
-    } else {
-        if (document.getElementById('contenido')) {
-            programarSiguienteActualizacion();
-        }
-    }
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (document.getElementById('contenido')) programarSiguienteActualizacion();
+    });
+} else {
+    if (document.getElementById('contenido')) programarSiguienteActualizacion();
 }
 
-
-// ============================================
-// RULETA DE NÚMEROS - VERSIÓN CORREGIDA
-// ============================================
-
-function mostrarRuleta() {
-    const overlay = document.getElementById('ruletaOverlay');
-    const tooltip = document.getElementById('ruletaTooltip');
-    const display = document.getElementById('ruletaDisplay');
-    
-    if (overlay) overlay.classList.remove('hidden');
-    if (tooltip) {
-        tooltip.style.opacity = '0';
-        tooltip.style.display = 'none';
-    }
-    
-    if (display) {
-        display.innerHTML = `
-            <div style="font-size: 3.75rem; font-weight: 700; color: #8B5CF6; margin-bottom: 1rem; padding: 2rem; background: linear-gradient(to right, #EDE9FE, #F3E8FF); border-radius: 0.75rem; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);">000</div>
-            <p style="color: #6B7280; text-align: center;">Haz clic en "Girar" para descubrir tus números</p>
-        `;
-    }
-}
-
-function girarRuleta() {
-    const display = document.getElementById('ruletaDisplay');
-    const button = event.target.closest('button');
-    
-    if (!display || !button) return;
-    
-    button.disabled = true;
-    button.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Girando...</span>`;
-    
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-    
-    display.innerHTML = '<div style="font-size: 3.75rem; font-weight: 700; color: #8B5CF6; margin-bottom: 1rem; padding: 2rem; background: linear-gradient(to right, #EDE9FE, #F3E8FF); border-radius: 0.75rem; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);" id="spinningNum">000</div>';
-    
-    let counter = 0;
-    const spinInterval = setInterval(() => {
-        const spinningNum = document.getElementById('spinningNum');
-        if (spinningNum) {
-            spinningNum.textContent = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        }
-        counter++;
-    }, 100);
-    
-    setTimeout(() => {
-        clearInterval(spinInterval);
-        mostrarNumerosSuerte();
-        
-        button.disabled = false;
-        button.innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5"></i><span>Girar Ruleta</span>`;
-        
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-        
-        crearConfetti();
-    }, 3000);
-}
-
-function mostrarNumerosSuerte() {
-    const numeros = [];
-    
-    // ✅ CAMBIADO: Ahora genera 6 números
-    while(numeros.length < 6) {
-        const num = Math.floor(Math.random() * 100);
-        if (!numeros.includes(num)) {
-            numeros.push(num);
-        }
-    }
-    
-    const mensajes = [
-        "¡Estos son tus números ganadores!",
-        "¡La suerte está de tu lado!",
-        "¡Números mágicos para ti!",
-        "¡Que la fortuna te acompañe!",
-        "¡Confía en estos números!",
-        "¡Tu día de suerte ha llegado!"
-    ];
-    
-    const mensajeAleatorio = mensajes[Math.floor(Math.random() * mensajes.length)];
-    
-    const display = document.getElementById('ruletaDisplay');
-    if (display) {
-        // ✅ ESTILOS INLINE para que funcionen siempre
-        display.innerHTML = `
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                ${numeros.map(num => `
-                    <div style="background: linear-gradient(to bottom right, #8B5CF6, #9333EA); color: white; font-size: 2.25rem; font-weight: 700; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                        ${num.toString().padStart(2, '0')}
-                    </div>
-                `).join('')}
-            </div>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 1.125rem; font-weight: 600; color: #8B5CF6;">
-                <i data-lucide="sparkles" class="w-5 h-5"></i>
-                <span>${mensajeAleatorio}</span>
-                <i data-lucide="sparkles" class="w-5 h-5"></i>
-            </div>
-        `;
-        
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-    }
-}
-
-
-
-function crearConfetti() {
-    const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#ffd700', '#00ff88'];
-    const overlay = document.getElementById('ruletaOverlay');
-    
-    if (!overlay) return;
-    
-    for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.style.position = 'fixed';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = '-10px';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.width = confetti.style.height = (Math.random() * 10 + 5) + 'px';
-            confetti.style.borderRadius = '50%';
-            confetti.style.pointerEvents = 'none';
-            confetti.style.zIndex = '9999';
-            confetti.style.animation = `fall ${Math.random() * 2 + 2}s linear forwards`;
-            
-            overlay.appendChild(confetti);
-            
-            setTimeout(() => confetti.remove(), 4000);
-        }, i * 30);
-    }
-}
-
-// Agregar animación de confetti
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes fall {
-        to {
-            transform: translateY(100vh) rotate(360deg);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-function cerrarRuleta() {
-    const overlay = document.getElementById('ruletaOverlay');
-    const tooltip = document.getElementById('ruletaTooltip');
-    const display = document.getElementById('ruletaDisplay');
-    
-    if (overlay) {
-        overlay.classList.add('hidden');
-    }
-    
-    if (tooltip) {
-        tooltip.style.opacity = '1';
-        tooltip.style.display = 'block';
-    }
-    
-    // Resetear el display para la próxima vez
-    if (display) {
-        display.innerHTML = `
-            <div style="font-size: 3.75rem; font-weight: 700; color: #8B5CF6; margin-bottom: 1rem; padding: 2rem; background: linear-gradient(to right, #EDE9FE, #F3E8FF); border-radius: 0.75rem; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);">000</div>
-            <p style="color: #6B7280; text-align: center;">Haz clic en "Girar" para descubrir tus números</p>
-        `;
-    }
-}
-
-// Exponer funciones globalmente para que puedan ser llamadas desde HTML
-window.mostrarRuleta = mostrarRuleta;
-window.cerrarRuleta = cerrarRuleta;
-window.girarRuleta = girarRuleta;
