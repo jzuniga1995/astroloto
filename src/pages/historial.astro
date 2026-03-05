@@ -1,0 +1,318 @@
+---
+// src/pages/historial.astro
+import Layout from '../layouts/Layout.astro';
+import { History, Calendar } from 'lucide-astro';
+---
+
+<Layout>
+<!-- ============== SEO — HISTORIAL 3 PAÍSES ============== -->
+<Fragment slot="head">
+    <title>Historial de Resultados Loto Honduras 2026 – Archivo Completo | LotoHN</title>
+
+    <meta name="description" content="📅 Historial completo de resultados de loterías de Honduras. Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio. Consulta resultados de días anteriores GRATIS desde Honduras, Costa Rica y Estados Unidos | LotoHN #1">
+
+    <meta name="keywords" content="
+        historial loteria honduras, resultados anteriores juga 3, historico pega 3,
+        resultados pasados premia 2, la diaria historial, super premio historial,
+        archivo resultados loto honduras, resultados ayer loto honduras,
+        historico sorteos honduras, resultados semana loto hn,
+        consultar resultados anteriores honduras, loto honduras dias anteriores,
+        historial juga 3 honduras, historial pega 3 honduras,
+        historial premia 2 honduras, historial la diaria honduras,
+        numeros anteriores loto honduras, loto hn archivo resultados,
+
+        historial loto honduras costa rica, resultados anteriores loto honduras costa rica,
+        archivo sorteos honduras costa rica, loto hn historial costa rica,
+        hondureños costa rica historial loto, resultados pasados honduras san jose,
+        consultar historial loto honduras desde costa rica,
+
+        historial loto honduras estados unidos, resultados anteriores loto honduras usa,
+        archivo loto honduras miami, historial sorteos honduras nueva york,
+        loto hn historial estados unidos, hondureños usa historial loto,
+        diaspora hondureña historial resultados, consultar historial loto desde usa
+    ">
+
+    <!-- ============== SEO TÉCNICO ============== -->
+    <link rel="canonical" href="https://lotohn.com/historial">
+    <meta name="author" content="LotoHN - Portal Oficial de Resultados">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow">
+    <meta http-equiv="content-language" content="es">
+    <meta name="revisit-after" content="1 hour">
+    <meta name="rating" content="general">
+    <meta name="distribution" content="global">
+    <meta name="language" content="Spanish">
+    <meta name="coverage" content="Worldwide">
+    <meta name="target" content="all">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+
+    <!-- ============== GEOLOCALIZACIÓN — 3 PAÍSES ============== -->
+    <meta name="geo.region" content="HN">
+    <meta name="geo.placename" content="Honduras, Tegucigalpa, San Pedro Sula, La Ceiba, Choloma, El Progreso, Choluteca, Comayagua, Danlí">
+    <meta name="geo.position" content="14.0650;-87.2172">
+    <meta name="ICBM" content="14.0650, -87.2172">
+    <meta name="geo.region" content="CR">
+    <meta name="geo.placename" content="Costa Rica, San José, Alajuela, Heredia, Liberia">
+    <meta name="geo.region" content="US">
+    <meta name="geo.placename" content="Miami FL, Nueva York NY, Houston TX, Los Angeles CA, New Orleans LA">
+
+    <!-- ============== OPEN GRAPH ============== -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LotoHN - Historial Loto Honduras">
+    <meta property="og:title" content="📅 Historial de Resultados Loto Honduras – Archivo Completo">
+    <meta property="og:description" content="Consulta el historial completo de resultados de todas las loterías de Honduras. Disponible desde Honduras, Costa Rica y Estados Unidos. GRATIS.">
+    <meta property="og:url" content="https://lotohn.com/historial">
+    <meta property="og:image" content="https://lotohn.com/favicon.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Historial Resultados Loto Honduras - Archivo Completo">
+    <meta property="og:locale" content="es_HN">
+    <meta property="og:locale:alternate" content="es_CR">
+    <meta property="og:locale:alternate" content="es_US">
+
+    <!-- ============== TWITTER CARD ============== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@LotoHN">
+    <meta name="twitter:creator" content="@LotoHN">
+    <meta name="twitter:title" content="📅 Historial Resultados Loto Honduras – Archivo Completo">
+    <meta name="twitter:description" content="Consulta el historial completo de resultados de Loto Honduras. Disponible desde Honduras, Costa Rica y EE.UU. GRATIS.">
+    <meta name="twitter:image" content="https://lotohn.com/favicon.png">
+    <meta name="theme-color" content="#667eea">
+
+    <!-- ============== HREFLANG ============== -->
+    <link rel="alternate" hreflang="es-HN" href="https://lotohn.com/historial">
+    <link rel="alternate" hreflang="es-CR" href="https://lotohn.com/historial">
+    <link rel="alternate" hreflang="es-US" href="https://lotohn.com/historial">
+    <link rel="alternate" hreflang="es"    href="https://lotohn.com/historial">
+    <link rel="alternate" hreflang="x-default" href="https://lotohn.com/historial">
+
+    <!-- ============== SCHEMA.ORG ============== -->
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Historial de Resultados Loto Honduras - LotoHN",
+      "url": "https://lotohn.com/historial",
+      "description": "Historial completo de resultados de Loto Honduras. Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio. Disponible desde Honduras, Costa Rica y Estados Unidos.",
+      "inLanguage": ["es-HN", "es-CR", "es-US"],
+      "audience": {
+        "@type": "Audience",
+        "geographicArea": [
+          { "@type": "Country", "name": "Honduras" },
+          { "@type": "Country", "name": "Costa Rica" },
+          { "@type": "Country", "name": "United States" }
+        ]
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "LotoHN",
+        "url": "https://lotohn.com",
+        "logo": { "@type": "ImageObject", "url": "https://lotohn.com/logo.png" }
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://lotohn.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Historial", "item": "https://lotohn.com/historial" }
+        ]
+      }
+    }
+    </script>
+
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Puedo ver resultados anteriores de Loto Honduras?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí, en LotoHN mantenemos un historial completo de resultados de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio. Puedes consultar los números ganadores de días anteriores de forma gratuita."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuántos días de historial están disponibles en LotoHN?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "LotoHN almacena el historial acumulado de todos los sorteos diarios de Loto Honduras. El historial crece automáticamente con cada sorteo y está disponible desde cualquier país."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo consultar el historial de Loto Honduras desde Costa Rica?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí, el historial de Loto Honduras está disponible desde Costa Rica de forma completamente gratuita. Puedes consultarlo desde San José, Alajuela, Heredia o cualquier ciudad costarricense."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo consultar el historial de Loto Honduras desde Estados Unidos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sí, miles de hondureños en Miami, Nueva York, Houston y Los Ángeles consultan el historial de Loto Honduras en LotoHN. El archivo completo de resultados está disponible desde cualquier estado de EE.UU. de forma gratuita."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        .historial-item {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+
+        .historial-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .historial-header:hover { background: #F5F3FF; }
+
+        .historial-fecha-info {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .historial-fecha-texto {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1F2937;
+        }
+
+        .historial-badge {
+            background: #EDE9FE;
+            color: #7C3AED;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+        }
+
+        .badge-hoy {
+            background: #7C3AED;
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            vertical-align: middle;
+        }
+
+        .historial-chevron {
+            color: #7C3AED;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .historial-header.abierto .historial-chevron { transform: rotate(180deg); }
+
+        .historial-contenido {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .historial-contenido.abierto { max-height: 9999px; }
+
+        .historial-tanda {
+            padding: 0.75rem 1.25rem 1rem;
+            border-top: 1px solid #F3F4F6;
+        }
+
+        .historial-tanda-titulo {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #6B7280;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+    </style>
+</Fragment>
+
+<!-- SEO oculto para crawlers -->
+<div class="absolute left-[-9999px] w-px h-px overflow-hidden" aria-hidden="true">
+    <h1>Historial de Resultados Loto Honduras - Archivo Completo de Sorteos</h1>
+    <h2>Consulta Resultados Anteriores de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio</h2>
+    <p>Consulta el historial completo de resultados de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio Honduras. Archivo actualizado automáticamente después de cada sorteo. Disponible desde Honduras, Costa Rica y Estados Unidos.</p>
+
+    <h3>Historial por Juego</h3>
+    <ul>
+        <li>Historial Jugá 3 Honduras - Todos los números ganadores del 000 al 999 por fecha</li>
+        <li>Historial Pega 3 Honduras - Resultados anteriores directo y combinado</li>
+        <li>Historial Premia 2 Honduras - Archivo Ordena2, Mixea2 y Posiciona2</li>
+        <li>Historial La Diaria Honduras - Números, signos y multiplicadores anteriores</li>
+        <li>Historial Súper Premio Honduras - Resultados millonarios Miércoles y Sábado</li>
+    </ul>
+
+    <h3>Historial Loto Honduras desde Costa Rica</h3>
+    <p>Consulta el historial completo de resultados de Loto Honduras desde Costa Rica completamente gratis. Hondureños y costarricenses en San José, Alajuela, Heredia, Cartago y Liberia consultan el archivo de sorteos en LotoHN. historial loto honduras costa rica, resultados anteriores loto honduras costa rica, archivo sorteos honduras costa rica, loto hn historial costa rica, consultar historial loto desde san jose, resultados pasados honduras costa rica, hondureños costa rica historial loto.</p>
+    <ul>
+        <li>Historial Jugá 3 Honduras desde San José Costa Rica</li>
+        <li>Resultados anteriores Pega 3 desde Alajuela, Heredia, Cartago</li>
+        <li>Archivo La Diaria Honduras disponible desde Costa Rica</li>
+        <li>Historial Súper Premio Honduras gratis desde Costa Rica</li>
+    </ul>
+
+    <h3>Historial Loto Honduras desde Estados Unidos</h3>
+    <p>Miles de hondureños en Estados Unidos consultan el historial de Loto Honduras en LotoHN. La diáspora hondureña en Miami, Nueva York, Houston, Los Ángeles, Atlanta y Chicago accede al archivo completo de sorteos. historial loto honduras estados unidos, resultados anteriores loto honduras usa, archivo sorteos honduras miami, historial juga 3 nueva york, loto hn historial estados unidos, diaspora hondureña historial loto, consultar historial loto honduras desde usa.</p>
+    <ul>
+        <li>Historial Jugá 3 Honduras desde Miami Florida</li>
+        <li>Resultados anteriores Pega 3 desde Nueva York</li>
+        <li>Archivo La Diaria Honduras para hondureños en Houston Texas</li>
+        <li>Historial Súper Premio Honduras desde Los Ángeles California</li>
+        <li>Diaspora hondureña archivo resultados Loto Honduras USA</li>
+    </ul>
+
+    <h3>Palabras clave historial Loto Honduras</h3>
+    <p>historial loto honduras, resultados anteriores loto, archivo sorteos honduras, resultados ayer loto hn, resultados semana loto honduras, historico juga 3, historico pega 3, historico premia 2, historico la diaria, historico super premio, consultar dias anteriores loto, loto hn archivo, numeros anteriores honduras, historial loto costa rica, historial loto estados unidos, historial loto miami, diaspora hondureña historial loto.</p>
+
+    <h3>Ciudades donde consultan el historial</h3>
+    <p>Honduras: Tegucigalpa, San Pedro Sula, La Ceiba, Choloma, El Progreso, Choluteca, Comayagua, Puerto Cortés, Danlí, Siguatepeque.</p>
+    <p>Costa Rica: San José, Alajuela, Heredia, Cartago, Liberia, Puntarenas, Limón.</p>
+    <p>Estados Unidos: Miami, Nueva York, Houston, Los Ángeles, Atlanta, Chicago, Dallas, Washington DC, Orlando, Tampa.</p>
+</div>
+
+    <!-- Header -->
+    <header class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center justify-center gap-3 flex-wrap">
+            <History class="w-10 h-10 text-violet-600" />
+            Historial de Resultados
+        </h1>
+        <div class="text-gray-500 text-base flex items-center justify-center gap-2">
+            <Calendar class="w-5 h-5 text-violet-600" />
+            <span>Resultados anteriores de todas las loterías de Honduras</span>
+        </div>
+    </header>
+
+    <!-- Loading -->
+    <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
+        <div class="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>
+        <p class="text-gray-600 text-lg">Cargando historial...</p>
+    </div>
+
+    <!-- Contenido generado por historial.js -->
+    <section id="historial-contenido" aria-label="Historial de resultados"></section>
+
+    <script src="/scripts/historial.js"></script>
+</Layout>
+

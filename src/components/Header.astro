@@ -1,6 +1,6 @@
 ---
 // src/components/Header.astro
-import { Menu, Home } from 'lucide-astro';
+import { Menu, Home, History } from 'lucide-astro';
 
 const currentPath = Astro.url.pathname;
 
@@ -71,6 +71,10 @@ const isActive = (href: string) => {
                 <a href="/loto-super-premio" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/loto-super-premio') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <span>Súper Premio</span>
                 </a>
+                <!-- ✅ HISTORIAL -->
+                <a href="/historial" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/historial') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+                    <History class="w-4 h-4" /><span>Historial</span>
+                </a>
                 <!-- ✅ SIGNOS DESKTOP -->
                 <a
                     href="/signos-la-diaria"
@@ -109,6 +113,10 @@ const isActive = (href: string) => {
                 <a href="/loto-super-premio" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/loto-super-premio') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
                     <span>Súper Premio</span>
                 </a>
+                <!-- ✅ HISTORIAL MÓVIL -->
+                <a href="/historial" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/historial') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
+                    <History class="w-4 h-4" /><span>Historial</span>
+                </a>
                 <a href="/signos-la-diaria" class={`relative flex items-center gap-2 px-4 py-3 rounded-lg font-semibold overflow-hidden signos-link transition-all ${isActive('/signos-la-diaria') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-gradient-to-r from-indigo-950 to-violet-950 text-yellow-300 border border-violet-700'}`}>
                     <span>🌙 Signos La Diaria</span>
                     <span class="badge-new">NUEVO</span>
@@ -133,7 +141,6 @@ const isActive = (href: string) => {
 </div>
 
 <style>
-  /* ===== SIGNOS LINK ===== */
   .signos-link .star-1,
   .signos-link .star-2 {
     position: absolute;
@@ -168,16 +175,7 @@ const isActive = (href: string) => {
     50%       { opacity: 0.7; transform: scale(0.95); }
   }
 
-  /* ===== TOAST — FIX SCROLL HORIZONTAL ===== */
-  /*
-    El problema: position:fixed con right:20px en móvil puede
-    crear un "overflowing paint area" que el navegador interpreta
-    como contenido desbordado → scroll horizontal.
-    Solución: usar left+right simétrico en móvil (inset horizontal),
-    así el elemento nunca sale del viewport.
-  */
   .signos-toast {
-    /* Móvil: pegado a ambos lados con margen */
     position: fixed;
     bottom: 16px;
     left: 16px;
@@ -188,14 +186,12 @@ const isActive = (href: string) => {
     border-radius: 14px;
     box-shadow: 0 8px 32px rgba(109, 40, 217, 0.4), 0 2px 8px rgba(0,0,0,0.5);
     overflow: hidden;
-    /* Animación: sube desde abajo */
     transform: translateY(calc(100% + 24px));
     opacity: 0;
     transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
     pointer-events: none;
   }
 
-  /* En pantallas más grandes: esquina inferior derecha con ancho fijo */
   @media (min-width: 480px) {
     .signos-toast {
       left: auto;
@@ -205,51 +201,21 @@ const isActive = (href: string) => {
     }
   }
 
-  .signos-toast.show {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: all;
-  }
-  .signos-toast.hide {
-    transform: translateY(calc(100% + 24px));
-    opacity: 0;
-    pointer-events: none;
-  }
+  .signos-toast.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+  .signos-toast.hide { transform: translateY(calc(100% + 24px)); opacity: 0; pointer-events: none; }
 
-  .toast-inner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 14px 10px 14px;
-  }
-  .toast-icon {
-    font-size: 26px;
-    flex-shrink: 0;
-    animation: moon-float 3s ease-in-out infinite;
-  }
+  .toast-inner { display: flex; align-items: center; gap: 10px; padding: 14px 14px 10px 14px; }
+  .toast-icon { font-size: 26px; flex-shrink: 0; animation: moon-float 3s ease-in-out infinite; }
+
   @keyframes moon-float {
     0%, 100% { transform: translateY(0) rotate(-5deg); }
     50%       { transform: translateY(-4px) rotate(5deg); }
   }
-  .toast-body {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-  }
-  .toast-body strong {
-    font-size: 12px;
-    color: #e9d5ff;
-    font-weight: 700;
-    line-height: 1.3;
-    display: block;
-  }
-  .toast-body span {
-    font-size: 11px;
-    color: #a78bfa;
-    line-height: 1.3;
-  }
+
+  .toast-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .toast-body strong { font-size: 12px; color: #e9d5ff; font-weight: 700; line-height: 1.3; display: block; }
+  .toast-body span   { font-size: 11px; color: #a78bfa; line-height: 1.3; }
+
   .toast-cta {
     flex-shrink: 0;
     background: #fbbf24;
@@ -264,6 +230,7 @@ const isActive = (href: string) => {
     white-space: nowrap;
   }
   .toast-cta:hover { background: #f59e0b; }
+
   .toast-close {
     flex-shrink: 0;
     background: none;
@@ -277,16 +244,9 @@ const isActive = (href: string) => {
   }
   .toast-close:hover { color: #e9d5ff; }
 
-  /* Barra de progreso — 30s */
-  .toast-progress {
-    height: 3px;
-    background: linear-gradient(90deg, #7c3aed, #fbbf24);
-    transform-origin: left;
-    transform: scaleX(1);
-  }
-  .signos-toast.show .toast-progress {
-    animation: progress-shrink 30s linear forwards;
-  }
+  .toast-progress { height: 3px; background: linear-gradient(90deg, #7c3aed, #fbbf24); transform-origin: left; transform: scaleX(1); }
+  .signos-toast.show .toast-progress { animation: progress-shrink 30s linear forwards; }
+
   @keyframes progress-shrink {
     from { transform: scaleX(1); }
     to   { transform: scaleX(0); }
@@ -294,7 +254,6 @@ const isActive = (href: string) => {
 </style>
 
 <script>
-    /* ===== HAMBURGER ===== */
     const menuBtn         = document.getElementById('menuBtn');
     const mobileMenu      = document.getElementById('mobileMenu');
     const menuIconWrapper = document.getElementById('menuIconWrapper');
@@ -318,7 +277,6 @@ const isActive = (href: string) => {
         });
     }
 
-    /* ===== TOAST — 2s delay, 30s visible, solo inicio, una vez por sesión ===== */
     const toast     = document.getElementById('signos-toast');
     const closeBtn  = document.getElementById('toast-close-btn');
     const TOAST_KEY = 'signos_toast_seen';
@@ -334,10 +292,7 @@ const isActive = (href: string) => {
             toast.classList.add('show');
             sessionStorage.setItem(TOAST_KEY, '1');
         }, 2000);
-
-        // 2s espera + 30s visible = 32s
         setTimeout(hideToast, 32000);
-
         closeBtn?.addEventListener('click', hideToast);
         toast.querySelector('.toast-cta')?.addEventListener('click', hideToast);
     }
