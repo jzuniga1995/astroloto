@@ -12,7 +12,7 @@
             <div class="sk-pill"></div>
         </div>
         <div class="sk-line" style="width:90%;margin-top:.8rem"></div>
-        <div class="sk-line" style="width:68%;margin-top:.4rem"></div>
+        <div class="sk-line" style="width:65%;margin-top:.4rem"></div>
         <div class="sk-balls">
             <div class="sk-ball"></div>
             <div class="sk-ball" style="animation-delay:.15s"></div>
@@ -23,7 +23,6 @@
     <!-- Card -->
     <div class="oraculo-card" id="oraculo-card" style="display:none">
 
-        <!-- Header -->
         <div class="o-header">
             <div class="o-icon" aria-hidden="true">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -47,17 +46,13 @@
             <div class="o-badge" id="oraculo-badge"></div>
         </div>
 
-        <!-- Acertijo -->
         <p class="o-acertijo" id="oraculo-acertijo"></p>
 
-        <!-- Bolas + frase -->
         <div class="o-bottom">
-
             <div class="o-balls-block">
                 <span class="o-balls-label">Números de la suerte</span>
                 <div class="o-balls" id="oraculo-nums"></div>
             </div>
-
             <p class="o-frase" id="oraculo-frase"></p>
         </div>
 
@@ -70,49 +65,35 @@
 </div>
 
 <style>
-    /* ── Tokens ── */
+    /* ── Wrapper centrado y acotado ── */
     .oraculo-root {
         --ca:    #16a34a;
-        --cb:    #4ade80;
-        --cc:    rgba(22,163,74,.08);
-        --cd:    rgba(22,163,74,.18);
-        --ce:    rgba(22,163,74,.45);
-        --ctext: #15803d;
+        --cb:    #86efac;
+        --ca-rgb: 22,163,74;
         font-family: inherit;
         width: 100%;
+        max-width: 580px;       /* no se estira a lo largo */
+        margin-inline: auto;    /* centrado */
     }
 
     /* ── Skeleton ── */
     .oraculo-skeleton {
         background: #fff;
-        border: 1px solid rgba(0,0,0,.07);
+        border: 1px solid rgba(0,0,0,.08);
         border-radius: 1rem;
-        padding: .9rem 1.1rem 1rem;
+        padding: .9rem 1.2rem 1rem;
     }
     .sk-toprow { display:flex; align-items:center; gap:.55rem; }
-    .sk-dot  {
-        width:1.6rem; height:1.6rem; border-radius:50%;
-        background:rgba(0,0,0,.07); flex-shrink:0;
-        animation:sk-s 1.5s ease-in-out infinite;
-    }
-    .sk-pill {
-        width:3.8rem; height:1.1rem; border-radius:2rem;
-        background:rgba(0,0,0,.07); margin-left:auto;
-        animation:sk-s 1.5s ease-in-out infinite;
-    }
-    .sk-line {
-        height:.58rem; border-radius:.4rem;
-        background:linear-gradient(90deg,
-            rgba(0,0,0,.05) 25%,rgba(0,0,0,.1) 50%,rgba(0,0,0,.05) 75%);
-        background-size:200% 100%;
-        animation:sk-s 1.5s ease-in-out infinite;
-    }
-    .sk-balls { display:flex; gap:.65rem; margin-top:1.1rem; }
-    .sk-ball  {
-        width:3rem; height:3rem; border-radius:50%;
-        background:rgba(0,0,0,.07);
-        animation:sk-s 1.5s ease-in-out infinite;
-    }
+    .sk-dot  { width:1.6rem; height:1.6rem; border-radius:50%;
+               background:rgba(0,0,0,.08); flex-shrink:0; animation:sk-s 1.5s ease-in-out infinite; }
+    .sk-pill { width:3.8rem; height:1rem; border-radius:2rem;
+               background:rgba(0,0,0,.08); margin-left:auto; animation:sk-s 1.5s ease-in-out infinite; }
+    .sk-line { height:.58rem; border-radius:.4rem;
+               background:linear-gradient(90deg,rgba(0,0,0,.05) 25%,rgba(0,0,0,.1) 50%,rgba(0,0,0,.05) 75%);
+               background-size:200% 100%; animation:sk-s 1.5s ease-in-out infinite; }
+    .sk-balls { display:flex; gap:.7rem; margin-top:1.1rem; }
+    .sk-ball  { width:3rem; height:3rem; border-radius:50%;
+                background:rgba(0,0,0,.08); animation:sk-s 1.5s ease-in-out infinite; }
     @keyframes sk-s {
         0%,100% { background-position:200% center; opacity:.7; }
         50%      { opacity:1; }
@@ -121,35 +102,39 @@
     /* ── Card ── */
     .oraculo-card {
         background: #fff;
-        border: 1px solid rgba(0,0,0,.08);
+        border: 1px solid rgba(0,0,0,.09);
         border-radius: 1rem;
         overflow: hidden;
         position: relative;
+        /* línea de color arriba según el día */
         box-shadow:
-            inset 0 2.5px 0 var(--ca),
-            0 1px 4px rgba(0,0,0,.06);
+            inset 0 3px 0 var(--ca),
+            0 2px 8px rgba(0,0,0,.07);
         animation: oc-in .4s cubic-bezier(.22,1,.36,1) both;
     }
     @keyframes oc-in {
         from { opacity:0; transform:translateY(6px); }
         to   { opacity:1; transform:translateY(0); }
     }
+    /* tinte de fondo muy sutil */
     .oraculo-card::before {
         content:'';
         position:absolute; inset:0;
-        background:linear-gradient(160deg, var(--cc) 0%, transparent 55%);
+        background: linear-gradient(160deg,
+            rgba(var(--ca-rgb),.06) 0%, transparent 55%);
         pointer-events:none; z-index:0;
     }
 
     /* ── Header ── */
     .o-header {
-        display:flex; align-items:center; gap:.5rem;
-        padding: .75rem 1.1rem .5rem;
+        display:flex; align-items:center; gap:.55rem;
+        padding: .8rem 1.2rem .55rem;
         position:relative; z-index:1;
     }
     .o-icon {
-        width:1.65rem; height:1.65rem; border-radius:50%;
-        background:var(--cd); color:var(--ca);
+        width:1.7rem; height:1.7rem; border-radius:50%;
+        background: rgba(var(--ca-rgb),.15);
+        color:var(--ca);
         display:flex; align-items:center; justify-content:center;
         flex-shrink:0;
     }
@@ -162,20 +147,19 @@
     .o-fecha { font-size:.6rem; color:#9ca3af; font-weight:500; }
     .o-badge {
         font-size:.54rem; font-weight:900; letter-spacing:.05em;
-        text-transform:uppercase;
-        color:var(--ca);
-        background:var(--cc);
-        border:1px solid var(--ce);
+        text-transform:uppercase; color:var(--ca);
+        background: rgba(var(--ca-rgb),.1);
+        border: 1px solid rgba(var(--ca-rgb),.3);
         padding:.18rem .55rem; border-radius:2rem;
         white-space:nowrap; flex-shrink:0;
     }
 
     /* ── Acertijo ── */
     .o-acertijo {
-        font-size:clamp(.84rem,2.8vw,.97rem);
-        line-height:1.66; color:#374151;
+        font-size:clamp(.84rem,2.6vw,.95rem);
+        line-height:1.65; color:#374151;
         font-style:italic; margin:0;
-        padding:.1rem 1.1rem .7rem;
+        padding:.05rem 1.2rem .75rem;
         position:relative; z-index:1;
     }
 
@@ -183,93 +167,101 @@
     .o-bottom {
         display:flex; align-items:center;
         gap:1rem; flex-wrap:wrap;
-        padding:.65rem 1.1rem .9rem;
+        padding:.7rem 1.2rem .95rem;
         border-top:1px solid rgba(0,0,0,.05);
         position:relative; z-index:1;
     }
 
     /* ── Bolas ── */
     .o-balls-block {
-        display:flex; flex-direction:column; gap:.45rem;
+        display:flex; flex-direction:column; gap:.5rem;
         flex-shrink:0;
     }
     .o-balls-label {
-        font-size:.58rem; font-weight:700;
+        font-size:.57rem; font-weight:700;
         text-transform:uppercase; letter-spacing:.07em;
         color:#9ca3af;
     }
-    .o-balls { display:flex; gap:.55rem; align-items:center; }
+    .o-balls { display:flex; gap:.6rem; align-items:center; }
 
     .o-ball {
-        /* Tamaño generoso — como bola de lotería real */
-        width:  clamp(2.6rem, 9vw, 3.1rem);
-        height: clamp(2.6rem, 9vw, 3.1rem);
+        /* Bola grande tipo lotería */
+        width:  3rem;
+        height: 3rem;
         border-radius: 50%;
 
-        /* Gradiente esférico */
+        /* Gradiente esférico: destello arriba-izq → color base → oscuro abajo */
         background:
-            radial-gradient(circle at 35% 30%,
-                #fff 0%,
-                var(--cb) 30%,
-                var(--ca) 70%,
-                color-mix(in srgb, var(--ca) 70%, #000) 100%);
+            radial-gradient(circle at 33% 28%,
+                #fff               0%,
+                var(--cb)         28%,
+                var(--ca)         62%,
+                rgba(0,0,0,.25)  100%);
 
         display:flex; align-items:center; justify-content:center;
-        font-size: clamp(.9rem,3.2vw,1.05rem);
+
+        font-size: 1rem;
         font-weight: 900;
         color: #fff;
-        text-shadow: 0 1px 3px rgba(0,0,0,.35);
+        text-shadow: 0 1px 4px rgba(0,0,0,.4);
 
+        /* Sombra que da profundidad */
         box-shadow:
-            0 4px 12px rgba(0,0,0,.18),
-            0 1px 3px rgba(0,0,0,.12),
-            inset 0 -3px 6px rgba(0,0,0,.2),
-            inset 0 2px 4px rgba(255,255,255,.45);
+            0 6px 16px rgba(var(--ca-rgb),.35),
+            0 2px 4px  rgba(0,0,0,.15),
+            inset 0 -4px 8px  rgba(0,0,0,.22),
+            inset 0  3px 6px  rgba(255,255,255,.4);
 
-        animation: ball-in .45s cubic-bezier(.34,1.56,.64,1) both;
         position: relative;
+        animation: ball-in .45s cubic-bezier(.34,1.56,.64,1) both;
         cursor: default;
-        transition: transform .15s ease;
+        transition: transform .15s ease, box-shadow .15s ease;
     }
-    .o-ball:hover { transform: scale(1.08) translateY(-2px); }
+    .o-ball:hover {
+        transform: translateY(-3px) scale(1.08);
+        box-shadow:
+            0 10px 24px rgba(var(--ca-rgb),.4),
+            0 3px 6px   rgba(0,0,0,.15),
+            inset 0 -4px 8px  rgba(0,0,0,.22),
+            inset 0  3px 6px  rgba(255,255,255,.4);
+    }
 
-    /* Brillo en la bola */
+    /* Brillo superior */
     .o-ball::before {
         content:'';
         position:absolute;
-        top: 18%; left: 22%;
-        width: 32%; height: 22%;
-        background: rgba(255,255,255,.5);
-        border-radius: 50%;
-        filter: blur(2px);
-        transform: rotate(-25deg);
+        top:16%; left:20%;
+        width:30%; height:20%;
+        background:rgba(255,255,255,.55);
+        border-radius:50%;
+        filter:blur(2px);
+        transform:rotate(-20deg);
         pointer-events:none;
     }
 
     .o-ball:nth-child(1) { animation-delay:.1s; }
     .o-ball:nth-child(2) { animation-delay:.22s; }
-    .o-ball:nth-child(3) { animation-delay:.34s; }
+    .o-ball:nth-child(3) { animation-delay:.36s; }
 
     @keyframes ball-in {
-        from { opacity:0; transform:scale(.4) translateY(8px); }
+        from { opacity:0; transform:scale(.35) translateY(10px); }
         to   { opacity:1; transform:scale(1) translateY(0); }
     }
 
     /* ── Frase ── */
     .o-frase {
-        flex:1; min-width:0;
-        font-size:clamp(.72rem,2.3vw,.8rem);
-        color:#6b7280;
-        font-style:italic; font-weight:600;
+        flex:1; min-width:120px;
+        font-size:clamp(.72rem,2.2vw,.8rem);
+        color:#6b7280; font-style:italic; font-weight:600;
         margin:0; line-height:1.45;
-        padding-left:.7rem;
-        border-left:2px solid var(--ce);
+        padding-left:.75rem;
+        border-left:2px solid rgba(var(--ca-rgb),.35);
     }
 
     /* ── Error ── */
     .oraculo-error {
         font-size:.8rem; color:#9ca3af;
-        padding:.75rem 1rem;
+        padding:.8rem 1rem;
         border:1px dashed rgba(0,0,0,.1);
         border-radius:1rem; text-align:center;
     }
@@ -278,45 +270,23 @@
 <script>
 (async () => {
 
-    const TEMAS: Record<number, {
-        badge:string; ca:string; cb:string;
-        cc:string; cd:string; ce:string; ctext:string;
-    }> = {
-        0: { badge:'Super Premio',
-             ca:'#c2410c', cb:'#fdba74',
-             cc:'rgba(194,65,12,.08)', cd:'rgba(194,65,12,.16)',
-             ce:'rgba(194,65,12,.4)', ctext:'#9a3412' },
-        1: { badge:'Jugá 3',
-             ca:'#1d4ed8', cb:'#93c5fd',
-             cc:'rgba(29,78,216,.08)', cd:'rgba(29,78,216,.16)',
-             ce:'rgba(29,78,216,.4)', ctext:'#1e40af' },
-        2: { badge:'Pega 3',
-             ca:'#0891b2', cb:'#67e8f9',
-             cc:'rgba(8,145,178,.08)', cd:'rgba(8,145,178,.16)',
-             ce:'rgba(8,145,178,.4)', ctext:'#0e7490' },
-        3: { badge:'Premia 2',
-             ca:'#7c3aed', cb:'#c4b5fd',
-             cc:'rgba(124,58,237,.08)', cd:'rgba(124,58,237,.16)',
-             ce:'rgba(124,58,237,.4)', ctext:'#6d28d9' },
-        4: { badge:'La Diaria',
-             ca:'#16a34a', cb:'#86efac',
-             cc:'rgba(22,163,74,.08)', cd:'rgba(22,163,74,.16)',
-             ce:'rgba(22,163,74,.4)', ctext:'#15803d' },
-        5: { badge:'Jugá 3',
-             ca:'#1d4ed8', cb:'#93c5fd',
-             cc:'rgba(29,78,216,.08)', cd:'rgba(29,78,216,.16)',
-             ce:'rgba(29,78,216,.4)', ctext:'#1e40af' },
-        6: { badge:'Super Premio',
-             ca:'#c2410c', cb:'#fdba74',
-             cc:'rgba(194,65,12,.08)', cd:'rgba(194,65,12,.16)',
-             ce:'rgba(194,65,12,.4)', ctext:'#9a3412' },
+    /* Paletas por día — solo necesitamos --ca (color base), --cb (claro), --ca-rgb */
+    const TEMAS: Record<number, { badge:string; ca:string; cb:string; rgb:string; }> = {
+        0: { badge:'Super Premio', ca:'#c2410c', cb:'#fed7aa', rgb:'194,65,12'  },
+        1: { badge:'Jugá 3',       ca:'#1d4ed8', cb:'#bfdbfe', rgb:'29,78,216'  },
+        2: { badge:'Pega 3',       ca:'#0891b2', cb:'#a5f3fc', rgb:'8,145,178'  },
+        3: { badge:'Premia 2',     ca:'#7c3aed', cb:'#ddd6fe', rgb:'124,58,237' },
+        4: { badge:'La Diaria',    ca:'#16a34a', cb:'#bbf7d0', rgb:'22,163,74'  },
+        5: { badge:'Jugá 3',       ca:'#1d4ed8', cb:'#bfdbfe', rgb:'29,78,216'  },
+        6: { badge:'Super Premio', ca:'#c2410c', cb:'#fed7aa', rgb:'194,65,12'  },
     };
 
     function aplicarTema(dia: number) {
         const t = TEMAS[dia] ?? TEMAS[4];
         const root = document.getElementById('oraculo-root') as HTMLElement;
-        (['ca','cb','cc','cd','ce','ctext'] as const)
-            .forEach(k => root.style.setProperty(`--${k}`, t[k]));
+        root.style.setProperty('--ca',     t.ca);
+        root.style.setProperty('--cb',     t.cb);
+        root.style.setProperty('--ca-rgb', t.rgb);
         const badge = document.getElementById('oraculo-badge');
         if (badge) badge.textContent = t.badge;
     }
@@ -374,4 +344,3 @@
     }
 })();
 </script>
-
