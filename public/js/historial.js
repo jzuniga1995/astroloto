@@ -1,261 +1,667 @@
 // ============================================
-// HISTORIAL — historial.js
+// HISTORIAL — tabla (desktop) + cards (mobile) + paginación + exportar CSV
 // ============================================
 
 const HISTORIAL_URL = '/api/historial';
 
-// ============================================
-// UTILIDADES
-// ============================================
+const JUEGOS_CONFIG = {
+    todos:        { label: 'Todos'        },
+    juga3:        { label: 'Jugá 3'       },
+    pega3:        { label: 'Pega 3'       },
+    premia2:      { label: 'Premia 2'     },
+    la_diaria:    { label: 'La Diaria'    },
+    super_premio: { label: 'Súper Premio' },
+};
 
-function formatearFechaLegible(fechaKey) {
-    // fechaKey viene como '2026-03-05'
-    const [year, mes, dia] = fechaKey.split('-').map(Number);
-    const fecha = new Date(year, mes - 1, dia);
-    const dias  = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    return `${dias[fecha.getDay()]} ${dia} de ${meses[mes - 1]} de ${year}`;
+const TANDA_LABELS = {
+    '11am': 'Mañana',
+    '3pm':  'Tarde',
+    '9pm':  'Noche',
+};
+
+const ROWS_PER_PAGE = 20;
+
+let historialData = {};
+let filtroJuego   = 'todos';
+let filtroTanda   = 'todas';
+let paginaActual  = 1;
+
+// ── SVG Icons ─────────────────────────────────────────────────────────────────
+
+const ICONS = {
+    sun:       `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+    sunrise:   `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m16 6-4-4-4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>`,
+    moon:      `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`,
+    download:  `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+    chevLeft:  `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
+    chevRight: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
+    calendar:  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+    filter:    `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
+    hash:      `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
+    alert:     `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+};
+
+const TANDA_ICONS = { '11am': ICONS.sunrise, '3pm': ICONS.sun, '9pm': ICONS.moon };
+
+// ── Utilidades ────────────────────────────────────────────────────────────────
+
+function formatearFecha(fechaKey) {
+    const [y, m, d] = fechaKey.split('-').map(Number);
+    const fecha = new Date(y, m - 1, d);
+    const dias  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    return `${dias[fecha.getDay()]} ${String(d).padStart(2,'0')} ${meses[m-1]} ${y}`;
 }
 
 function esHoy(fechaKey) {
-    const hoy = new Date();
-    const fechaHoy = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
-    return fechaKey === fechaHoy;
+    const h = new Date();
+    return fechaKey === `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`;
 }
 
-// ============================================
-// CREAR CARD DE JUEGO (reutiliza estilos de bola)
-// ============================================
-
-function crearCardHistorial(key, datos) {
-    const card = document.createElement('div');
-    card.className = 'game-card';
-
-    const nombreBase = datos.nombre_juego
-        .replace(/\s*(11:00 AM|3:00 PM|9:00 PM)/gi, '')
-        .trim();
-
-    const logoHTML = datos.logo_url
-        ? `<img src="${datos.logo_url}" alt="${nombreBase}" class="game-logo" width="56" height="56" loading="lazy">`
-        : '';
-
-    let bolasHTML = '';
-
-    if (key.includes('juga3')) {
-        const digitos = datos.numeros_individuales.length ? datos.numeros_individuales : list(datos.numero_ganador);
-        bolasHTML = `
-            <div class="numeros-titulo">NÚMEROS GANADORES</div>
-            <div class="numeros-individuales">
-                ${digitos.map((n, i) => `<div class="bola" style="animation-delay:${i * 0.1}s">${n}</div>`).join('')}
-            </div>`;
-    } else {
-        const numeros = datos.numeros_adicionales || [];
-        const titulo  = key.includes('diaria') ? 'NÚMERO · SIGNO · MULTIPLICADOR' : 'NÚMEROS GANADORES';
-        bolasHTML = `
-            <div class="numeros-titulo">${titulo}</div>
-            <div class="numeros-grid">
-                ${numeros.map((n, i) => {
-                    const esTexto = isNaN(n);
-                    return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${n}</div>`;
-                }).join('')}
-            </div>`;
-    }
-
-    card.innerHTML = `
-        <div class="game-header">
-            <div class="game-title-row">
-                <div class="game-name">${nombreBase}</div>
-                ${logoHTML}
-            </div>
-            ${datos.hora_sorteo ? `<div class="game-meta"><div class="game-time"><i data-lucide="clock" class="w-4 h-4 inline-block mr-1"></i>${datos.hora_sorteo}</div></div>` : ''}
-        </div>
-        <div class="numeros-container">${bolasHTML}</div>
-    `;
-
-    return card;
+function detectarTanda(key) {
+    if (key.includes('11am') || key.includes('10am') || key.includes('manana') || key.includes('mañana')) return '11am';
+    if (key.includes('3pm')  || key.includes('2pm')  || key.includes('tarde'))  return '3pm';
+    if (key.includes('9pm')  || key.includes('noche'))                           return '9pm';
+    return null;
 }
 
-// ============================================
-// ORDENAR JUEGOS DENTRO DE UN DÍA
-// ============================================
-
-function ordenarJuegosDelDia(sorteos) {
-    const ordenTipo  = ['juga3', 'pega3', 'premia2', 'diaria', 'super'];
-    const ordenHora  = { '11:00 AM': 1, '3:00 PM': 2, '9:00 PM': 3 };
-
-    return Object.entries(sorteos).sort((a, b) => {
-        const [keyA, dA] = a;
-        const [keyB, dB] = b;
-        const horaA = ordenHora[dA.hora_sorteo] || 4;
-        const horaB = ordenHora[dB.hora_sorteo] || 4;
-        if (horaA !== horaB) return horaA - horaB;
-        const tipoA = ordenTipo.findIndex(t => keyA.includes(t));
-        const tipoB = ordenTipo.findIndex(t => keyB.includes(t));
-        return tipoA - tipoB;
-    });
+function detectarJuego(key) {
+    if (key.includes('juga3')   || key.includes('juga_3'))   return 'juga3';
+    if (key.includes('pega3')   || key.includes('pega_3'))   return 'pega3';
+    if (key.includes('premia2') || key.includes('premia_2')) return 'premia2';
+    if (key.includes('diaria'))                               return 'la_diaria';
+    if (key.includes('super'))                                return 'super_premio';
+    return null;
 }
 
-// ============================================
-// AGRUPAR POR TANDA DENTRO DE UN DÍA
-// ============================================
-
-function agruparPorTanda(sorteos) {
-    const tandas = { '11:00 AM': [], '3:00 PM': [], '9:00 PM': [], 'super': [] };
-
-    sorteos.forEach(([key, datos]) => {
-        if (key.includes('super')) {
-            tandas['super'].push([key, datos]);
-        } else {
-            const hora = datos.hora_sorteo;
-            if (tandas[hora]) tandas[hora].push([key, datos]);
-        }
-    });
-    return tandas;
+function formatearNums(datos) {
+    if (!datos) return '—';
+    const nums = datos.numeros_adicionales?.length
+        ? datos.numeros_adicionales
+        : datos.numeros_individuales;
+    if (nums?.length) return nums.join(' · ');
+    return datos.numero_ganador ?? '—';
 }
 
-// ============================================
-// RENDER DE UN DÍA (acordeón item)
-// ============================================
+// ── Procesar datos → filas ─────────────────────────────────────────────────────
 
-function crearItemAcordeon(fechaKey, sorteos, abierto = false) {
-    const item = document.createElement('div');
-    item.className = 'historial-item';
+function getFilas() {
+    const fechas = Object.keys(historialData).sort((a, b) => b.localeCompare(a));
+    const filas  = [];
 
-    const totalSorteos = Object.keys(sorteos).length;
-    const etiquetaHoy  = esHoy(fechaKey) ? ' <span class="badge-hoy">HOY</span>' : '';
+    fechas.forEach(fechaKey => {
+        const grid = { '11am': {}, '3pm': {}, '9pm': {} };
 
-    const header = document.createElement('div');
-    header.className = `historial-header ${abierto ? 'abierto' : ''}`;
-    header.innerHTML = `
-        <div class="historial-fecha-info">
-            <i data-lucide="calendar" class="w-5 h-5"></i>
-            <span class="historial-fecha-texto">${formatearFechaLegible(fechaKey)}${etiquetaHoy}</span>
-            <span class="historial-badge">${totalSorteos} sorteos</span>
-        </div>
-        <i data-lucide="chevron-down" class="w-5 h-5 historial-chevron"></i>
-    `;
-
-    const contenido = document.createElement('div');
-    contenido.className = `historial-contenido ${abierto ? 'abierto' : ''}`;
-
-    const sorteosOrdenados = ordenarJuegosDelDia(sorteos);
-    const tandas = agruparPorTanda(sorteosOrdenados);
-
-    const nombresTanda = { '11:00 AM': 'MAÑANA', '3:00 PM': 'TARDE', '9:00 PM': 'NOCHE', 'super': 'SÚPER PREMIO' };
-    const iconosTanda  = { '11:00 AM': 'sunrise', '3:00 PM': 'sun', '9:00 PM': 'moon', 'super': 'trophy' };
-
-    ['11:00 AM', '3:00 PM', '9:00 PM', 'super'].forEach(tanda => {
-        const juegos = tandas[tanda];
-        if (!juegos || juegos.length === 0) return;
-
-        const seccion = document.createElement('div');
-        seccion.className = 'historial-tanda';
-
-        const tituloTanda = document.createElement('div');
-        tituloTanda.className = 'historial-tanda-titulo';
-        tituloTanda.innerHTML = `
-            <i data-lucide="${iconosTanda[tanda]}" class="w-4 h-4 inline-block mr-1"></i>
-            ${nombresTanda[tanda]}${tanda !== 'super' ? ` - ${tanda}` : ''}
-        `;
-
-        const grid = document.createElement('div');
-        grid.className = 'sorteo-grid horizontal';
-
-        juegos.forEach(([key, datos]) => {
-            grid.appendChild(crearCardHistorial(key, datos));
+        Object.entries(historialData[fechaKey]).forEach(([key, datos]) => {
+            const tanda = detectarTanda(key);
+            const juego = detectarJuego(key);
+            if (tanda && juego) grid[tanda][juego] = datos;
         });
 
-        seccion.appendChild(tituloTanda);
-        seccion.appendChild(grid);
-        contenido.appendChild(seccion);
+        const superKey = Object.keys(historialData[fechaKey]).find(k => k.includes('super'));
+        if (superKey) {
+            ['11am','3pm','9pm'].forEach(t => {
+                if (!grid[t].super_premio) grid[t].super_premio = historialData[fechaKey][superKey];
+            });
+        }
+
+        const tandasMostrar = filtroTanda === 'todas' ? ['11am','3pm','9pm'] : [filtroTanda];
+        tandasMostrar.forEach(tanda => {
+            const celdas = grid[tanda];
+            if (!Object.keys(celdas).length) return;
+            if (filtroJuego !== 'todos' && !celdas[filtroJuego]) return;
+            filas.push({ fechaKey, tanda, celdas });
+        });
     });
 
-    // Toggle acordeón
-    header.addEventListener('click', () => {
-        const estaAbierto = header.classList.toggle('abierto');
-        contenido.classList.toggle('abierto', estaAbierto);
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    });
-
-    item.appendChild(header);
-    item.appendChild(contenido);
-    return item;
+    return filas;
 }
 
-// ============================================
-// CARGAR HISTORIAL
-// ============================================
+function getColumnas() {
+    return filtroJuego === 'todos'
+        ? ['juga3','pega3','premia2','la_diaria','super_premio']
+        : [filtroJuego];
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+
+function renderTabla() {
+    const thead   = document.getElementById('h-thead');
+    const tbody   = document.getElementById('h-tbody');
+    const contEl  = document.getElementById('h-contador');
+    const paginEl = document.getElementById('h-paginacion');
+    if (!tbody) return;
+
+    const columnas    = getColumnas();
+    const todasFilas  = getFilas();
+    const total       = todasFilas.length;
+    const totalPags   = Math.max(1, Math.ceil(total / ROWS_PER_PAGE));
+
+    if (paginaActual > totalPags) paginaActual = 1;
+
+    const inicio = (paginaActual - 1) * ROWS_PER_PAGE;
+    const filas  = todasFilas.slice(inicio, inicio + ROWS_PER_PAGE);
+
+    // ── Encabezado ──
+    thead.innerHTML = `<tr>
+        <th><span class="th-ic">${ICONS.calendar}</span>Fecha</th>
+        <th><span class="th-ic">${ICONS.filter}</span>Tanda</th>
+        ${columnas.map(c => `<th><span class="th-ic">${ICONS.hash}</span>${JUEGOS_CONFIG[c].label}</th>`).join('')}
+    </tr>`;
+
+    if (!filas.length) {
+        tbody.innerHTML = `<tr><td colspan="${columnas.length + 2}" class="h-empty">Sin datos para este filtro.</td></tr>`;
+        if (contEl)  contEl.innerHTML  = '';
+        if (paginEl) paginEl.innerHTML = '';
+        return;
+    }
+
+    // ── Filas — data-label para el CSS cards en mobile ──
+    tbody.innerHTML = filas.map(({ fechaKey, tanda, celdas }) => `
+        <tr class="${esHoy(fechaKey) ? 'fila-hoy' : ''}">
+            <td class="td-fecha" data-label="Fecha">
+                ${formatearFecha(fechaKey)}
+                ${esHoy(fechaKey) ? '<span class="badge-hoy">HOY</span>' : ''}
+            </td>
+            <td class="td-tanda" data-label="Tanda">
+                <span class="tanda-chip tanda-${tanda}">
+                    ${TANDA_ICONS[tanda] || ''}
+                    ${TANDA_LABELS[tanda] || tanda}
+                </span>
+            </td>
+            ${columnas.map(c => `
+                <td class="td-num" data-label="${JUEGOS_CONFIG[c].label}">
+                    ${formatearNums(celdas[c])}
+                </td>`).join('')}
+        </tr>`).join('');
+
+    // ── Contador ──
+    if (contEl) {
+        contEl.innerHTML = `${ICONS.hash}&nbsp;<strong>${total}</strong>&nbsp;registros`;
+    }
+
+    // ── Paginación ──
+    if (!paginEl) return;
+    if (totalPags <= 1) { paginEl.innerHTML = ''; return; }
+
+    let pStart = Math.max(1, paginaActual - 2);
+    let pEnd   = Math.min(totalPags, pStart + 4);
+    if (pEnd - pStart < 4) pStart = Math.max(1, pEnd - 4);
+
+    const btnCls = p => `h-pag-btn${p === paginaActual ? ' active' : ''}`;
+
+    paginEl.innerHTML = `
+        <button class="h-pag-nav${paginaActual === 1 ? ' disabled' : ''}"
+            data-p="${paginaActual - 1}" ${paginaActual === 1 ? 'disabled' : ''} aria-label="Anterior">
+            ${ICONS.chevLeft}
+        </button>
+        <span class="h-pag-pages">
+            ${pStart > 1 ? `<button class="${btnCls(1)}" data-p="1">1</button>${pStart > 2 ? '<span class="h-ellipsis">…</span>' : ''}` : ''}
+            ${Array.from({ length: pEnd - pStart + 1 }, (_, i) => pStart + i)
+                .map(p => `<button class="${btnCls(p)}" data-p="${p}">${p}</button>`)
+                .join('')}
+            ${pEnd < totalPags ? `${pEnd < totalPags - 1 ? '<span class="h-ellipsis">…</span>' : ''}<button class="${btnCls(totalPags)}" data-p="${totalPags}">${totalPags}</button>` : ''}
+        </span>
+        <button class="h-pag-nav${paginaActual === totalPags ? ' disabled' : ''}"
+            data-p="${paginaActual + 1}" ${paginaActual === totalPags ? 'disabled' : ''} aria-label="Siguiente">
+            ${ICONS.chevRight}
+        </button>
+        <span class="h-pag-info">Pág. <strong>${paginaActual}</strong> / ${totalPags}</span>
+    `;
+
+    paginEl.querySelectorAll('[data-p]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const p = parseInt(btn.dataset.p);
+            if (p >= 1 && p <= totalPags && p !== paginaActual) {
+                paginaActual = p;
+                renderTabla();
+                document.getElementById('h-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+}
+
+// ── Exportar CSV ──────────────────────────────────────────────────────────────
+
+function exportar() {
+    const columnas   = getColumnas();
+    const todasFilas = getFilas();
+    if (!todasFilas.length) return;
+
+    const headers = ['Fecha', 'Tanda', ...columnas.map(c => JUEGOS_CONFIG[c].label)];
+    const rows = todasFilas.map(({ fechaKey, tanda, celdas }) => [
+        fechaKey,
+        TANDA_LABELS[tanda] || tanda,
+        ...columnas.map(c => formatearNums(celdas[c]))
+    ]);
+
+    const csv  = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = Object.assign(document.createElement('a'), {
+        href: url,
+        download: `historial-loto-hn-${JUEGOS_CONFIG[filtroJuego].label.toLowerCase().replace(/\s+/g, '-')}.csv`
+    });
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ── Render interfaz ───────────────────────────────────────────────────────────
+
+function renderInterfaz() {
+    const wrap    = document.getElementById('historial-contenido');
+    const loading = document.getElementById('loading');
+    if (!wrap) return;
+    if (loading) loading.style.display = 'none';
+
+    wrap.innerHTML = `
+    <style>
+        /* ── Variables ── */
+        .h-root {
+            --c-brand:   #5b21b6;
+            --c-brand2:  #7c3aed;
+            --c-brand3:  #9333ea;
+            --c-border:  #ede9fe;
+            --c-hover:   #faf5ff;
+            --c-text:    #1e1b4b;
+            --c-muted:   #9ca3af;
+            --c-row:     #374151;
+            --radius:    .875rem;
+            --shadow:    0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(92,33,182,.07);
+            font-family: 'DM Sans', system-ui, sans-serif;
+            color: var(--c-text);
+        }
+
+        /* ── Controles: mobile-first (columna) → desktop (fila) ── */
+        .h-controles {
+            background: #fff;
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .875rem 1rem;
+            margin-bottom: .875rem;
+            display: flex;
+            flex-direction: column;
+            gap: .625rem;
+        }
+        @media (min-width: 640px) {
+            .h-controles {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding: .875rem 1.25rem;
+                gap: .75rem;
+            }
+        }
+
+        /* ── Tabs: scroll horizontal sin scrollbar visible ── */
+        .h-tabs-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+        .h-tabs-wrap::-webkit-scrollbar { display: none; }
+        .h-tabs {
+            display: flex;
+            gap: .3rem;
+            min-width: max-content;
+        }
+        .h-tab {
+            padding: .3rem .8rem;
+            border-radius: 9999px;
+            font-size: .76rem;
+            font-weight: 700;
+            letter-spacing: .01em;
+            border: 1.5px solid var(--c-border);
+            background: #fff;
+            color: var(--c-brand2);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .13s, color .13s, border-color .13s, box-shadow .13s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .h-tab:hover { background: #f5f3ff; border-color: #c4b5fd; }
+        .h-tab.on    { background: var(--c-brand2); color: #fff; border-color: var(--c-brand2); box-shadow: 0 2px 8px rgba(124,58,237,.28); }
+
+        /* ── Fila de acciones ── */
+        .h-acciones {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            flex-wrap: wrap;
+        }
+        @media (min-width: 640px) {
+            .h-acciones { flex-wrap: nowrap; }
+        }
+
+        /* Select con flecha custom */
+        .h-select {
+            flex: 1 1 auto;
+            min-width: 120px;
+            padding: .38rem 1.8rem .38rem .65rem;
+            border: 1.5px solid var(--c-border);
+            border-radius: .5rem;
+            font-size: .76rem;
+            color: #374151;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right .6rem center;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: border-color .13s;
+        }
+        .h-select:focus { outline: none; border-color: var(--c-brand2); }
+        @media (min-width: 640px) {
+            .h-select { flex: none; min-width: 140px; }
+        }
+
+        /* Botón exportar */
+        .h-btn-csv {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: .38rem .9rem;
+            background: #059669;
+            color: #fff;
+            border: none;
+            border-radius: .5rem;
+            font-size: .76rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .13s, box-shadow .13s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .h-btn-csv:hover  { background: #047857; box-shadow: 0 2px 8px rgba(5,150,105,.28); }
+        .h-btn-csv:active { background: #065f46; }
+
+        /* Contador */
+        .h-contador {
+            display: inline-flex;
+            align-items: center;
+            gap: .25rem;
+            font-size: .71rem;
+            color: var(--c-muted);
+            font-weight: 500;
+            margin-left: auto;
+        }
+        .h-contador strong { color: var(--c-brand2); }
+
+        /* ── Wrap tabla ── */
+        #h-wrap {
+            background: #fff;
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        /* ══════════════════════════════════
+           TABLA — visible solo en ≥ 640px
+        ══════════════════════════════════ */
+        .h-tabla { width: 100%; border-collapse: collapse; font-size: .83rem; }
+
+        .h-tabla thead tr {
+            background: linear-gradient(135deg, var(--c-brand) 0%, var(--c-brand3) 100%);
+        }
+        .h-tabla th {
+            color: #fff;
+            padding: .65rem 1rem;
+            text-align: left;
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .th-ic { display: inline-flex; align-items: center; margin-right: .28rem; opacity: .7; vertical-align: middle; }
+
+        .h-tabla td {
+            padding: .55rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            white-space: nowrap;
+            color: var(--c-row);
+            vertical-align: middle;
+        }
+        .h-tabla tr:last-child td  { border-bottom: none; }
+        .h-tabla tbody tr          { transition: background .1s; }
+        .h-tabla tbody tr:hover td { background: var(--c-hover); }
+        .fila-hoy td               { background: #fdf4ff !important; }
+        .fila-hoy:hover td         { background: #f3e8ff !important; }
+
+        .td-fecha { font-weight: 600; color: var(--c-text); font-size: .82rem; }
+        .td-num {
+            font-weight: 700;
+            color: var(--c-brand2);
+            font-family: 'JetBrains Mono', 'Fira Mono', ui-monospace, monospace;
+            font-size: .86rem;
+            letter-spacing: .03em;
+        }
+
+        /* Chip tanda */
+        .tanda-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .28rem;
+            padding: .2rem .55rem;
+            border-radius: .375rem;
+            font-size: .71rem;
+            font-weight: 700;
+            letter-spacing: .02em;
+            flex-shrink: 0;
+        }
+        .tanda-chip svg { flex-shrink: 0; }
+        .tanda-11am { background: #fefce8; color: #854d0e; border: 1px solid #fef08a; }
+        .tanda-3pm  { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
+        .tanda-9pm  { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+        .badge-hoy {
+            background: var(--c-brand2);
+            color: #fff;
+            font-size: .58rem;
+            font-weight: 800;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            padding: .1rem .38rem;
+            border-radius: 9999px;
+            margin-left: .4rem;
+            vertical-align: middle;
+        }
+        .h-empty { text-align: center; padding: 2.5rem; color: var(--c-muted); font-size: .85rem; }
+
+        /* ══════════════════════════════════
+           CARDS — mobile (< 640px)
+           Técnica: table → display:block
+           + data-label en cada <td>
+        ══════════════════════════════════ */
+        @media (max-width: 639px) {
+            /* Ocultar thead */
+            .h-tabla thead { display: none; }
+
+            /* Tabla y descendientes → bloques */
+            .h-tabla,
+            .h-tabla tbody,
+            .h-tabla tr,
+            .h-tabla td { display: block; width: 100%; box-sizing: border-box; }
+
+            /* Cada fila → card con borde inferior */
+            .h-tabla tbody tr {
+                border-bottom: 1px solid var(--c-border);
+                padding: .625rem .875rem .5rem;
+            }
+            .h-tabla tbody tr:last-child  { border-bottom: none; }
+            /* Deshabilitar hover en mobile */
+            .h-tabla tbody tr:hover td    { background: transparent; }
+            .fila-hoy                     { background: #fdf4ff !important; }
+
+            /* Celda → fila label : valor */
+            .h-tabla td {
+                padding: .22rem 0;
+                border-bottom: none;
+                white-space: normal;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: .5rem;
+                font-size: .82rem;
+            }
+
+            /* Label desde data-label */
+            .h-tabla td::before {
+                content: attr(data-label);
+                font-size: .67rem;
+                font-weight: 700;
+                color: var(--c-muted);
+                text-transform: uppercase;
+                letter-spacing: .05em;
+                flex-shrink: 0;
+                min-width: 65px;
+            }
+
+            /* Fecha: ocupa fila completa arriba, sin label */
+            .td-fecha {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: .18rem;
+                padding-bottom: .35rem;
+                border-bottom: 1px solid #f3f4f6;
+                margin-bottom: .1rem;
+                font-size: .86rem;
+                font-weight: 700;
+            }
+            .td-fecha::before { display: none; }
+
+            /* Tanda: ya tiene chip, sin label */
+            .td-tanda::before   { display: none; }
+            .td-tanda           { justify-content: flex-start; padding: .15rem 0 .3rem; }
+
+            /* Paginación mobile: solo mostrar página activa en el grupo */
+            .h-pag-pages .h-pag-btn:not(.active) { display: none; }
+        }
+
+        /* ══════════════════════════════════
+           PAGINACIÓN
+        ══════════════════════════════════ */
+        .h-paginacion {
+            display: flex;
+            align-items: center;
+            gap: .3rem;
+            flex-wrap: wrap;
+            padding: .7rem 1rem;
+            border-top: 1px solid #f3f4f6;
+        }
+        .h-pag-pages { display: flex; align-items: center; gap: .3rem; }
+
+        .h-pag-btn,
+        .h-pag-nav {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2rem;
+            height: 2rem;
+            border-radius: .4rem;
+            border: 1.5px solid var(--c-border);
+            background: #fff;
+            color: var(--c-brand2);
+            font-size: .78rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0 .35rem;
+            transition: all .13s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .h-pag-btn:hover,
+        .h-pag-nav:hover    { background: #f5f3ff; border-color: #c4b5fd; }
+        .h-pag-btn.active   { background: var(--c-brand2); color: #fff; border-color: var(--c-brand2); box-shadow: 0 2px 6px rgba(124,58,237,.28); }
+        .h-pag-nav.disabled,
+        .h-pag-nav:disabled { opacity: .35; cursor: not-allowed; pointer-events: none; }
+        .h-ellipsis         { color: var(--c-muted); font-size: .8rem; padding: 0 .15rem; }
+        .h-pag-info         { font-size: .71rem; color: var(--c-muted); font-weight: 500; margin-left: auto; white-space: nowrap; }
+        .h-pag-info strong  { color: var(--c-brand2); }
+    </style>
+
+    <div class="h-root">
+        <div class="h-controles">
+            <div class="h-tabs-wrap">
+                <div class="h-tabs" id="h-tabs">
+                    ${Object.entries(JUEGOS_CONFIG).map(([k, v]) =>
+                        `<button class="h-tab${filtroJuego === k ? ' on' : ''}" data-j="${k}">${v.label}</button>`
+                    ).join('')}
+                </div>
+            </div>
+            <div class="h-acciones">
+                <select class="h-select" id="h-tanda" aria-label="Filtrar por tanda">
+                    <option value="todas">Todas las tandas</option>
+                    <option value="11am">Mañana</option>
+                    <option value="3pm">Tarde</option>
+                    <option value="9pm">Noche</option>
+                </select>
+                <button class="h-btn-csv" id="h-export" aria-label="Exportar CSV">
+                    ${ICONS.download} Exportar
+                </button>
+                <span class="h-contador" id="h-contador"></span>
+            </div>
+        </div>
+
+        <div id="h-wrap">
+            <table class="h-tabla" role="grid" aria-label="Historial de resultados">
+                <thead id="h-thead"></thead>
+                <tbody id="h-tbody"></tbody>
+            </table>
+            <div class="h-paginacion" id="h-paginacion" role="navigation" aria-label="Paginación"></div>
+        </div>
+    </div>`;
+
+    document.getElementById('h-tabs').addEventListener('click', e => {
+        const btn = e.target.closest('.h-tab');
+        if (!btn) return;
+        filtroJuego  = btn.dataset.j;
+        paginaActual = 1;
+        document.querySelectorAll('.h-tab').forEach(b => b.classList.toggle('on', b === btn));
+        renderTabla();
+    });
+
+    document.getElementById('h-tanda').addEventListener('change', e => {
+        filtroTanda  = e.target.value;
+        paginaActual = 1;
+        renderTabla();
+    });
+
+    document.getElementById('h-export').addEventListener('click', exportar);
+
+    renderTabla();
+}
+
+// ── Fetch ──────────────────────────────────────────────────────────────────────
 
 async function cargarHistorial() {
-    const contenedor = document.getElementById('historial-contenido');
-    if (!contenedor) return;
-
-    contenedor.innerHTML = `
-        <div class="sorteo-section">
-            <div class="sorteo-grid">
-                ${[1,2,3].map(() => `
-                    <div class="game-card skeleton">
-                        <div class="skeleton-line" style="width:60%;height:24px;"></div>
-                        <div class="skeleton-line" style="width:40%;height:16px;margin-top:8px;"></div>
-                        <div style="display:flex;gap:8px;margin-top:20px;">
-                            <div class="skeleton-circle"></div>
-                            <div class="skeleton-circle"></div>
-                            <div class="skeleton-circle"></div>
-                        </div>
-                    </div>`).join('')}
-            </div>
-        </div>`;
+    const wrap    = document.getElementById('historial-contenido');
+    const loading = document.getElementById('loading');
+    if (!wrap) return;
 
     try {
         const resp = await fetch(`${HISTORIAL_URL}?t=${Date.now()}`, {
             cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache' }
+            headers: { 'Cache-Control': 'no-cache' },
         });
-
-        if (!resp.ok) throw new Error('No se pudo cargar el historial');
-
-        const historial = await resp.json();
-        contenedor.innerHTML = '';
-
-        // Ordenar fechas de más reciente a más antigua
-        const fechas = Object.keys(historial).sort((a, b) => b.localeCompare(a));
-
-        if (fechas.length === 0) {
-            contenedor.innerHTML = `<div class="error-message">No hay historial disponible aún.</div>`;
-            return;
-        }
-
-        fechas.forEach((fechaKey, index) => {
-            const sorteos = historial[fechaKey];
-            if (Object.keys(sorteos).length === 0) return;
-            // El primero (más reciente) abierto por defecto
-            const item = crearItemAcordeon(fechaKey, sorteos, index === 0);
-            contenedor.appendChild(item);
-        });
-
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-
-    } catch (error) {
-        console.error('Error:', error);
-        contenedor.innerHTML = `
-            <div class="error-message">
-                <i data-lucide="alert-triangle" class="w-6 h-6 inline-block mr-2"></i>
-                Error al cargar el historial<br><small>${error.message}</small>
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        historialData = await resp.json();
+        renderInterfaz();
+    } catch (err) {
+        if (loading) loading.style.display = 'none';
+        wrap.innerHTML = `
+            <div style="text-align:center;padding:2.5rem;color:#dc2626;font-size:.88rem;line-height:1.7">
+                <span style="display:block;margin-bottom:.75rem;opacity:.7">${ICONS.alert}</span>
+                Error al cargar el historial.<br>
+                <small style="color:#9ca3af">${err.message}</small>
             </div>`;
-        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 }
 
-// ============================================
-// INIT
-// ============================================
+// ── Init ───────────────────────────────────────────────────────────────────────
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.getElementById('historial-contenido')) cargarHistorial();
-    });
+    document.addEventListener('DOMContentLoaded', cargarHistorial);
 } else {
-    if (document.getElementById('historial-contenido')) cargarHistorial();
+    cargarHistorial();
 }
 

@@ -163,89 +163,89 @@ import { History, Calendar } from 'lucide-astro';
     </script>
 
     <style>
-        .historial-item {
+        /* ── Página historial: estilos propios del .astro ── */
+
+        /* Header responsive */
+        .hist-header {
             background: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-            margin-bottom: 0.75rem;
-            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(92,33,182,.07);
+            padding: 1.25rem 1rem;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+        @media (min-width: 640px) {
+            .hist-header { padding: 2rem 2.5rem; margin-bottom: 1.5rem; }
         }
 
-        .historial-header {
+        .hist-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #5b21b6, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.25rem;
-            cursor: pointer;
-            user-select: none;
-            transition: background 0.2s;
+            justify-content: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+            line-height: 1.2;
+            margin-bottom: .75rem;
+        }
+        @media (min-width: 640px) {
+            .hist-title { font-size: 2rem; }
+        }
+        @media (min-width: 768px) {
+            .hist-title { font-size: 2.25rem; }
         }
 
-        .historial-header:hover { background: #F5F3FF; }
+        .hist-title svg {
+            flex-shrink: 0;
+            /* En mobile el ícono puede ser un poco más chico */
+            width: 1.75rem;
+            height: 1.75rem;
+        }
+        @media (min-width: 640px) {
+            .hist-title svg { width: 2.25rem; height: 2.25rem; }
+        }
 
-        .historial-fecha-info {
+        .hist-subtitle {
+            color: #6b7280;
+            font-size: .82rem;
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            justify-content: center;
+            gap: .4rem;
             flex-wrap: wrap;
         }
-
-        .historial-fecha-texto {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #1F2937;
+        @media (min-width: 640px) {
+            .hist-subtitle { font-size: .95rem; }
         }
+        .hist-subtitle svg { flex-shrink: 0; color: #7c3aed; }
 
-        .historial-badge {
-            background: #EDE9FE;
-            color: #7C3AED;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-        }
-
-        .badge-hoy {
-            background: #7C3AED;
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 0.15rem 0.5rem;
-            border-radius: 999px;
-            vertical-align: middle;
-        }
-
-        .historial-chevron {
-            color: #7C3AED;
-            transition: transform 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .historial-header.abierto .historial-chevron { transform: rotate(180deg); }
-
-        .historial-contenido {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
-        }
-
-        .historial-contenido.abierto { max-height: 9999px; }
-
-        .historial-tanda {
-            padding: 0.75rem 1.25rem 1rem;
-            border-top: 1px solid #F3F4F6;
-        }
-
-        .historial-tanda-titulo {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #6B7280;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
+        /* Loading responsive */
+        .hist-loading {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.3rem;
+            justify-content: center;
+            padding: 3rem 1rem;
         }
+        .hist-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid #ede9fe;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: hist-spin .7s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @media (min-width: 640px) {
+            .hist-spinner { width: 3.75rem; height: 3.75rem; }
+        }
+        @keyframes hist-spin { to { transform: rotate(360deg); } }
+        .hist-loading-text { color: #6b7280; font-size: .9rem; }
     </style>
 </Fragment>
 
@@ -265,26 +265,10 @@ import { History, Calendar } from 'lucide-astro';
     </ul>
 
     <h3>Historial Loto Honduras desde Costa Rica</h3>
-    <p>Consulta el historial completo de resultados de Loto Honduras desde Costa Rica completamente gratis. Hondureños y costarricenses en San José, Alajuela, Heredia, Cartago y Liberia consultan el archivo de sorteos en LotoHN. historial loto honduras costa rica, resultados anteriores loto honduras costa rica, archivo sorteos honduras costa rica, loto hn historial costa rica, consultar historial loto desde san jose, resultados pasados honduras costa rica, hondureños costa rica historial loto.</p>
-    <ul>
-        <li>Historial Jugá 3 Honduras desde San José Costa Rica</li>
-        <li>Resultados anteriores Pega 3 desde Alajuela, Heredia, Cartago</li>
-        <li>Archivo La Diaria Honduras disponible desde Costa Rica</li>
-        <li>Historial Súper Premio Honduras gratis desde Costa Rica</li>
-    </ul>
+    <p>Consulta el historial completo de resultados de Loto Honduras desde Costa Rica completamente gratis. Hondureños y costarricenses en San José, Alajuela, Heredia, Cartago y Liberia consultan el archivo de sorteos en LotoHN.</p>
 
     <h3>Historial Loto Honduras desde Estados Unidos</h3>
-    <p>Miles de hondureños en Estados Unidos consultan el historial de Loto Honduras en LotoHN. La diáspora hondureña en Miami, Nueva York, Houston, Los Ángeles, Atlanta y Chicago accede al archivo completo de sorteos. historial loto honduras estados unidos, resultados anteriores loto honduras usa, archivo sorteos honduras miami, historial juga 3 nueva york, loto hn historial estados unidos, diaspora hondureña historial loto, consultar historial loto honduras desde usa.</p>
-    <ul>
-        <li>Historial Jugá 3 Honduras desde Miami Florida</li>
-        <li>Resultados anteriores Pega 3 desde Nueva York</li>
-        <li>Archivo La Diaria Honduras para hondureños en Houston Texas</li>
-        <li>Historial Súper Premio Honduras desde Los Ángeles California</li>
-        <li>Diaspora hondureña archivo resultados Loto Honduras USA</li>
-    </ul>
-
-    <h3>Palabras clave historial Loto Honduras</h3>
-    <p>historial loto honduras, resultados anteriores loto, archivo sorteos honduras, resultados ayer loto hn, resultados semana loto honduras, historico juga 3, historico pega 3, historico premia 2, historico la diaria, historico super premio, consultar dias anteriores loto, loto hn archivo, numeros anteriores honduras, historial loto costa rica, historial loto estados unidos, historial loto miami, diaspora hondureña historial loto.</p>
+    <p>Miles de hondureños en Estados Unidos consultan el historial de Loto Honduras en LotoHN. La diáspora hondureña en Miami, Nueva York, Houston, Los Ángeles, Atlanta y Chicago accede al archivo completo de sorteos.</p>
 
     <h3>Ciudades donde consultan el historial</h3>
     <p>Honduras: Tegucigalpa, San Pedro Sula, La Ceiba, Choloma, El Progreso, Choluteca, Comayagua, Puerto Cortés, Danlí, Siguatepeque.</p>
@@ -292,26 +276,26 @@ import { History, Calendar } from 'lucide-astro';
     <p>Estados Unidos: Miami, Nueva York, Houston, Los Ángeles, Atlanta, Chicago, Dallas, Washington DC, Orlando, Tampa.</p>
 </div>
 
-    <!-- Header -->
-    <header class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6 text-center">
-        <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-4 flex items-center justify-center gap-3 flex-wrap">
-            <History class="w-10 h-10 text-violet-600" />
-            Historial de Resultados
-        </h1>
-        <div class="text-gray-500 text-base flex items-center justify-center gap-2">
-            <Calendar class="w-5 h-5 text-violet-600" />
-            <span>Resultados anteriores de todas las loterías de Honduras</span>
-        </div>
-    </header>
+<!-- Header -->
+<header class="hist-header">
+    <h1 class="hist-title">
+        <History class="text-violet-600" />
+        Historial de Resultados
+    </h1>
+    <p class="hist-subtitle">
+        <Calendar />
+        <span>Resultados anteriores de todas las loterías de Honduras</span>
+    </p>
+</header>
 
-    <!-- Loading -->
-    <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
-        <div class="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>
-        <p class="text-gray-600 text-lg">Cargando historial...</p>
-    </div>
+<!-- Loading -->
+<div id="loading" class="hist-loading" role="status" aria-live="polite">
+    <div class="hist-spinner" aria-hidden="true"></div>
+    <p class="hist-loading-text">Cargando historial...</p>
+</div>
 
-    <!-- Contenido generado por historial.js -->
-    <section id="historial-contenido" aria-label="Historial de resultados"></section>
+<!-- Contenido generado por historial.js -->
+<section id="historial-contenido" aria-label="Historial de resultados"></section>
 
 <script is:inline src="/js/historial.js"></script>
 </Layout>
