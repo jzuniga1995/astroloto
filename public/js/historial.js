@@ -48,10 +48,11 @@ const TANDA_ICONS = { '11am': ICONS.sunrise, '3pm': ICONS.sun, '9pm': ICONS.moon
 // FIX: constructor local con mediodía — nunca desfasa por timezone
 function formatearFecha(fechaKey) {
     const [y, m, d] = fechaKey.split('-').map(Number);
+    // mediodía local — nunca desfasa por timezone
     const fecha = new Date(y, m - 1, d, 12, 0, 0);
-    return fecha.toLocaleDateString('es-HN', {
-        day: 'numeric', month: 'long', year: 'numeric'
-    });
+    const dias  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    return `${dias[fecha.getDay()]} ${String(d).padStart(2,'0')} ${meses[m-1]} ${y}`;
 }
 
 // FIX: esHoy usando hora Honduras (UTC-6)
