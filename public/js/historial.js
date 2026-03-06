@@ -1,5 +1,5 @@
 // ============================================
-// HISTORIAL — tabla (desktop) + cards (mobile) + paginación + exportar CSV
+// HISTORIAL — tabla (desktop) + cards (mobile) + paginación + exportar XLSX
 // ============================================
 
 const HISTORIAL_URL = '/api/historial';
@@ -53,15 +53,20 @@ function formatearFecha(fechaKey) {
     return `${dias[fecha.getDay()]} ${String(d).padStart(2,'0')} ${meses[m-1]} ${y}`;
 }
 
+// FIX 1: esHoy usando hora Honduras (UTC-6) para evitar desfase de zona horaria
 function esHoy(fechaKey) {
-    const h = new Date();
-    return fechaKey === `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,'0')}-${String(h.getDate()).padStart(2,'0')}`;
+    const ahora = new Date(Date.now() - 6 * 60 * 60 * 1000);
+    const y = ahora.getUTCFullYear();
+    const m = String(ahora.getUTCMonth() + 1).padStart(2, '0');
+    const d = String(ahora.getUTCDate()).padStart(2, '0');
+    return fechaKey === `${y}-${m}-${d}`;
 }
 
+// FIX 2: super_premio siempre cae en tanda noche (juega mié y sáb a las 9pm)
 function detectarTanda(key) {
     if (key.includes('11am') || key.includes('10am') || key.includes('manana') || key.includes('mañana')) return '11am';
     if (key.includes('3pm')  || key.includes('2pm')  || key.includes('tarde'))  return '3pm';
-    if (key.includes('9pm')  || key.includes('noche'))                           return '9pm';
+    if (key.includes('9pm')  || key.includes('noche') || key.includes('super')) return '9pm';
     return null;
 }
 
@@ -83,8 +88,9 @@ function formatearNums(datos) {
     return datos.numero_ganador ?? '—';
 }
 
-// ── Procesar datos → filas ─────────────────────────────────────────────────────
+// ── Procesar datos → filas ────────────────────────────────────────────────────
 
+// FIX 3: eliminado el bloque workaround de super_premio que generaba filas duplicadas
 function getFilas() {
     const fechas = Object.keys(historialData).sort((a, b) => b.localeCompare(a));
     const filas  = [];
@@ -97,13 +103,6 @@ function getFilas() {
             const juego = detectarJuego(key);
             if (tanda && juego) grid[tanda][juego] = datos;
         });
-
-        const superKey = Object.keys(historialData[fechaKey]).find(k => k.includes('super'));
-        if (superKey) {
-            ['11am','3pm','9pm'].forEach(t => {
-                if (!grid[t].super_premio) grid[t].super_premio = historialData[fechaKey][superKey];
-            });
-        }
 
         const tandasMostrar = filtroTanda === 'todas' ? ['11am','3pm','9pm'] : [filtroTanda];
         tandasMostrar.forEach(tanda => {
@@ -142,7 +141,6 @@ function renderTabla() {
     const inicio = (paginaActual - 1) * ROWS_PER_PAGE;
     const filas  = todasFilas.slice(inicio, inicio + ROWS_PER_PAGE);
 
-    // ── Encabezado ──
     thead.innerHTML = `<tr>
         <th><span class="th-ic">${ICONS.calendar}</span>Fecha</th>
         <th><span class="th-ic">${ICONS.filter}</span>Tanda</th>
@@ -156,7 +154,6 @@ function renderTabla() {
         return;
     }
 
-    // ── Filas — data-label para el CSS cards en mobile ──
     tbody.innerHTML = filas.map(({ fechaKey, tanda, celdas }) => `
         <tr class="${esHoy(fechaKey) ? 'fila-hoy' : ''}">
             <td class="td-fecha" data-label="Fecha">
@@ -175,12 +172,10 @@ function renderTabla() {
                 </td>`).join('')}
         </tr>`).join('');
 
-    // ── Contador ──
     if (contEl) {
         contEl.innerHTML = `${ICONS.hash}&nbsp;<strong>${total}</strong>&nbsp;registros`;
     }
 
-    // ── Paginación ──
     if (!paginEl) return;
     if (totalPags <= 1) { paginEl.innerHTML = ''; return; }
 
@@ -239,7 +234,6 @@ async function exportar() {
     const todasFilas = getFilas();
     if (!todasFilas.length) return;
 
-    // Feedback visual mientras carga SheetJS
     const btn = document.getElementById('h-export');
     const textoOriginal = btn.innerHTML;
     btn.innerHTML = `${ICONS.download} Generando…`;
@@ -248,35 +242,29 @@ async function exportar() {
     try {
         const XLSX = await loadXLSX();
 
-        // ── Construir datos ──
         const columnaLabels = columnas.map(c => JUEGOS_CONFIG[c].label);
         const headers = ['Fecha', 'Día', 'Tanda', ...columnaLabels];
-
-        const aoa = [headers]; // array of arrays
+        const aoa = [headers];
 
         todasFilas.forEach(({ fechaKey, tanda, celdas }) => {
             const [y, m, d] = fechaKey.split('-').map(Number);
             const fecha  = new Date(y, m - 1, d);
             const dias   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-
             aoa.push([
-                fechaKey,                          // Fecha ISO — se formateará como fecha Excel
-                dias[fecha.getDay()],              // Día de la semana
-                TANDA_LABELS[tanda] || tanda,      // Tanda (texto)
+                fechaKey,
+                dias[fecha.getDay()],
+                TANDA_LABELS[tanda] || tanda,
                 ...columnas.map(c => formatearNums(celdas[c]))
             ]);
         });
 
-        // ── Crear hoja ──
         const ws = XLSX.utils.aoa_to_sheet(aoa);
 
-        // Convertir col "Fecha" (col 0) a tipo fecha real en Excel
         for (let r = 1; r < aoa.length; r++) {
             const cellAddr = XLSX.utils.encode_cell({ r, c: 0 });
             const cell = ws[cellAddr];
             if (cell && typeof cell.v === 'string') {
                 const [cy, cm, cd] = cell.v.split('-').map(Number);
-                // UTC explícito para evitar desfase por zona horaria (Honduras = UTC-6)
                 const jsDate = new Date(Date.UTC(cy, cm - 1, cd));
                 cell.t = 'd';
                 cell.v = jsDate;
@@ -284,19 +272,15 @@ async function exportar() {
             }
         }
 
-        // ── Anchos de columna ──
         const colWidths = headers.map((h, i) => {
-            if (i === 0) return { wch: 13 };   // Fecha
-            if (i === 1) return { wch: 12 };   // Día
-            if (i === 2) return { wch: 10 };   // Tanda
+            if (i === 0) return { wch: 13 };
+            if (i === 1) return { wch: 12 };
+            if (i === 2) return { wch: 10 };
             return { wch: Math.max(h.length + 2, 14) };
         });
         ws['!cols'] = colWidths;
-
-        // Fijar fila de encabezado (freeze top row)
         ws['!freeze'] = { xSplit: 0, ySplit: 1, topLeftCell: 'A2', activeCell: 'A2', sqref: 'A2' };
 
-        // ── Crear libro y descargar ──
         const wb   = XLSX.utils.book_new();
         const nombre = `Historial ${JUEGOS_CONFIG[filtroJuego].label}`;
         XLSX.utils.book_append_sheet(wb, ws, nombre.substring(0, 31));
@@ -322,7 +306,6 @@ function renderInterfaz() {
 
     wrap.innerHTML = `
     <style>
-        /* ── Variables ── */
         .h-root {
             --c-brand:   #5b21b6;
             --c-brand2:  #7c3aed;
@@ -339,8 +322,6 @@ function renderInterfaz() {
             max-width: 100%;
             overflow-x: clip;
         }
-
-        /* ── Controles: mobile-first (columna) → desktop (fila) ── */
         .h-controles {
             background: #fff;
             border: 1px solid var(--c-border);
@@ -363,8 +344,6 @@ function renderInterfaz() {
                 gap: .75rem;
             }
         }
-
-        /* ── Tabs: scroll horizontal sin scrollbar visible ── */
         .h-tabs-wrap {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -372,11 +351,7 @@ function renderInterfaz() {
             padding-bottom: 2px;
         }
         .h-tabs-wrap::-webkit-scrollbar { display: none; }
-        .h-tabs {
-            display: flex;
-            gap: .3rem;
-            min-width: max-content;
-        }
+        .h-tabs { display: flex; gap: .3rem; min-width: max-content; }
         .h-tab {
             padding: .3rem .8rem;
             border-radius: 9999px;
@@ -393,19 +368,13 @@ function renderInterfaz() {
         }
         .h-tab:hover { background: #f5f3ff; border-color: #c4b5fd; }
         .h-tab.on    { background: var(--c-brand2); color: #fff; border-color: var(--c-brand2); box-shadow: 0 2px 8px rgba(124,58,237,.28); }
-
-        /* ── Fila de acciones ── */
         .h-acciones {
             display: flex;
             align-items: center;
             gap: .5rem;
             flex-wrap: wrap;
         }
-        @media (min-width: 640px) {
-            .h-acciones { flex-wrap: nowrap; }
-        }
-
-        /* Select con flecha custom */
+        @media (min-width: 640px) { .h-acciones { flex-wrap: nowrap; } }
         .h-select {
             flex: 1 1 auto;
             min-width: 120px;
@@ -420,11 +389,7 @@ function renderInterfaz() {
             transition: border-color .13s;
         }
         .h-select:focus { outline: none; border-color: var(--c-brand2); }
-        @media (min-width: 640px) {
-            .h-select { flex: none; min-width: 140px; }
-        }
-
-        /* Botón exportar */
+        @media (min-width: 640px) { .h-select { flex: none; min-width: 140px; } }
         .h-btn-csv {
             display: inline-flex;
             align-items: center;
@@ -443,8 +408,6 @@ function renderInterfaz() {
         }
         .h-btn-csv:hover  { background: #047857; box-shadow: 0 2px 8px rgba(5,150,105,.28); }
         .h-btn-csv:active { background: #065f46; }
-
-        /* Contador */
         .h-contador {
             display: inline-flex;
             align-items: center;
@@ -455,8 +418,6 @@ function renderInterfaz() {
             margin-left: auto;
         }
         .h-contador strong { color: var(--c-brand2); }
-
-        /* ── Wrap tabla ── */
         #h-wrap {
             background: #fff;
             border: 1px solid var(--c-border);
@@ -464,19 +425,11 @@ function renderInterfaz() {
             box-shadow: var(--shadow);
             overflow-x: hidden;
             overflow-y: visible;
-            /* Garantiza que la tabla no empuje el borde */
             max-width: 100%;
             box-sizing: border-box;
         }
-
-        /* ══════════════════════════════════
-           TABLA — visible solo en ≥ 640px
-        ══════════════════════════════════ */
         .h-tabla { width: 100%; border-collapse: collapse; font-size: .83rem; }
-
-        .h-tabla thead tr {
-            background: linear-gradient(135deg, var(--c-brand) 0%, var(--c-brand3) 100%);
-        }
+        .h-tabla thead tr { background: linear-gradient(135deg, var(--c-brand) 0%, var(--c-brand3) 100%); }
         .h-tabla th {
             color: #fff;
             padding: .65rem 1rem;
@@ -488,7 +441,6 @@ function renderInterfaz() {
             white-space: nowrap;
         }
         .th-ic { display: inline-flex; align-items: center; margin-right: .28rem; opacity: .7; vertical-align: middle; }
-
         .h-tabla td {
             padding: .55rem 1rem;
             border-bottom: 1px solid #f3f4f6;
@@ -501,7 +453,6 @@ function renderInterfaz() {
         .h-tabla tbody tr:hover td { background: var(--c-hover); }
         .fila-hoy td               { background: #fdf4ff !important; }
         .fila-hoy:hover td         { background: #f3e8ff !important; }
-
         .td-fecha { font-weight: 600; color: var(--c-text); font-size: .82rem; }
         .td-num {
             font-weight: 700;
@@ -510,8 +461,6 @@ function renderInterfaz() {
             font-size: .86rem;
             letter-spacing: .03em;
         }
-
-        /* Chip tanda */
         .tanda-chip {
             display: inline-flex;
             align-items: center;
@@ -527,7 +476,6 @@ function renderInterfaz() {
         .tanda-11am { background: #fefce8; color: #854d0e; border: 1px solid #fef08a; }
         .tanda-3pm  { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
         .tanda-9pm  { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
-
         .badge-hoy {
             background: var(--c-brand2);
             color: #fff;
@@ -541,17 +489,8 @@ function renderInterfaz() {
             vertical-align: middle;
         }
         .h-empty { text-align: center; padding: 2.5rem; color: var(--c-muted); font-size: .85rem; }
-
-        /* ══════════════════════════════════
-           CARDS — mobile (< 640px)
-           Técnica: table → display:block
-           + data-label en cada <td>
-        ══════════════════════════════════ */
         @media (max-width: 639px) {
-            /* Ocultar thead */
             .h-tabla thead { display: none; }
-
-            /* Tabla y descendientes → bloques */
             .h-tabla {
                 display: block;
                 width: 100%;
@@ -562,30 +501,23 @@ function renderInterfaz() {
             .h-tabla tbody { display: block; width: 100%; }
             .h-tabla tr    { display: block; width: 100%; box-sizing: border-box; }
             .h-tabla td    { display: flex;  width: 100%; box-sizing: border-box; }
-
-            /* Cada fila → card con borde inferior */
             .h-tabla tbody tr {
                 border-bottom: 1px solid var(--c-border);
                 padding: .625rem .875rem .5rem;
             }
             .h-tabla tbody tr:last-child  { border-bottom: none; }
-            /* Deshabilitar hover en mobile */
             .h-tabla tbody tr:hover td    { background: transparent; }
             .fila-hoy                     { background: #fdf4ff !important; }
-
-            /* Celda → fila label : valor */
             .h-tabla td {
                 padding: .22rem 0;
                 border-bottom: none;
-                white-space: normal;        /* override del nowrap de desktop */
+                white-space: normal;
                 word-break: break-word;
                 align-items: center;
                 justify-content: space-between;
                 gap: .5rem;
                 font-size: .82rem;
             }
-
-            /* Label desde data-label */
             .h-tabla td::before {
                 content: attr(data-label);
                 font-size: .67rem;
@@ -596,8 +528,6 @@ function renderInterfaz() {
                 flex-shrink: 0;
                 min-width: 65px;
             }
-
-            /* Fecha: ocupa fila completa arriba, sin label */
             .td-fecha {
                 flex-direction: column;
                 align-items: flex-start;
@@ -609,18 +539,10 @@ function renderInterfaz() {
                 font-weight: 700;
             }
             .td-fecha::before { display: none; }
-
-            /* Tanda: ya tiene chip, sin label */
-            .td-tanda::before   { display: none; }
-            .td-tanda           { justify-content: flex-start; padding: .15rem 0 .3rem; }
-
-            /* Paginación mobile: solo mostrar página activa en el grupo */
+            .td-tanda::before { display: none; }
+            .td-tanda         { justify-content: flex-start; padding: .15rem 0 .3rem; }
             .h-pag-pages .h-pag-btn:not(.active) { display: none; }
         }
-
-        /* ══════════════════════════════════
-           PAGINACIÓN
-        ══════════════════════════════════ */
         .h-paginacion {
             display: flex;
             align-items: center;
@@ -632,7 +554,6 @@ function renderInterfaz() {
             max-width: 100%;
         }
         .h-pag-pages { display: flex; align-items: center; gap: .3rem; }
-
         .h-pag-btn,
         .h-pag-nav {
             display: inline-flex;
@@ -713,7 +634,7 @@ function renderInterfaz() {
     renderTabla();
 }
 
-// ── Fetch ──────────────────────────────────────────────────────────────────────
+// ── Fetch ─────────────────────────────────────────────────────────────────────
 
 async function cargarHistorial() {
     const wrap    = document.getElementById('historial-contenido');
@@ -739,7 +660,7 @@ async function cargarHistorial() {
     }
 }
 
-// ── Init ───────────────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────────
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', cargarHistorial);
