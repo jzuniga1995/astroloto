@@ -45,15 +45,16 @@ const TANDA_ICONS = { '11am': ICONS.sunrise, '3pm': ICONS.sun, '9pm': ICONS.moon
 
 // ── Utilidades ────────────────────────────────────────────────────────────────
 
+// FIX: constructor local con mediodía — nunca desfasa por timezone
 function formatearFecha(fechaKey) {
     const [y, m, d] = fechaKey.split('-').map(Number);
-    const fecha = new Date(y, m - 1, d);
-    const dias  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-    const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    return `${dias[fecha.getDay()]} ${String(d).padStart(2,'0')} ${meses[m-1]} ${y}`;
+    const fecha = new Date(y, m - 1, d, 12, 0, 0);
+    return fecha.toLocaleDateString('es-HN', {
+        day: 'numeric', month: 'long', year: 'numeric'
+    });
 }
 
-// FIX 1: esHoy usando hora Honduras (UTC-6) para evitar desfase de zona horaria
+// FIX: esHoy usando hora Honduras (UTC-6)
 function esHoy(fechaKey) {
     const ahora = new Date(Date.now() - 6 * 60 * 60 * 1000);
     const y = ahora.getUTCFullYear();
@@ -62,7 +63,7 @@ function esHoy(fechaKey) {
     return fechaKey === `${y}-${m}-${d}`;
 }
 
-// FIX 2: super_premio siempre cae en tanda noche (juega mié y sáb a las 9pm)
+// FIX: super_premio siempre tanda noche (juega mié y sáb a las 9pm)
 function detectarTanda(key) {
     if (key.includes('11am') || key.includes('10am') || key.includes('manana') || key.includes('mañana')) return '11am';
     if (key.includes('3pm')  || key.includes('2pm')  || key.includes('tarde'))  return '3pm';
@@ -90,7 +91,7 @@ function formatearNums(datos) {
 
 // ── Procesar datos → filas ────────────────────────────────────────────────────
 
-// FIX 3: eliminado el bloque workaround de super_premio que generaba filas duplicadas
+// FIX: sin bloque workaround de super_premio — ya lo detecta detectarTanda()
 function getFilas() {
     const fechas = Object.keys(historialData).sort((a, b) => b.localeCompare(a));
     const filas  = [];
@@ -122,7 +123,7 @@ function getColumnas() {
         : [filtroJuego];
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
+// ── Render tabla ──────────────────────────────────────────────────────────────
 
 function renderTabla() {
     const thead   = document.getElementById('h-thead');
@@ -248,8 +249,9 @@ async function exportar() {
 
         todasFilas.forEach(({ fechaKey, tanda, celdas }) => {
             const [y, m, d] = fechaKey.split('-').map(Number);
-            const fecha  = new Date(y, m - 1, d);
-            const dias   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+            // FIX: mediodía local — nunca desfasa por timezone en Excel
+            const fecha = new Date(y, m - 1, d, 12, 0, 0);
+            const dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
             aoa.push([
                 fechaKey,
                 dias[fecha.getDay()],
@@ -260,14 +262,14 @@ async function exportar() {
 
         const ws = XLSX.utils.aoa_to_sheet(aoa);
 
+        // FIX: convertir col Fecha a tipo fecha Excel con mediodía local
         for (let r = 1; r < aoa.length; r++) {
             const cellAddr = XLSX.utils.encode_cell({ r, c: 0 });
             const cell = ws[cellAddr];
             if (cell && typeof cell.v === 'string') {
                 const [cy, cm, cd] = cell.v.split('-').map(Number);
-                const jsDate = new Date(Date.UTC(cy, cm - 1, cd));
                 cell.t = 'd';
-                cell.v = jsDate;
+                cell.v = new Date(cy, cm - 1, cd, 12, 0, 0);
                 cell.z = 'DD/MM/YYYY';
             }
         }
@@ -281,7 +283,7 @@ async function exportar() {
         ws['!cols'] = colWidths;
         ws['!freeze'] = { xSplit: 0, ySplit: 1, topLeftCell: 'A2', activeCell: 'A2', sqref: 'A2' };
 
-        const wb   = XLSX.utils.book_new();
+        const wb     = XLSX.utils.book_new();
         const nombre = `Historial ${JUEGOS_CONFIG[filtroJuego].label}`;
         XLSX.utils.book_append_sheet(wb, ws, nombre.substring(0, 31));
 
@@ -667,3 +669,5 @@ if (document.readyState === 'loading') {
 } else {
     cargarHistorial();
 }
+
+
