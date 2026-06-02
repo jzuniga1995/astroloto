@@ -13,15 +13,6 @@ const { bodyClass = '' } = Astro.props;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Ezoic CMP + Ads -->
-    <script is:inline data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js"></script>
-    <script is:inline data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js"></script>
-    <script is:inline async src="//www.ezojs.com/ezoic/sa.min.js"></script>
-    <script is:inline>
-        window.ezstandalone = window.ezstandalone || {};
-        ezstandalone.cmd = ezstandalone.cmd || [];
-    </script>
-
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-B9L2HSP4B6"></script>
     <script is:inline>
@@ -71,17 +62,16 @@ const { bodyClass = '' } = Astro.props;
     <div class="max-w-7xl mx-auto pt-4">
         <main class="p-4 md:p-6">
 
-            <!-- ❌ Adsterra Native Banner — comentado temporalmente
+            <!-- Adsterra Native Banner -->
             <div style="margin-bottom: 1rem;">
                 <script is:inline async data-cfasync="false" src="https://pl28417320.effectivegatecpm.com/c053bb82e7e2a6d39cd34a6acda6a322/invoke.js"></script>
                 <div id="container-c053bb82e7e2a6d39cd34a6acda6a322"></div>
             </div>
-            -->
 
             <!-- Contenido de cada página -->
             <slot />
 
-            <!-- ❌ Adsterra Banner 300x250 — comentado temporalmente
+            <!-- Adsterra Banner 300x250 -->
             <div style="display: flex; justify-content: center; margin-top: 1.5rem;">
                 <script is:inline>
                     atOptions = {
@@ -94,7 +84,6 @@ const { bodyClass = '' } = Astro.props;
                 </script>
                 <script is:inline src="https://www.highperformanceformat.com/4adb7d49b21a18585b492d5dc304a3c0/invoke.js"></script>
             </div>
-            -->
 
         </main>
     </div>
@@ -104,13 +93,11 @@ const { bodyClass = '' } = Astro.props;
     <!-- Scripts globales -->
     <script src="../scripts/main.js"></script>
 
-    <!-- ❌ Adsterra Popunder — comentado temporalmente
+    <!-- Adsterra Popunder -->
     <script is:inline src="https://pl28763898.effectivegatecpm.com/bb/ee/c0/bbeec0fcb17cd4d4fc49d7e85e3f4f35.js"></script>
-    -->
 
-    <!-- ❌ Adsterra Social Bar — comentado temporalmente
+    <!-- Adsterra Social Bar -->
     <script is:inline src="https://pl28763916.effectivegatecpm.com/35/14/fd/3514fdd317f29f6fae7476c399c70d81.js"></script>
-    -->
 
 </body>
 </html>
