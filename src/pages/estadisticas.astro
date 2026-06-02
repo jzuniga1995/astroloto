@@ -288,7 +288,10 @@ import Layout from '../layouts/Layout.astro';
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Estadísticas de Resultados
     </h1>
-    <p class="stats-subtitle">Análisis de frecuencias basado en el historial real de sorteos</p>
+    <p class="stats-subtitle">Análisis de frecuencias basado en el historial real de sorteos de Loto Honduras</p>
+    <p style="color:#6b7280;font-size:.88rem;margin-top:.5rem;max-width:600px;margin-left:auto;margin-right:auto;">
+        Consultá qué números han salido más veces (<strong>calientes</strong>) y cuáles menos (<strong>fríos</strong>) en Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio. Datos calculados sobre el historial real de sorteos.
+    </p>
 </header>
 
 <div id="stats-loading" class="stats-loading" role="status" aria-live="polite">
@@ -297,6 +300,132 @@ import Layout from '../layouts/Layout.astro';
 </div>
 
 <div id="stats-contenido"></div>
+
+<!-- ============ CONTENIDO SEO VISIBLE ============ -->
+<div style="margin-top:2rem;">
+
+<style>
+  .seo-section { background:#fff; border-radius:1rem; box-shadow:0 1px 6px rgba(124,58,237,.08); padding:1.5rem; margin-bottom:1.25rem; }
+  .seo-section h2 { font-size:1.2rem; font-weight:800; color:#3b0764; margin-bottom:.875rem; display:flex; align-items:center; gap:.5rem; }
+  .seo-section h3 { font-size:1rem; font-weight:700; color:#5b21b6; margin:1rem 0 .4rem; }
+  .seo-section p { color:#374151; line-height:1.75; font-size:.95rem; margin-bottom:.75rem; }
+  .seo-section ul { color:#374151; font-size:.95rem; padding-left:1.25rem; }
+  .seo-section ul li { margin-bottom:.45rem; line-height:1.65; }
+  .seo-section a { color:#7c3aed; font-weight:600; text-decoration:none; }
+  .seo-section a:hover { text-decoration:underline; }
+  .juego-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1rem; margin:.875rem 0; }
+  .juego-card { border-radius:.75rem; padding:1rem 1.25rem; border:1px solid #ede9fe; }
+  .juego-card h3 { font-size:.95rem; font-weight:800; margin:0 0 .4rem; }
+  .juego-card p { font-size:.88rem; color:#374151; margin:0; line-height:1.6; }
+  .faq-item { border-bottom:1px solid #f3f4f6; padding:.875rem 0; }
+  .faq-item:last-child { border-bottom:none; }
+  .faq-item h3 { font-size:.95rem; font-weight:700; color:#3b0764; margin:0 0 .4rem; }
+  .faq-item p { font-size:.9rem; color:#374151; margin:0; line-height:1.65; }
+  .links-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:.75rem; margin-top:.875rem; }
+  .link-card { background:#f5f3ff; border:1px solid #ede9fe; border-radius:.75rem; padding:.75rem 1rem; text-decoration:none; color:#5b21b6; font-weight:600; font-size:.85rem; transition:all .15s; display:flex; align-items:center; gap:.4rem; }
+  .link-card:hover { background:#ede9fe; border-color:#c4b5fd; }
+</style>
+
+<!-- ¿Qué son? -->
+<section class="seo-section">
+    <h2>📊 ¿Qué son los Números Calientes y Fríos en Loto Honduras?</h2>
+    <p>Las estadísticas de LotoHN analizan el <strong>historial completo de sorteos</strong> de Loto Honduras para identificar dos tipos de números:</p>
+    <ul>
+        <li><strong>Números calientes 🔥</strong> — Los que han aparecido con mayor frecuencia en los sorteos recientes. Muchos jugadores los prefieren basándose en la tendencia histórica.</li>
+        <li><strong>Números fríos 🧊</strong> — Los que menos han salido en el historial. Algunos jugadores apuestan a que "ya les toca".</li>
+    </ul>
+    <p>Es importante entender que la lotería es un <strong>juego de azar</strong> — cada sorteo es independiente y las estadísticas históricas no garantizan resultados futuros. Sin embargo, conocer las frecuencias te permite tomar decisiones más informadas.</p>
+</section>
+
+<!-- Estadísticas por juego -->
+<section class="seo-section">
+    <h2>🎯 Estadísticas por Juego de Loto Honduras</h2>
+    <div class="juego-grid">
+        <div class="juego-card" style="background:#faf5ff;">
+            <h3 style="color:#7c3aed;">🎯 Jugá 3</h3>
+            <p>Estadísticas de los números de 3 dígitos (000–999). Con 263+ sorteos en el historial, podés ver cuáles combinaciones de tres dígitos se repiten más en las tandas de mañana, tarde y noche. <a href="/juga-3">Ver resultados Jugá 3 →</a></p>
+        </div>
+        <div class="juego-card" style="background:#f0f9ff;">
+            <h3 style="color:#0369a1;">🎲 Pega 3</h3>
+            <p>Análisis de frecuencias del número directo ganador de Pega 3. Descubrí qué combinaciones de 3 dígitos aparecen con más regularidad en los sorteos diarios de Honduras. <a href="/pega-3">Ver resultados Pega 3 →</a></p>
+        </div>
+        <div class="juego-card" style="background:#f0fdf4;">
+            <h3 style="color:#065f46;">🏆 Premia 2</h3>
+            <p>Estadísticas de los números de 2 dígitos (00–99) de Premia 2. Con solo 100 combinaciones posibles, las frecuencias son más notorias y útiles para elegir tu número. <a href="/premia-2">Ver resultados Premia 2 →</a></p>
+        </div>
+        <div class="juego-card" style="background:#fff7ed;">
+            <h3 style="color:#9a3412;">🌙 La Diaria</h3>
+            <p>Análisis del número ganador de La Diaria Honduras. Los datos muestran qué números del 1 al 100 aparecen más frecuentemente a lo largo de los tres sorteos diarios. <a href="/la-diaria">Ver resultados La Diaria →</a></p>
+        </div>
+        <div class="juego-card" style="background:#fffbeb;">
+            <h3 style="color:#b45309;">🏅 Súper Premio</h3>
+            <p>Frecuencia de las bolas individuales del Súper Premio Honduras. Analiza cuáles números se extraen más en los sorteos de los miércoles y sábados. <a href="/loto-super-premio">Ver Súper Premio →</a></p>
+        </div>
+    </div>
+</section>
+
+<!-- Cómo usar -->
+<section class="seo-section">
+    <h2>💡 Cómo Usar las Estadísticas de LotoHN</h2>
+    <p>Las estadísticas de LotoHN se actualizan automáticamente después de cada sorteo. Así las podés aprovechar:</p>
+    <ul>
+        <li><strong>Elegí el juego</strong> en las pestañas (Jugá 3, Pega 3, Premia 2, La Diaria, Súper Premio).</li>
+        <li>Revisá la columna de <strong>Números Calientes</strong> para ver los más frecuentes del historial real.</li>
+        <li>Compará con los <strong>Números Fríos</strong> para decidir tu estrategia según tu estilo de juego.</li>
+        <li>Combiná las estadísticas con el <a href="/historial">historial completo de resultados</a> para análisis más profundos.</li>
+        <li>Leé la <a href="/guia/estrategias-loto-honduras">guía de estrategias</a> para sacarle más provecho a estos datos.</li>
+    </ul>
+</section>
+
+<!-- FAQ visible -->
+<section class="seo-section">
+    <h2>❓ Preguntas Frecuentes sobre las Estadísticas</h2>
+    <div class="faq-item">
+        <h3>¿Qué número sale más en Jugá 3 Honduras?</h3>
+        <p>Los números calientes de Jugá 3 cambian con el tiempo a medida que se acumulan más sorteos. Consultá la pestaña de Jugá 3 en esta página para ver los más frecuentes según el historial actual. Los datos se actualizan automáticamente después de cada sorteo.</p>
+    </div>
+    <div class="faq-item">
+        <h3>¿Los números calientes tienen más probabilidad de salir?</h3>
+        <p>Matemáticamente, no. Cada número tiene exactamente la misma probabilidad en cada sorteo porque los sorteos son eventos independientes. Sin embargo, los números calientes reflejan una tendencia estadística histórica que muchos jugadores consideran al elegir sus números.</p>
+    </div>
+    <div class="faq-item">
+        <h3>¿Cada cuánto se actualizan las estadísticas?</h3>
+        <p>Las estadísticas se actualizan con cada carga de la página, tomando los datos más recientes del historial. Después de cada sorteo (11 AM, 3 PM y 9 PM), el historial se actualiza automáticamente y las estadísticas reflejan el nuevo sorteo.</p>
+    </div>
+    <div class="faq-item">
+        <h3>¿Qué número sale más en La Diaria de Honduras?</h3>
+        <p>La Diaria tiene números del 1 al 100. En la pestaña de La Diaria de esta página podés ver cuáles han salido más frecuentemente en el historial de todos los sorteos registrados en LotoHN.</p>
+    </div>
+    <div class="faq-item">
+        <h3>¿Puedo ver las estadísticas desde Costa Rica o EE.UU.?</h3>
+        <p>Sí, LotoHN y sus estadísticas son completamente gratuitas y accesibles desde Honduras, Costa Rica, Estados Unidos y cualquier país del mundo. Solo necesitás conexión a internet.</p>
+    </div>
+    <div class="faq-item">
+        <h3>¿Las estadísticas incluyen todos los sorteos o solo los recientes?</h3>
+        <p>Las estadísticas de LotoHN se calculan sobre el <strong>historial completo</strong> de sorteos almacenados, que incluye meses de resultados de las tres tandas diarias. Cuantos más días acumula el historial, más representativas son las frecuencias.</p>
+    </div>
+</section>
+
+<!-- Links relacionados -->
+<section class="seo-section">
+    <h2>🔗 Herramientas Relacionadas</h2>
+    <div class="links-grid">
+        <a href="/" class="link-card">🏠 Resultados de hoy en vivo</a>
+        <a href="/historial" class="link-card">📅 Historial completo</a>
+        <a href="/juga-3" class="link-card">🎯 Resultados Jugá 3</a>
+        <a href="/pega-3" class="link-card">🎲 Resultados Pega 3</a>
+        <a href="/premia-2" class="link-card">🏆 Resultados Premia 2</a>
+        <a href="/la-diaria" class="link-card">🌙 Resultados La Diaria</a>
+        <a href="/loto-super-premio" class="link-card">🏅 Resultados Súper Premio</a>
+        <a href="/signos-la-diaria" class="link-card">♈ Tabla 100 Signos</a>
+        <a href="/guia/estrategias-loto-honduras" class="link-card">💡 Guía de Estrategias</a>
+        <a href="/guia/probabilidades-loterias-honduras" class="link-card">📊 Probabilidades</a>
+        <a href="/guia/loto-honduras-desde-costa-rica" class="link-card">🇨🇷 Loto desde Costa Rica</a>
+        <a href="/guia/loto-honduras-desde-estados-unidos" class="link-card">🇺🇸 Loto desde EE.UU.</a>
+    </div>
+</section>
+
+</div>
 
 <script>
 const HISTORIAL_URL = '/api/historial';
