@@ -7,23 +7,21 @@ Portal de resultados de loterías hondureñas. Muestra resultados en vivo de Jug
 - **Astro 5** — SSG, sin SSR. Todo el dinamismo es client-side JS.
 - **Tailwind CSS 3** — Estilos utilitarios.
 - **Lucide Astro** — Iconos SVG.
-- **Hosting:** Netlify (ver `public/_redirects`).
+- **Hosting:** Netlify (`public/_redirects`).
 - **Dominio:** https://lotohn.com
+- **Repo:** https://github.com/jzuniga1995/astroloto
 
 ## Arquitectura
 
-Este es el **frontend únicamente**. Los datos vienen de un backend Python separado (`C:\Users\Jose\loto`) que:
-- Hace web scraping de `loteriasdehonduras.com` con Playwright.
-- Genera los JSON de resultados y los sirve como endpoints.
-- Corre en GitHub Actions en las horas de sorteo.
+Frontend estático. Los datos vienen del backend Python separado (`C:\Users\Jose\loto`) que hace scraping de `loteriasdehonduras.com` y sirve 3 endpoints JSON.
 
-### Endpoints que consume este frontend
+### Endpoints consumidos
 
-| Endpoint | Descripción |
-|----------|-------------|
-| `/api/resultados-v2` | Resultados del día, agrupados por juego y tanda |
-| `/api/historial` | Historial acumulado por fecha `{ "YYYY-MM-DD": { ... } }` |
-| `/api/oraculo` | Cábala del día `{ acertijo, numeros[], frase, fecha }` |
+| Endpoint | Descripción | Cache |
+|----------|-------------|-------|
+| `/api/resultados-v2` | Resultados del día por juego y tanda | `no-cache` |
+| `/api/historial` | Historial acumulado `{ "YYYY-MM-DD": { ... } }` | `no-cache` |
+| `/api/oraculo` | Cábala del día `{ acertijo, numeros[], frase, fecha }` | `no-cache` |
 
 ### Estructura de datos de `/api/resultados-v2`
 
@@ -44,7 +42,20 @@ Este es el **frontend únicamente**. Los datos vienen de un backend Python separ
 }
 ```
 
+### Estructura de datos de `/api/historial`
+
+```json
+{
+  "2026-06-01": {
+    "juga3_11am": { "numero_ganador": "326", "numeros_adicionales": ["326"], ... },
+    "pega3_10am": { ... }
+  }
+}
+```
+
 ## Páginas
+
+### Resultados (raíz)
 
 | Ruta | Archivo | Descripción |
 |------|---------|-------------|
@@ -55,55 +66,97 @@ Este es el **frontend únicamente**. Los datos vienen de un backend Python separ
 | `/la-diaria` | `la-diaria.astro` | Solo La Diaria |
 | `/loto-super-premio` | `loto-super-premio.astro` | Solo Súper Premio |
 | `/historial` | `historial.astro` | Tabla paginada + exportar XLSX |
-| `/estadisticas` | `estadisticas.astro` | Frecuencias: números calientes/fríos |
+| `/estadisticas` | `estadisticas.astro` | Frecuencias: números calientes/fríos por juego |
 | `/signos-la-diaria` | `signos-la-diaria.astro` | Tabla de 100 signos zodiacales |
 | `/contacto` | `contacto.astro` | Formulario de contacto |
 | `/sobre-nosotros` | `sobre-nosotros.astro` | Información del proyecto |
 
-## Componentes clave
+### Guías `/guia/` (evergreen, sin año en título)
 
-- **`Header.astro`** — Navegación sticky con menú móvil.
-- **`Footer.astro`** — Links + aviso legal.
-- **`Oraculo.astro`** — Card de cábala del día. Llama a `/api/oraculo` en client-side. Colores cambian por día de la semana.
-- **`Layout.astro`** — Template base: Google Analytics, Ezoic ads, PWA (manifest + SW), preload de logos, estilos globales.
+| Ruta | Contenido |
+|------|-----------|
+| `/guia/como-jugar-juga-3` | Reglas, modalidades, horarios, FAQ |
+| `/guia/como-jugar-pega-3` | Directo, combinado, por la mitad |
+| `/guia/como-jugar-premia-2` | Ordena2, Mixea2, Posiciona2 |
+| `/guia/como-jugar-la-diaria` | Número + signo + multiplicador, link a signos |
+| `/guia/como-jugar-super-premio` | Jackpot, miércoles y sábado, premios |
+| `/guia/horarios-sorteos-honduras` | Tabla completa con 6 zonas horarias EE.UU. |
+| `/guia/donde-cobrar-premios-honduras` | Requisitos, pasos, plazo 90 días |
+| `/guia/probabilidades-loterias-honduras` | Comparativa de odds de todas las modalidades |
+| `/guia/estrategias-loto-honduras` | 3 estrategias + juego responsable |
+| `/guia/loto-honduras-desde-costa-rica` | Para la diáspora en CR (misma zona UTC-6) |
+| `/guia/loto-honduras-desde-estados-unidos` | Horarios para ET/CT/MT/PT |
+
+**Regla importante:** Los títulos de las guías **nunca llevan año** — son páginas evergreen. El año puede aparecer en keywords y body, no en `<title>` ni H1.
+
+## Componentes
+
+- **`Header.astro`** — Navegación sticky. Nav desktop + menú móvil hamburguesa. Links: Inicio, Jugá 3, Pega 3, Premia 2, La Diaria, Súper Premio, Historial, Estadísticas, Signos.
+- **`Footer.astro`** — Nav de resultados + sección Guías (11 links) + nav legal.
+- **`Oraculo.astro`** — Card de cábala del día. Fetch a `/api/oraculo`. Colores por día de la semana.
+- **`Layout.astro`** — Template base: Ezoic CMP, Google Analytics, PWA (manifest + SW), preload logos, estilos globales.
 
 ## Scripts client-side
 
-- **`src/scripts/main.js`** — Carga `/api/resultados-v2`, renderiza cards por tanda horaria, auto-refresh cada 1 min en horas de sorteo o cada 5 min el resto del día. Reloj Honduras (UTC-6) en tiempo real.
-- **`src/scripts/historial.js`** — Tabla interactiva con filtros por juego/tanda, paginación (20 filas), exportar a XLSX vía SheetJS.
+- **`src/scripts/main.js`** — Fetch `/api/resultados-v2` con `cache: 'no-cache'`. Renderiza cards por tanda. Auto-refresh 1 min en horarios de sorteo, 5 min el resto. Reloj Honduras (UTC-6).
+- **`src/scripts/historial.js`** — Tabla interactiva, filtros juego/tanda, paginación 20 filas, exportar XLSX vía SheetJS CDN.
 
-## Estilos dinámicos
+## Estilos
 
-`public/styles_dinamicos.css` — Estilos de las cards de sorteo (`.game-card`, `.bola`, `.sorteo-grid`, skeleton loaders). Se sirve como archivo estático, no pasa por el build de Tailwind.
+- `public/styles_dinamicos.css` — Cards de sorteo (`.game-card`, `.bola`, `.sorteo-grid`, skeletons). Archivo estático, no pasa por Tailwind.
+- Estilos de guías y estadísticas van en `<style>` dentro de cada `.astro`.
 
 ## PWA
 
-- `public/manifest.webmanifest` — Solo habilita instalación ("Añadir a inicio"). **Sin caché offline** para garantizar carga de anuncios y datos frescos.
-- `public/sw.js` — Service worker mínimo, sin handler de fetch.
+- `public/manifest.webmanifest` — Instalable. Shortcuts a Jugá 3, La Diaria e Historial.
+- `public/sw.js` — Service worker **mínimo**. Sin caché offline — garantiza carga de anuncios y datos frescos.
 
-## SEO
+## SEO — Patrón por página
 
-Cada página tiene su propio bloque SEO en el `<slot name="head">`. **No modificar** los bloques de meta tags, keywords, Schema.org ni Open Graph existentes — están optimizados y funcionando. Solo agregar encima o debajo si se necesita algo nuevo.
+Cada página sigue este patrón en el `<slot name="head">`:
 
-El `index.astro` incluye un bloque de texto invisible para crawlers con ~250 keywords georeferencializadas (Honduras, Costa Rica, EE.UU.). No es black-hat — está con `clip:rect(0,0,0,0)` dentro de `aria-hidden`.
+1. `<title>` — Sin año en páginas evergreen. Con descripción clara del tema.
+2. `<meta name="description">` — 150–160 chars, incluye emoji inicial.
+3. `<meta name="keywords">` — 30–50 términos, 3 países (HN + CR + US).
+4. SEO técnico — `robots`, `googlebot`, `bingbot`, `revisit-after`, `HandheldFriendly`.
+5. Geolocalización triple — `geo.region` HN + CR + US con ciudades.
+6. Open Graph completo — `og:image:width/height/alt`, `og:locale:alternate`.
+7. Twitter Card — `@LotoHN` en `twitter:site` y `twitter:creator`.
+8. Hreflang — 5 variantes: `es-HN`, `es-CR`, `es-US`, `es`, `x-default`.
+9. Schema.org — `WebPage` o `Article` + `FAQPage` + `BreadcrumbList`.
+10. Bloque SEO oculto — `clip:rect(0,0,0,0)` + `aria-hidden="true"`, 200+ palabras geolocalizadas.
+11. Contenido visible — Párrafos reales, FAQ visible, links internos. **No solo texto oculto.**
+
+**Regla crítica:** No modificar bloques SEO existentes que ya funcionan. Solo agregar encima o debajo.
 
 ## Monetización
 
-Ezoic activo en `Layout.astro`:
-- Gatekeeper Consent CMP
-- `ezojs.com/ezoic/sa.min.js`
-- Native Banner (effectivegatecpm.com)
-- Banner 300×250 (highperformanceformat.com)
-- Popunder + Social Bar (effectivegatecpm.com)
+En `Layout.astro`:
+
+| Red | Estado |
+|-----|--------|
+| Ezoic (gatekeeperconsent + ezojs) | ✅ Activo |
+| Adsterra Native Banner (effectivegatecpm.com) | ❌ Comentado |
+| Adsterra Banner 300×250 (highperformanceformat.com) | ❌ Comentado |
+| Adsterra Popunder (effectivegatecpm.com) | ❌ Comentado |
+| Adsterra Social Bar (effectivegatecpm.com) | ❌ Comentado |
+
+## Google Analytics
+
+ID: `G-B9L2HSP4B6` — en `Layout.astro`.
 
 ## Comandos
 
 ```bash
 npm run dev      # Servidor de desarrollo
-npm run build    # Build de producción (genera /dist)
+npm run build    # Build de producción → /dist (build limpio, 25 páginas, ~350ms)
 npm run preview  # Preview del build
 ```
 
-## Google Analytics
+## Build
 
-ID: `G-B9L2HSP4B6` — configurado en `Layout.astro`.
+El build compila sin errores. Las advertencias del IDE sobre `is:inline` en scripts con atributos son normales en Astro — no afectan el build.
+
+## Backend relacionado
+
+`C:\Users\Jose\loto` — Python. Scraper con Playwright + generador de Oráculo con Gemini. Corre vía GitHub Actions (`workflow_dispatch` — sin cron automático). Genera `resultados_hoy.json`, `historial.json` y `oraculo.json`.
