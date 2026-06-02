@@ -645,9 +645,8 @@ async function cargarHistorial() {
     if (!wrap) return;
 
     try {
-        const resp = await fetch(`${HISTORIAL_URL}?t=${Date.now()}`, {
-            cache: 'no-store',
-            headers: { 'Cache-Control': 'no-cache' },
+        const resp = await fetch(HISTORIAL_URL, {
+            cache: 'no-cache'
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         historialData = await resp.json();

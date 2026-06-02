@@ -1,0 +1,465 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+<Fragment slot="head">
+    <title>Estadísticas Loto Honduras 2026 – Números Calientes y Fríos | LotoHN</title>
+
+    <meta name="description" content="📊 Estadísticas y análisis de resultados de Loto Honduras. Números más frecuentes y menos frecuentes de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio. Mejora tus probabilidades con datos reales | LotoHN">
+
+    <meta name="keywords" content="
+        estadisticas loto honduras, numeros calientes loto honduras, numeros frios loto honduras,
+        frecuencia numeros juga 3, estadisticas pega 3 honduras, analisis premia 2 honduras,
+        numeros mas salidos la diaria, estadisticas super premio honduras,
+        probabilidades loto honduras, numeros frecuentes loto hn,
+        analisis estadistico loteria honduras, numeros ganadores frecuentes honduras,
+        estadisticas loteria honduras costa rica, analisis numeros honduras estados unidos,
+        frecuencia sorteos loto hn, numeros menos salidos loto honduras
+    ">
+
+    <link rel="canonical" href="https://lotohn.com/estadisticas">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="author" content="LotoHN - Portal Oficial de Resultados">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LotoHN">
+    <meta property="og:title" content="📊 Estadísticas Loto Honduras – Números Calientes y Fríos">
+    <meta property="og:description" content="Análisis de frecuencias de los números más y menos salidos en Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio Honduras.">
+    <meta property="og:url" content="https://lotohn.com/estadisticas">
+    <meta property="og:image" content="https://lotohn.com/favicon.png">
+    <meta property="og:locale" content="es_HN">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="📊 Estadísticas Loto Honduras – Números Calientes y Fríos">
+    <meta name="twitter:description" content="Análisis de frecuencias de Loto Honduras. Los números más y menos frecuentes por juego.">
+    <meta name="twitter:image" content="https://lotohn.com/favicon.png">
+
+    <link rel="alternate" hreflang="es-HN" href="https://lotohn.com/estadisticas">
+    <link rel="alternate" hreflang="es-CR" href="https://lotohn.com/estadisticas">
+    <link rel="alternate" hreflang="es-US" href="https://lotohn.com/estadisticas">
+    <link rel="alternate" hreflang="x-default" href="https://lotohn.com/estadisticas">
+
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Estadísticas Loto Honduras - Números Calientes y Fríos",
+      "url": "https://lotohn.com/estadisticas",
+      "description": "Estadísticas y análisis de frecuencias de los resultados de Loto Honduras. Números más y menos frecuentes por juego.",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://lotohn.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Estadísticas", "item": "https://lotohn.com/estadisticas" }
+        ]
+      }
+    }
+    </script>
+
+    <style>
+        .stats-header {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(92,33,182,.07);
+            padding: 1.25rem 1rem;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+        @media (min-width: 640px) {
+            .stats-header { padding: 2rem 2.5rem; margin-bottom: 1.5rem; }
+        }
+        .stats-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #5b21b6, #9333ea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+            line-height: 1.2;
+            margin-bottom: .75rem;
+        }
+        @media (min-width: 640px) { .stats-title { font-size: 2rem; } }
+        .stats-subtitle {
+            color: #6b7280;
+            font-size: .85rem;
+        }
+        .stats-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+        }
+        .stats-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid #ede9fe;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: stats-spin .7s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes stats-spin { to { transform: rotate(360deg); } }
+        .stats-loading-text { color: #6b7280; font-size: .9rem; }
+    </style>
+</Fragment>
+
+<!-- SEO oculto -->
+<div style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;" aria-hidden="true">
+    <h1>Estadísticas de Resultados Loto Honduras - Números Más Frecuentes y Menos Frecuentes</h1>
+    <p>Análisis estadístico completo de los números ganadores de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio Honduras. Consulta qué números salen más y cuáles salen menos en cada juego de lotería hondureña. Disponible para consulta desde Honduras, Costa Rica y Estados Unidos.</p>
+    <p>Estadísticas Jugá 3 Honduras - Los 10 números de tres dígitos más frecuentes y los 10 menos frecuentes del 000 al 999. Estadísticas Pega 3 Honduras - Análisis de frecuencia de combinaciones ganadoras. Estadísticas La Diaria Honduras - Números y signos más repetidos por tanda mañana tarde y noche.</p>
+</div>
+
+<header class="stats-header">
+    <h1 class="stats-title">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Estadísticas de Resultados
+    </h1>
+    <p class="stats-subtitle">Análisis de frecuencias basado en el historial real de sorteos</p>
+</header>
+
+<div id="stats-loading" class="stats-loading" role="status" aria-live="polite">
+    <div class="stats-spinner" aria-hidden="true"></div>
+    <p class="stats-loading-text">Calculando estadísticas...</p>
+</div>
+
+<div id="stats-contenido"></div>
+
+<script>
+const HISTORIAL_URL = '/api/historial';
+
+const JUEGOS = [
+    { key: 'juga3',       label: 'Jugá 3',      color: '#7c3aed', bg: '#f5f3ff' },
+    { key: 'pega3',       label: 'Pega 3',       color: '#0369a1', bg: '#f0f9ff' },
+    { key: 'premia2',     label: 'Premia 2',     color: '#065f46', bg: '#f0fdf4' },
+    { key: 'la_diaria',   label: 'La Diaria',    color: '#9a3412', bg: '#fff7ed' },
+    { key: 'super_premio',label: 'Súper Premio', color: '#b45309', bg: '#fffbeb' },
+];
+
+const TOP_N = 12;
+
+function detectarJuego(key) {
+    if (key.includes('juga3')   || key.includes('juga_3'))   return 'juga3';
+    if (key.includes('pega3')   || key.includes('pega_3'))   return 'pega3';
+    if (key.includes('premia2') || key.includes('premia_2')) return 'premia2';
+    if (key.includes('diaria'))                               return 'la_diaria';
+    if (key.includes('super'))                                return 'super_premio';
+    return null;
+}
+
+function extraerNumeros(datos) {
+    const nums = [];
+    if (datos.numeros_adicionales?.length) {
+        datos.numeros_adicionales.forEach(n => {
+            if (!isNaN(n) && n !== null && n !== '') nums.push(String(n).trim());
+        });
+    } else if (datos.numeros_individuales?.length) {
+        nums.push(datos.numeros_individuales.join(''));
+    } else if (datos.numero_ganador) {
+        nums.push(String(datos.numero_ganador).trim());
+    }
+    return nums;
+}
+
+function calcularFrecuencias(historialData) {
+    const frecuencias = {};
+    JUEGOS.forEach(j => { frecuencias[j.key] = {}; });
+
+    Object.values(historialData).forEach(diaData => {
+        Object.entries(diaData).forEach(([key, datos]) => {
+            const juego = detectarJuego(key);
+            if (!juego || !frecuencias[juego]) return;
+            const nums = extraerNumeros(datos);
+            nums.forEach(n => {
+                if (n) frecuencias[juego][n] = (frecuencias[juego][n] || 0) + 1;
+            });
+        });
+    });
+
+    return frecuencias;
+}
+
+function renderBarChart(entries, color, maxVal) {
+    return entries.map(([num, count]) => {
+        const pct = maxVal > 0 ? Math.round((count / maxVal) * 100) : 0;
+        return `
+            <div class="stat-bar-row">
+                <span class="stat-num">${num}</span>
+                <div class="stat-bar-wrap">
+                    <div class="stat-bar" style="width:${pct}%;background:${color}"></div>
+                </div>
+                <span class="stat-count">${count}x</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderEstadisticas(historialData) {
+    const loading = document.getElementById('stats-loading');
+    const contenido = document.getElementById('stats-contenido');
+    if (loading) loading.style.display = 'none';
+    if (!contenido) return;
+
+    const frecuencias = calcularFrecuencias(historialData);
+    const totalDias   = Object.keys(historialData).length;
+
+    let html = `
+    <style>
+        .stats-resumen {
+            background:#fff;
+            border:1px solid #ede9fe;
+            border-radius:1rem;
+            padding:1rem 1.25rem;
+            margin-bottom:1.5rem;
+            display:flex;
+            gap:1rem;
+            flex-wrap:wrap;
+            align-items:center;
+            box-shadow:0 1px 4px rgba(0,0,0,.06);
+        }
+        .stats-resumen-item {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:.15rem;
+            min-width:80px;
+        }
+        .stats-resumen-val {
+            font-size:1.5rem;
+            font-weight:900;
+            color:#7c3aed;
+            line-height:1;
+        }
+        .stats-resumen-lbl {
+            font-size:.72rem;
+            color:#6b7280;
+            font-weight:600;
+            text-align:center;
+        }
+        .stats-tabs {
+            display:flex;
+            gap:.4rem;
+            flex-wrap:nowrap;
+            overflow-x:auto;
+            padding-bottom:4px;
+            margin-bottom:1.25rem;
+            scrollbar-width:none;
+        }
+        .stats-tabs::-webkit-scrollbar { display:none; }
+        .stats-tab {
+            padding:.4rem 1rem;
+            border-radius:9999px;
+            font-size:.8rem;
+            font-weight:700;
+            border:1.5px solid #ede9fe;
+            background:#fff;
+            color:#7c3aed;
+            cursor:pointer;
+            white-space:nowrap;
+            transition:all .15s;
+            -webkit-tap-highlight-color:transparent;
+        }
+        .stats-tab:hover { background:#f5f3ff; }
+        .stats-tab.active { color:#fff; border-color:transparent; }
+        .stats-panel { display:none; }
+        .stats-panel.active { display:block; }
+        .stats-card {
+            background:#fff;
+            border:1px solid #ede9fe;
+            border-radius:1rem;
+            overflow:hidden;
+            box-shadow:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(92,33,182,.06);
+            margin-bottom:1.25rem;
+        }
+        .stats-card-header {
+            padding:.85rem 1.25rem;
+            font-size:.85rem;
+            font-weight:800;
+            letter-spacing:.04em;
+            text-transform:uppercase;
+            display:flex;
+            align-items:center;
+            gap:.5rem;
+        }
+        .stats-card-body {
+            padding:.75rem 1.25rem 1rem;
+        }
+        .stat-bar-row {
+            display:flex;
+            align-items:center;
+            gap:.6rem;
+            margin-bottom:.55rem;
+        }
+        .stat-num {
+            font-size:.82rem;
+            font-weight:800;
+            min-width:52px;
+            text-align:right;
+            font-family:'JetBrains Mono','Fira Mono',ui-monospace,monospace;
+            color:#1e1b4b;
+        }
+        .stat-bar-wrap {
+            flex:1;
+            height:18px;
+            background:#f3f4f6;
+            border-radius:9999px;
+            overflow:hidden;
+        }
+        .stat-bar {
+            height:100%;
+            border-radius:9999px;
+            transition:width .4s cubic-bezier(.4,0,.2,1);
+            min-width:4px;
+        }
+        .stat-count {
+            font-size:.78rem;
+            font-weight:700;
+            color:#6b7280;
+            min-width:32px;
+            text-align:right;
+        }
+        .stats-two-col {
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:1rem;
+        }
+        @media (max-width:600px) {
+            .stats-two-col { grid-template-columns:1fr; }
+        }
+        .stats-empty {
+            padding:2rem;
+            text-align:center;
+            color:#9ca3af;
+            font-size:.88rem;
+        }
+        .stats-total-badge {
+            background:#f3e8ff;
+            color:#7c3aed;
+            font-size:.72rem;
+            font-weight:700;
+            padding:.2rem .6rem;
+            border-radius:9999px;
+            margin-left:auto;
+        }
+    </style>
+
+    <div class="stats-resumen">
+        <div class="stats-resumen-item">
+            <span class="stats-resumen-val">${totalDias}</span>
+            <span class="stats-resumen-lbl">Días de historial</span>
+        </div>
+        ${JUEGOS.map(j => {
+            const total = Object.values(frecuencias[j.key]).reduce((a, b) => a + b, 0);
+            const distintos = Object.keys(frecuencias[j.key]).length;
+            return `
+            <div class="stats-resumen-item">
+                <span class="stats-resumen-val" style="color:${j.color}">${total}</span>
+                <span class="stats-resumen-lbl">${j.label}<br>sorteos</span>
+            </div>`;
+        }).join('')}
+    </div>
+
+    <div class="stats-tabs" id="stats-tabs" role="tablist">
+        ${JUEGOS.map((j, i) => `
+            <button class="stats-tab${i === 0 ? ' active' : ''}"
+                style="${i === 0 ? `background:${j.color}` : ''}"
+                data-juego="${j.key}"
+                data-color="${j.color}"
+                data-bg="${j.bg}"
+                role="tab"
+                aria-selected="${i === 0}"
+                aria-controls="panel-${j.key}">
+                ${j.label}
+            </button>
+        `).join('')}
+    </div>
+    `;
+
+    JUEGOS.forEach((juego, i) => {
+        const freqs = frecuencias[juego.key];
+        const sorted = Object.entries(freqs).sort((a, b) => b[1] - a[1]);
+        const calientes = sorted.slice(0, TOP_N);
+        const frios     = sorted.slice(-TOP_N).reverse();
+        const maxVal    = calientes.length ? calientes[0][1] : 1;
+        const total     = sorted.reduce((a, b) => a + b[1], 0);
+
+        html += `
+        <div class="stats-panel${i === 0 ? ' active' : ''}" id="panel-${juego.key}" role="tabpanel">
+            ${sorted.length === 0 ? `<div class="stats-empty">Sin datos suficientes para ${juego.label}.</div>` : `
+            <div class="stats-two-col">
+                <div class="stats-card">
+                    <div class="stats-card-header" style="background:${juego.bg};color:${juego.color}">
+                        🔥 Números Calientes
+                        <span class="stats-total-badge">${total} sorteos</span>
+                    </div>
+                    <div class="stats-card-body">
+                        ${renderBarChart(calientes, juego.color, maxVal)}
+                    </div>
+                </div>
+                <div class="stats-card">
+                    <div class="stats-card-header" style="background:#f9fafb;color:#374151">
+                        🧊 Números Fríos
+                        <span class="stats-total-badge">${sorted.length} distintos</span>
+                    </div>
+                    <div class="stats-card-body">
+                        ${renderBarChart(frios, '#9ca3af', frios.length ? frios[0][1] : 1)}
+                    </div>
+                </div>
+            </div>
+            `}
+        </div>`;
+    });
+
+    contenido.innerHTML = html;
+
+    document.getElementById('stats-tabs').addEventListener('click', e => {
+        const btn = e.target.closest('.stats-tab');
+        if (!btn) return;
+        const juego = btn.dataset.juego;
+        const color = btn.dataset.color;
+
+        document.querySelectorAll('.stats-tab').forEach(b => {
+            b.classList.remove('active');
+            b.style.background = '';
+        });
+        btn.classList.add('active');
+        btn.style.background = color;
+
+        document.querySelectorAll('.stats-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`panel-${juego}`)?.classList.add('active');
+    });
+}
+
+async function cargarEstadisticas() {
+    try {
+        const resp = await fetch('/api/historial', { cache: 'no-cache' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        renderEstadisticas(data);
+    } catch (err) {
+        const loading = document.getElementById('stats-loading');
+        const contenido = document.getElementById('stats-contenido');
+        if (loading) loading.style.display = 'none';
+        if (contenido) contenido.innerHTML = `
+            <div style="text-align:center;padding:2.5rem;color:#dc2626;font-size:.9rem;">
+                <div style="font-size:2rem;margin-bottom:.75rem;">⚠️</div>
+                No se pudieron cargar los datos.<br>
+                <small style="color:#9ca3af;">${err.message}</small>
+            </div>`;
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cargarEstadisticas);
+} else {
+    cargarEstadisticas();
+}
+</script>
+</Layout>

@@ -1,0 +1,38 @@
+{
+  "name": "LotoHN - Resultados Lotería Honduras",
+  "short_name": "LotoHN",
+  "description": "Resultados en vivo de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio Honduras",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f5f3ff",
+  "theme_color": "#7c3aed",
+  "lang": "es-HN",
+  "categories": ["news", "entertainment"],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jugá 3",
+      "url": "/juga-3",
+      "description": "Ver resultados Jugá 3"
+    },
+    {
+      "name": "La Diaria",
+      "url": "/la-diaria",
+      "description": "Ver resultados La Diaria"
+    },
+    {
+      "name": "Historial",
+      "url": "/historial",
+      "description": "Historial de resultados"
+    }
+  ]
+}

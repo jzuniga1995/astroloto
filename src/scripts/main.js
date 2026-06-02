@@ -390,9 +390,8 @@ async function cargarResultados() {
         if (DATOS_EMBEBIDOS) {
             data = DATOS_EMBEBIDOS;
         } else {
-            const response = await fetch(`${JSON_URL}?t=${Date.now()}`, {
-                cache: 'no-store',
-                headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache' }
+            const response = await fetch(JSON_URL, {
+                cache: 'no-cache'
             });
             if (!response.ok) throw new Error('No se pudieron cargar los resultados.');
             data = await response.json();
