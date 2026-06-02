@@ -51,7 +51,7 @@ User-agent: Yandex
 Allow: /
 
 # Sitemap location
-Sitemap: https://lotohn.com/sitemap.xml
+Sitemap: https://lotohn.com/sitemap-index.xml
 
 # Crawl-delay (opcional - para ser amable con los servidores)
 # Crawl-delay: 1
