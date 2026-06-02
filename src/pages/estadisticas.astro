@@ -336,13 +336,15 @@ function extraerNumeros(datos, juegoKey) {
 }
 
 function calcularFrecuencias(historialData) {
-    const frecuencias = {};
-    JUEGOS.forEach(j => { frecuencias[j.key] = {}; });
+    const frecuencias   = {};
+    const conteoSorteos = {};
+    JUEGOS.forEach(j => { frecuencias[j.key] = {}; conteoSorteos[j.key] = 0; });
 
     Object.values(historialData).forEach(diaData => {
         Object.entries(diaData).forEach(([key, datos]) => {
             const juego = detectarJuego(key);
             if (!juego || !frecuencias[juego]) return;
+            conteoSorteos[juego]++;                        // sorteos reales siempre +1
             const nums = extraerNumeros(datos, juego);
             nums.forEach(n => {
                 if (n) frecuencias[juego][n] = (frecuencias[juego][n] || 0) + 1;
@@ -350,7 +352,7 @@ function calcularFrecuencias(historialData) {
         });
     });
 
-    return frecuencias;
+    return { frecuencias, conteoSorteos };
 }
 
 function renderBarChart(entries, color, maxVal) {
@@ -374,8 +376,8 @@ function renderEstadisticas(historialData) {
     if (loading) loading.style.display = 'none';
     if (!contenido) return;
 
-    const frecuencias = calcularFrecuencias(historialData);
-    const totalDias   = Object.keys(historialData).length;
+    const { frecuencias, conteoSorteos } = calcularFrecuencias(historialData);
+    const totalDias = Object.keys(historialData).length;
 
     let html = `
     <style>
@@ -522,15 +524,12 @@ function renderEstadisticas(historialData) {
             <span class="stats-resumen-val">${totalDias}</span>
             <span class="stats-resumen-lbl">Días de historial</span>
         </div>
-        ${JUEGOS.map(j => {
-            const total = Object.values(frecuencias[j.key]).reduce((a, b) => a + b, 0);
-            const distintos = Object.keys(frecuencias[j.key]).length;
-            return `
+        ${JUEGOS.map(j => `
             <div class="stats-resumen-item">
-                <span class="stats-resumen-val" style="color:${j.color}">${total}</span>
+                <span class="stats-resumen-val" style="color:${j.color}">${conteoSorteos[j.key]}</span>
                 <span class="stats-resumen-lbl">${j.label}<br>sorteos</span>
-            </div>`;
-        }).join('')}
+            </div>`
+        ).join('')}
     </div>
 
     <div class="stats-tabs" id="stats-tabs" role="tablist">
@@ -550,12 +549,12 @@ function renderEstadisticas(historialData) {
     `;
 
     JUEGOS.forEach((juego, i) => {
-        const freqs = frecuencias[juego.key];
-        const sorted = Object.entries(freqs).sort((a, b) => b[1] - a[1]);
+        const freqs   = frecuencias[juego.key];
+        const sorted  = Object.entries(freqs).sort((a, b) => b[1] - a[1]);
         const calientes = sorted.slice(0, TOP_N);
         const frios     = sorted.slice(-TOP_N).reverse();
         const maxVal    = calientes.length ? calientes[0][1] : 1;
-        const total     = sorted.reduce((a, b) => a + b[1], 0);
+        const totalSorteos = conteoSorteos[juego.key];
 
         html += `
         <div class="stats-panel${i === 0 ? ' active' : ''}" id="panel-${juego.key}" role="tabpanel">
@@ -564,7 +563,7 @@ function renderEstadisticas(historialData) {
                 <div class="stats-card">
                     <div class="stats-card-header" style="background:${juego.bg};color:${juego.color}">
                         🔥 Números Calientes
-                        <span class="stats-total-badge">${total} sorteos</span>
+                        <span class="stats-total-badge">${totalSorteos} sorteos</span>
                     </div>
                     <div class="stats-card-body">
                         ${renderBarChart(calientes, juego.color, maxVal)}
