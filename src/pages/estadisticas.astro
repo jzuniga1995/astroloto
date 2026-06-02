@@ -154,18 +154,19 @@ function detectarJuego(key) {
     return null;
 }
 
-function extraerNumeros(datos) {
-    const nums = [];
-    if (datos.numeros_adicionales?.length) {
-        datos.numeros_adicionales.forEach(n => {
-            if (!isNaN(n) && n !== null && n !== '') nums.push(String(n).trim());
+function extraerNumeros(datos, juegoKey) {
+    // Súper Premio: frecuencia de cada bola individual (6 bolas por sorteo)
+    if (juegoKey === 'super_premio') {
+        const nums = [];
+        (datos.numeros_adicionales || []).forEach(n => {
+            const s = String(n).trim();
+            if (s && !isNaN(s)) nums.push(s);
         });
-    } else if (datos.numeros_individuales?.length) {
-        nums.push(datos.numeros_individuales.join(''));
-    } else if (datos.numero_ganador) {
-        nums.push(String(datos.numero_ganador).trim());
+        return nums;
     }
-    return nums;
+    // Todos los demás juegos: un solo resultado por sorteo
+    if (datos.numero_ganador) return [String(datos.numero_ganador).trim()];
+    return [];
 }
 
 function calcularFrecuencias(historialData) {
@@ -176,7 +177,7 @@ function calcularFrecuencias(historialData) {
         Object.entries(diaData).forEach(([key, datos]) => {
             const juego = detectarJuego(key);
             if (!juego || !frecuencias[juego]) return;
-            const nums = extraerNumeros(datos);
+            const nums = extraerNumeros(datos, juego);
             nums.forEach(n => {
                 if (n) frecuencias[juego][n] = (frecuencias[juego][n] || 0) + 1;
             });
