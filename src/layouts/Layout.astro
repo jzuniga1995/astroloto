@@ -65,17 +65,17 @@ const { bodyClass = '' } = Astro.props;
     <div class="max-w-7xl mx-auto pt-4">
         <main class="p-4 md:p-6">
 
+            <!-- Contenido de cada página -->
+            <slot />
+
             <!-- Adsterra Native Banner -->
-            <div style="margin-bottom: 1rem;">
+            <div style="margin-top: 1.5rem; margin-bottom: 1rem;">
                 <script is:inline async data-cfasync="false" src="https://pl28417320.effectivegatecpm.com/c053bb82e7e2a6d39cd34a6acda6a322/invoke.js"></script>
                 <div id="container-c053bb82e7e2a6d39cd34a6acda6a322"></div>
             </div>
 
-            <!-- Contenido de cada página -->
-            <slot />
-
             <!-- Adsterra Banner 300x250 -->
-            <div style="display: flex; justify-content: center; margin-top: 1.5rem;">
+            <div style="display: flex; justify-content: center; margin-top: 1rem;">
                 <script is:inline>
                     atOptions = {
                         'key' : '4adb7d49b21a18585b492d5dc304a3c0',
@@ -99,8 +99,8 @@ const { bodyClass = '' } = Astro.props;
     <!-- Monetag Zone -->
     <script is:inline src="https://quge5.com/88/tag.min.js" data-zone="245625" async data-cfasync="false"></script>
 
-    <!-- Adsterra Popunder -->
-    <script is:inline src="https://pl28763898.effectivegatecpm.com/bb/ee/c0/bbeec0fcb17cd4d4fc49d7e85e3f4f35.js"></script>
+    <!-- Adsterra Popunder — comentado: afecta page experience y ranking SEO -->
+    <!-- <script is:inline src="https://pl28763898.effectivegatecpm.com/bb/ee/c0/bbeec0fcb17cd4d4fc49d7e85e3f4f35.js"></script> -->
 
     <!-- Adsterra Social Bar -->
     <script is:inline src="https://pl28763916.effectivegatecpm.com/35/14/fd/3514fdd317f29f6fae7476c399c70d81.js"></script>
