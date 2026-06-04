@@ -135,48 +135,30 @@ function filtrarSorteos(sorteos, tipoJuego) {
 }
 
 // ============================================
-// AGRUPAR SORTEOS POR HORARIO
+// AGRUPAR SORTEOS POR TANDA (sufijo de la key)
 // ============================================
 
-function agruparPorHorario(sorteos) {
-    const grupos = {
-        '11:00 AM': [],
-        '3:00 PM':  [],
-        '9:00 PM':  [],
-        'super':    []
-    };
-    
-    const mapeoHoras = {
-        '11:00 AM': '11:00 AM',
-        '10:00 AM': '11:00 AM',
-        '3:00 PM':  '3:00 PM',
-        '2:00 PM':  '3:00 PM',
-        '15:00':    '3:00 PM',
-        '9:00 PM':  '9:00 PM',
-        '21:00':    '9:00 PM'
-    };
-    
-    sorteos.forEach(([key, datos]) => {
-        const keyLower = key.toLowerCase();
-        if (keyLower.includes('super')) {
-            grupos['super'].push([key, datos]);
-        } else {
-            const horaNormalizada = mapeoHoras[datos.hora_sorteo];
-            if (horaNormalizada && grupos[horaNormalizada]) {
-                grupos[horaNormalizada].push([key, datos]);
-            }
-        }
+const TANDAS = {
+    '_11am': { label: 'SORTEO DE LA MAÑANA',  hora: '11:00 AM', icono: 'sunrise' },
+    '_3pm':  { label: 'SORTEO DE LA TARDE',   hora: '3:00 PM',  icono: 'sun'     },
+    '_9pm':  { label: 'SORTEO DE LA NOCHE',   hora: '9:00 PM',  icono: 'moon'    },
+    'otros': { label: 'OTROS JUEGOS',          hora: null,       icono: 'layers'  }
+};
+
+function detectarTanda(key) {
+    const k = key.toLowerCase();
+    if (k.endsWith('_11am')) return '_11am';
+    if (k.endsWith('_3pm'))  return '_3pm';
+    if (k.endsWith('_9pm'))  return '_9pm';
+    return 'otros';
+}
+
+function agruparPorTanda(sorteos) {
+    const grupos = { '_11am': [], '_3pm': [], '_9pm': [], 'otros': [] };
+    sorteos.forEach(entrada => {
+        const tanda = detectarTanda(entrada[0]);
+        grupos[tanda].push(entrada);
     });
-    
-    const ordenJuegos = ['juga3', 'pega3', 'premia2', 'diaria', 'super'];
-    Object.keys(grupos).forEach(hora => {
-        grupos[hora].sort((a, b) => {
-            const tipoA = ordenJuegos.findIndex(t => a[0].toLowerCase().includes(t));
-            const tipoB = ordenJuegos.findIndex(t => b[0].toLowerCase().includes(t));
-            return tipoA - tipoB;
-        });
-    });
-    
     return grupos;
 }
 
@@ -265,38 +247,33 @@ function crearCardJuego(key, datos) {
                width="72" height="72" loading="lazy" decoding="async">`
         : '';
 
+    // Determinar qué números mostrar: individuales (3 dígitos separados), adicionales, o número ganador
+    const tieneIndividuales = datos.numeros_individuales && datos.numeros_individuales.length > 0;
+    const tieneAdicionales  = datos.numeros_adicionales  && datos.numeros_adicionales.length  > 0;
+    const numeros = tieneIndividuales ? datos.numeros_individuales
+                  : tieneAdicionales  ? datos.numeros_adicionales
+                  : datos.numero_ganador ? [datos.numero_ganador]
+                  : [];
+
     let contenidoPrincipal = '';
 
-    if (key.includes('juga3')) {
-        contenidoPrincipal = datos.numero_ganador ? `
-            <div class="juga3-numero">
-                <div class="numeros-titulo">NÚMEROS GANADORES</div>
-                <div class="numeros-individuales">
-                    ${datos.numeros_individuales.map((num, i) =>
-                        `<div class="bola" style="animation-delay:${i * 0.1}s">${num}</div>`
-                    ).join('')}
+    if (numeros.length > 0) {
+        const titulo = key.toLowerCase().includes('diaria')
+            ? 'NÚMERO · SIGNO · MULTIPLICADOR'
+            : 'NÚMEROS GANADORES';
+        contenidoPrincipal = `
+            <div class="numeros-container">
+                <div class="numeros-titulo">${titulo}</div>
+                <div class="numeros-grid">
+                    ${numeros.map((num, i) => {
+                        const esTexto = isNaN(num) || String(num).trim() === '';
+                        return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
+                    }).join('')}
                 </div>
             </div>
-        ` : `<div class="pendiente"><i data-lucide="clock" class="w-5 h-5 inline-block mr-2"></i>Pendiente</div>`;
+        `;
     } else {
-        if (datos.numeros_adicionales && datos.numeros_adicionales.length > 0) {
-            const titulo = key.includes('diaria')
-                ? 'NÚMERO · SIGNO · MULTIPLICADOR'
-                : 'NÚMEROS GANADORES';
-            contenidoPrincipal = `
-                <div class="numeros-container">
-                    <div class="numeros-titulo">${titulo}</div>
-                    <div class="numeros-grid">
-                        ${datos.numeros_adicionales.map((num, i) => {
-                            const esTexto = isNaN(num);
-                            return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
-                        }).join('')}
-                    </div>
-                </div>
-            `;
-        } else {
-            contenidoPrincipal = `<div class="pendiente"><i data-lucide="clock" class="w-5 h-5 inline-block mr-2"></i>Pendiente</div>`;
-        }
+        contenidoPrincipal = `<div class="pendiente"><i data-lucide="clock" class="w-5 h-5 inline-block mr-2"></i>Pendiente</div>`;
     }
 
     const fechaConAnio = formatearFechaSorteo(datos.fecha_sorteo);
@@ -355,12 +332,7 @@ function ordenarPorFechaYHora(sorteos) {
 
         const horaA = ordenHoras[datosA.hora_sorteo] || 0;
         const horaB = ordenHoras[datosB.hora_sorteo] || 0;
-        if (horaA !== horaB) return horaA - horaB;
-
-        const ordenJuegos = ['juga3', 'pega3', 'premia2', 'diaria', 'super'];
-        const tipoA = ordenJuegos.findIndex(t => keyA.includes(t));
-        const tipoB = ordenJuegos.findIndex(t => keyB.includes(t));
-        return tipoA - tipoB;
+        return horaA - horaB;
     });
 }
 
@@ -420,38 +392,32 @@ async function cargarResultados() {
 
         preloadLogos(sorteosFiltrados);
 
-        const sorteosOrdenados  = ordenarPorFechaYHora(sorteosFiltrados);
-        const gruposPorHorario  = agruparPorHorario(sorteosOrdenados);
+        const sorteosOrdenados   = ordenarPorFechaYHora(sorteosFiltrados);
+        const gruposPorTanda     = agruparPorTanda(sorteosOrdenados);
         const esPaginaIndividual = tipoJuego !== 'todos';
 
         contenido.innerHTML = '';
 
-        const horarios = ['11:00 AM', '3:00 PM', '9:00 PM', 'super'];
-        const iconosHorario  = { '11:00 AM':'sunrise', '3:00 PM':'sun', '9:00 PM':'moon', 'super':'trophy' };
-        const nombresHorario = {
-            '11:00 AM': 'SORTEO DE LA MAÑANA',
-            '3:00 PM':  'SORTEO DE LA TARDE',
-            '9:00 PM':  'SORTEO DE LA NOCHE',
-            'super':    'SÚPER PREMIO'
-        };
-
-        horarios.forEach(horario => {
-            const sorteosDeLaHora = gruposPorHorario[horario];
-            if (!sorteosDeLaHora || sorteosDeLaHora.length === 0) return;
+        Object.entries(TANDAS).forEach(([tandaKey, tandaInfo]) => {
+            const lista = gruposPorTanda[tandaKey];
+            if (!lista || lista.length === 0) return;
 
             const section = document.createElement('div');
             section.className = 'sorteo-section';
 
             const header = document.createElement('h2');
             header.className = 'sorteo-header';
-            header.innerHTML = `<i data-lucide="${iconosHorario[horario]}" class="w-6 h-6 inline-block mr-2"></i>${nombresHorario[horario]}${horario !== 'super' ? ` - ${horario}` : ''}`;
+            const etiqueta = tandaInfo.hora
+                ? `${tandaInfo.label} - ${tandaInfo.hora}`
+                : tandaInfo.label;
+            header.innerHTML = `<i data-lucide="${tandaInfo.icono}" class="w-6 h-6 inline-block mr-2"></i>${etiqueta}`;
 
             const grid = document.createElement('div');
-            grid.className = esPaginaIndividual || sorteosDeLaHora.length <= 3
+            grid.className = esPaginaIndividual || lista.length <= 3
                 ? 'sorteo-grid horizontal'
                 : 'sorteo-grid';
 
-            sorteosDeLaHora.forEach(([key, datos]) => grid.appendChild(crearCardJuego(key, datos)));
+            lista.forEach(([key, datos]) => grid.appendChild(crearCardJuego(key, datos)));
 
             section.appendChild(header);
             section.appendChild(grid);
