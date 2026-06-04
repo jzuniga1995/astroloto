@@ -119,15 +119,35 @@ function formatearFechaSorteo(fechaSorteo) {
 }
 
 // ============================================
+// JUEGOS PRINCIPALES (tienen tanda _11am/_3pm/_9pm)
+// ============================================
+
+const JUEGOS_PRINCIPALES = ['juga3', 'pega3', 'premia2', 'la_diaria', 'multi_x'];
+
+function obtenerJuegoBase(key) {
+    return key.toLowerCase().replace(/_(11am|3pm|9pm)$/, '');
+}
+
+function esPrincipal(key) {
+    return JUEGOS_PRINCIPALES.includes(obtenerJuegoBase(key));
+}
+
+// Normaliza logo_url eliminando el sufijo de tanda del nombre de archivo
+// ej: /logos/juga3_11am.png → /logos/juga3.png
+function normalizarLogo(logo_url) {
+    if (!logo_url) return '';
+    return logo_url.replace(/_(11am|3pm|9pm)(\.[^.]+)$/, '$2');
+}
+
+// ============================================
 // FILTRAR SORTEOS POR TIPO
 // ============================================
 
 function filtrarSorteos(sorteos, tipoJuego) {
     if (tipoJuego === 'todos') return sorteos;
-    
     const filtrados = {};
     for (const [key, value] of Object.entries(sorteos)) {
-        if (key.toLowerCase().includes(tipoJuego)) {
+        if (obtenerJuegoBase(key).includes(tipoJuego)) {
             filtrados[key] = value;
         }
     }
@@ -156,7 +176,9 @@ function detectarTanda(key) {
 function agruparPorTanda(sorteos) {
     const grupos = { '_11am': [], '_3pm': [], '_9pm': [], 'otros': [] };
     sorteos.forEach(entrada => {
-        const tanda = detectarTanda(entrada[0]);
+        const key = entrada[0];
+        // Solo los 5 juegos principales van en sus tandas; el resto a "otros"
+        const tanda = esPrincipal(key) ? detectarTanda(key) : 'otros';
         grupos[tanda].push(entrada);
     });
     return grupos;
@@ -193,9 +215,8 @@ const logosPreloadCache = new Set();
 function preloadLogos(sorteos) {
     const logosUnicos = new Set();
     Object.values(sorteos).forEach(datos => {
-        if (datos.logo_url && datos.logo_url.startsWith('/logos/')) {
-            logosUnicos.add(datos.logo_url);
-        }
+        const src = normalizarLogo(datos.logo_url);
+        if (src && src.startsWith('/logos/')) logosUnicos.add(src);
     });
     logosUnicos.forEach(logoUrl => {
         if (!logosPreloadCache.has(logoUrl)) {
@@ -242,8 +263,9 @@ function crearCardJuego(key, datos) {
         .replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '')
         .trim();
 
-    const logoHTML = datos.logo_url
-        ? `<img src="${datos.logo_url}" alt="${nombreBase}" class="game-logo"
+    const logoSrc  = normalizarLogo(datos.logo_url);
+    const logoHTML = logoSrc
+        ? `<img src="${logoSrc}" alt="${nombreBase}" class="game-logo"
                width="72" height="72" loading="lazy" decoding="async">`
         : '';
 
