@@ -190,13 +190,25 @@ function detectarTanda(key) {
     return 'otros';
 }
 
+const OTROS_JUEGOS_PERMITIDOS = ['bingocontodo', 'superpremio'];
+
+function esOtroPermitido(key) {
+    return OTROS_JUEGOS_PERMITIDOS.includes(normalizarNombre(key));
+}
+
 function agruparPorTanda(sorteos) {
     const grupos = { '_11am': [], '_3pm': [], '_9pm': [], 'otros': [] };
-    sorteos.forEach(entrada => {
-        const key = entrada[0];
-        // Principales con tanda → su sección; el resto (incluyendo principales sin tanda) → otros
-        const tanda = esPrincipal(key) ? detectarTanda(key) : 'otros';
-        grupos[tanda].push(entrada);
+    sorteos.forEach(([key, datos]) => {
+        if (esPrincipal(key)) {
+            // Solo mostrar si el sorteo es de hoy
+            if (esFechaHoy(datos.fecha_sorteo)) {
+                grupos[detectarTanda(key)].push([key, datos]);
+            }
+        } else if (esOtroPermitido(key)) {
+            // Bingo y Super Premio: mostrar siempre (no juegan todos los días)
+            grupos['otros'].push([key, datos]);
+        }
+        // Cualquier otro juego: ignorar
     });
     return grupos;
 }
@@ -268,9 +280,7 @@ function crearCardJuego(key, datos) {
         return card;
     }
 
-    const esHoy = esFechaHoy(datos.fecha_sorteo);
-
-    card.className = esHoy ? 'game-card' : 'game-card resultado-anterior';
+    card.className = 'game-card';
 
     const nombreBase = datos.nombre_juego
         .replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '')
