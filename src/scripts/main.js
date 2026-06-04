@@ -134,6 +134,12 @@ function obtenerJuegoBase(key) {
 
 const JUEGOS_PRINCIPALES_NORM = ['juga3', 'pega3', 'premia2', 'ladiaria', 'diaria', 'multix'];
 
+// Mapea variantes al nombre canónico para deduplicación
+function canonicalizar(normName) {
+    if (normName === 'diaria') return 'ladiaria';
+    return normName;
+}
+
 // Mapa canónico de logos (evita depender del nombre del archivo del backend)
 const LOGO_MAP = {
     'juga3':        '/logos/juga3.png',
@@ -210,9 +216,8 @@ function agruparPorTanda(sorteos) {
         const gameNorm = normalizarNombre(obtenerJuegoBase(key));
 
         if (esPrincipal(key)) {
-            if (!esFechaHoy(datos.fecha_sorteo)) return; // solo resultados de hoy
             const tanda    = detectarTanda(key);
-            const dedupeId = `${gameNorm}_${tanda}`;
+            const dedupeId = `${canonicalizar(gameNorm)}_${tanda}`;
             if (vistos.has(dedupeId)) return;           // descartar duplicado
             vistos.add(dedupeId);
             grupos[tanda].push([key, datos]);
@@ -282,7 +287,7 @@ function crearCardJuego(key, datos) {
     const card = document.createElement('div');
 
     if (!datos.fecha_sorteo) {
-        card.className = 'game-card';
+        card.className = 'game-card resultado-anterior';
         card.innerHTML = `
             <div class="game-header">
                 <div class="game-title-row">
@@ -295,7 +300,7 @@ function crearCardJuego(key, datos) {
         return card;
     }
 
-    card.className = 'game-card';
+    card.className = esFechaHoy(datos.fecha_sorteo) ? 'game-card' : 'game-card resultado-anterior';
 
     const nombreBase = datos.nombre_juego
         .replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '')
