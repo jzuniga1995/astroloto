@@ -119,32 +119,35 @@ function formatearFechaSorteo(fechaSorteo) {
 }
 
 // ============================================
-// JUEGOS PRINCIPALES (tienen tanda _11am/_3pm/_9pm)
+// JUEGOS PRINCIPALES Y LOGOS
 // ============================================
 
-// Normaliza nombre quitando underscores para comparar sin importar formato
-// ej: pega_3 → pega3, premia_2 → premia2, la_diaria → ladiaria
+// Normaliza nombre quitando underscores/espacios: pega_3 → pega3, la_diaria → ladiaria
 function normalizarNombre(str) {
     return str.toLowerCase().replace(/_/g, '').replace(/\s/g, '');
 }
 
-const JUEGOS_PRINCIPALES_NORM = ['juga3', 'pega3', 'premia2', 'ladiaria', 'multix'];
-
+// Quita el sufijo de tanda (_11am, _10am, _3pm, _2pm, _9pm)
 function obtenerJuegoBase(key) {
-    return key.toLowerCase().replace(/_(11am|3pm|9pm)$/, '');
+    return key.toLowerCase().replace(/_(11am|10am|3pm|2pm|9pm)$/, '');
 }
 
-function esPrincipal(key) {
-    const tanda = detectarTanda(key);
-    if (tanda === 'otros') return false; // principales SIN tanda se ignoran
-    return JUEGOS_PRINCIPALES_NORM.includes(normalizarNombre(obtenerJuegoBase(key)));
-}
+const JUEGOS_PRINCIPALES_NORM = ['juga3', 'pega3', 'premia2', 'ladiaria', 'diaria', 'multix'];
 
-// Normaliza logo_url eliminando el sufijo de tanda del nombre de archivo
-// ej: /logos/juga3_11am.png → /logos/juga3.png
-function normalizarLogo(logo_url) {
-    if (!logo_url) return '';
-    return logo_url.replace(/_(11am|3pm|9pm)(\.[^.]+)$/, '$2');
+// Mapa canónico de logos (evita depender del nombre del archivo del backend)
+const LOGO_MAP = {
+    'juga3':        '/logos/juga3.png',
+    'pega3':        '/logos/pega3.png',
+    'premia2':      '/logos/premia2.png',
+    'ladiaria':     '/logos/la_diaria.png',
+    'diaria':       '/logos/la_diaria.png',
+    'multix':       '/logos/multi_x.png',
+    'superpremio':  '/logos/super_premio.png',
+    'bingocontodo': '/logos/bingo_con_todo.png',
+};
+
+function resolverLogo(key) {
+    return LOGO_MAP[normalizarNombre(obtenerJuegoBase(key))] || '';
 }
 
 // Devuelve true si fecha_sorteo corresponde a hoy en Honduras (UTC-6)
@@ -182,33 +185,45 @@ const TANDAS = {
     'otros': { label: 'OTROS JUEGOS',          hora: null,       icono: 'layers'  }
 };
 
+// _10am y _2pm son alias de la tanda de mañana y tarde respectivamente
 function detectarTanda(key) {
     const k = key.toLowerCase();
-    if (k.endsWith('_11am')) return '_11am';
-    if (k.endsWith('_3pm'))  return '_3pm';
-    if (k.endsWith('_9pm'))  return '_9pm';
+    if (k.endsWith('_11am') || k.endsWith('_10am')) return '_11am';
+    if (k.endsWith('_3pm')  || k.endsWith('_2pm'))  return '_3pm';
+    if (k.endsWith('_9pm'))                          return '_9pm';
     return 'otros';
 }
 
-const OTROS_JUEGOS_PERMITIDOS = ['bingocontodo', 'superpremio'];
-
-function esOtroPermitido(key) {
-    return OTROS_JUEGOS_PERMITIDOS.includes(normalizarNombre(key));
+function esPrincipal(key) {
+    if (detectarTanda(key) === 'otros') return false;
+    return JUEGOS_PRINCIPALES_NORM.includes(normalizarNombre(obtenerJuegoBase(key)));
 }
 
+// Juegos que van en "Otros Juegos" (sin tanda fija)
+const OTROS_PERMITIDOS = new Set(['bingocontodo', 'superpremio', 'multix']);
+
 function agruparPorTanda(sorteos) {
-    const grupos = { '_11am': [], '_3pm': [], '_9pm': [], 'otros': [] };
+    const grupos  = { '_11am': [], '_3pm': [], '_9pm': [], 'otros': [] };
+    const vistos  = new Set(); // deduplicar: gameNorm+tanda
+
     sorteos.forEach(([key, datos]) => {
+        const gameNorm = normalizarNombre(obtenerJuegoBase(key));
+
         if (esPrincipal(key)) {
-            // Solo mostrar si el sorteo es de hoy
-            if (esFechaHoy(datos.fecha_sorteo)) {
-                grupos[detectarTanda(key)].push([key, datos]);
+            if (!esFechaHoy(datos.fecha_sorteo)) return; // solo resultados de hoy
+            const tanda    = detectarTanda(key);
+            const dedupeId = `${gameNorm}_${tanda}`;
+            if (vistos.has(dedupeId)) return;           // descartar duplicado
+            vistos.add(dedupeId);
+            grupos[tanda].push([key, datos]);
+
+        } else if (OTROS_PERMITIDOS.has(gameNorm)) {
+            if (!vistos.has(gameNorm)) {
+                vistos.add(gameNorm);
+                grupos['otros'].push([key, datos]);
             }
-        } else if (esOtroPermitido(key)) {
-            // Bingo y Super Premio: mostrar siempre (no juegan todos los días)
-            grupos['otros'].push([key, datos]);
         }
-        // Cualquier otro juego: ignorar
+        // resto se ignora
     });
     return grupos;
 }
@@ -243,9 +258,9 @@ const logosPreloadCache = new Set();
 
 function preloadLogos(sorteos) {
     const logosUnicos = new Set();
-    Object.values(sorteos).forEach(datos => {
-        const src = normalizarLogo(datos.logo_url);
-        if (src && src.startsWith('/logos/')) logosUnicos.add(src);
+    Object.entries(sorteos).forEach(([key, datos]) => {
+        const src = resolverLogo(key);
+        if (src) logosUnicos.add(src);
     });
     logosUnicos.forEach(logoUrl => {
         if (!logosPreloadCache.has(logoUrl)) {
@@ -286,7 +301,7 @@ function crearCardJuego(key, datos) {
         .replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '')
         .trim();
 
-    const logoSrc  = normalizarLogo(datos.logo_url);
+    const logoSrc  = resolverLogo(key);
     const logoHTML = logoSrc
         ? `<img src="${logoSrc}" alt="${nombreBase}" class="game-logo"
                width="72" height="72" loading="lazy" decoding="async">`
