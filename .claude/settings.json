@@ -11,7 +11,12 @@
       "Bash(not exist *)",
       "Bash(New-Item -ItemType Directory -Force -Path \"C:\\\\Users\\\\Jose\\\\.claude\\\\projects\\\\c--Users-Jose-lotohn-astro\\\\memory\")",
       "Bash(Out-Null)",
-      "Bash(Write-Output \"OK\")"
+      "Bash(Write-Output \"OK\")",
+      "Bash(git -C \"c:\\\\Users\\\\Jose\\\\lotohn-astro\" status)",
+      "Bash(git -C \"c:\\\\Users\\\\Jose\\\\lotohn-astro\" diff)",
+      "Bash(git -C \"c:\\\\Users\\\\Jose\\\\lotohn-astro\" add src/layouts/Layout.astro)",
+      "Bash(git -C 'c:\\\\Users\\\\Jose\\\\lotohn-astro' commit -m ' *)",
+      "Bash(git -C \"c:\\\\Users\\\\Jose\\\\lotohn-astro\" push origin main)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Jose\\.claude\\projects\\c--Users-Jose-lotohn-astro"
