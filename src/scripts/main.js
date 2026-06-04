@@ -122,14 +122,22 @@ function formatearFechaSorteo(fechaSorteo) {
 // JUEGOS PRINCIPALES (tienen tanda _11am/_3pm/_9pm)
 // ============================================
 
-const JUEGOS_PRINCIPALES = ['juga3', 'pega3', 'premia2', 'la_diaria', 'multi_x'];
+// Normaliza nombre quitando underscores para comparar sin importar formato
+// ej: pega_3 → pega3, premia_2 → premia2, la_diaria → ladiaria
+function normalizarNombre(str) {
+    return str.toLowerCase().replace(/_/g, '').replace(/\s/g, '');
+}
+
+const JUEGOS_PRINCIPALES_NORM = ['juga3', 'pega3', 'premia2', 'ladiaria', 'multix'];
 
 function obtenerJuegoBase(key) {
     return key.toLowerCase().replace(/_(11am|3pm|9pm)$/, '');
 }
 
 function esPrincipal(key) {
-    return JUEGOS_PRINCIPALES.includes(obtenerJuegoBase(key));
+    const tanda = detectarTanda(key);
+    if (tanda === 'otros') return false; // principales SIN tanda se ignoran
+    return JUEGOS_PRINCIPALES_NORM.includes(normalizarNombre(obtenerJuegoBase(key)));
 }
 
 // Normaliza logo_url eliminando el sufijo de tanda del nombre de archivo
@@ -137,6 +145,15 @@ function esPrincipal(key) {
 function normalizarLogo(logo_url) {
     if (!logo_url) return '';
     return logo_url.replace(/_(11am|3pm|9pm)(\.[^.]+)$/, '$2');
+}
+
+// Devuelve true si fecha_sorteo corresponde a hoy en Honduras (UTC-6)
+function esFechaHoy(fechaSorteo) {
+    if (!fechaSorteo) return false;
+    const ahora = new Date();
+    const hn = new Date(ahora.getTime() + (ahora.getTimezoneOffset() * 60000) + 3600000 * -6);
+    const [dia, mes] = fechaSorteo.split('-').map(Number);
+    return dia === hn.getDate() && mes === (hn.getMonth() + 1);
 }
 
 // ============================================
@@ -147,7 +164,7 @@ function filtrarSorteos(sorteos, tipoJuego) {
     if (tipoJuego === 'todos') return sorteos;
     const filtrados = {};
     for (const [key, value] of Object.entries(sorteos)) {
-        if (obtenerJuegoBase(key).includes(tipoJuego)) {
+        if (normalizarNombre(obtenerJuegoBase(key)).includes(tipoJuego)) {
             filtrados[key] = value;
         }
     }
@@ -177,7 +194,7 @@ function agruparPorTanda(sorteos) {
     const grupos = { '_11am': [], '_3pm': [], '_9pm': [], 'otros': [] };
     sorteos.forEach(entrada => {
         const key = entrada[0];
-        // Solo los 5 juegos principales van en sus tandas; el resto a "otros"
+        // Principales con tanda → su sección; el resto (incluyendo principales sin tanda) → otros
         const tanda = esPrincipal(key) ? detectarTanda(key) : 'otros';
         grupos[tanda].push(entrada);
     });
@@ -251,13 +268,9 @@ function crearCardJuego(key, datos) {
         return card;
     }
 
-    const fechaHoy = new Date();
-    const [dia, mes, año] = datos.fecha_sorteo.split('-').map(Number);
-    const fechaSorteo = new Date(año || fechaHoy.getFullYear(), mes - 1, dia);
-    const esAnterior  = datos.estado === 'anterior' ||
-                        fechaSorteo < new Date(fechaHoy.getFullYear(), fechaHoy.getMonth(), fechaHoy.getDate());
+    const esHoy = esFechaHoy(datos.fecha_sorteo);
 
-    card.className = esAnterior ? 'game-card resultado-anterior' : 'game-card';
+    card.className = esHoy ? 'game-card' : 'game-card resultado-anterior';
 
     const nombreBase = datos.nombre_juego
         .replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '')
