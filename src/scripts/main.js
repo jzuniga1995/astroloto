@@ -339,9 +339,9 @@ function crearCardJuego(key, datos) {
                             const esTexto = isNaN(num) || String(num).trim() === '';
                             return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
                         }).join('')}
-                        <div class="mas1-bola" style="animation-delay:${principales.length * 0.1}s">
-                            <img src="/logos/mas1.png" alt="Más 1" class="mas1-logo-img" width="36" height="36" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;">
-                            <span class="mas1-num">${mas1}</span>
+                        <div class="mas1-bola" style="display:inline-flex;flex-direction:row;align-items:center;gap:6px;animation-delay:${principales.length * 0.1}s">
+                            <img src="/logos/mas1.png" alt="Más 1" width="32" height="32" style="width:32px;height:32px;object-fit:contain;flex-shrink:0;display:block;">
+                            <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ca8a04,#eab308);color:#fff;font-size:1.25rem;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(202,138,4,0.4);flex-shrink:0;">${mas1}</div>
                         </div>
                     </div>
                 </div>
