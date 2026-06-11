@@ -2,70 +2,82 @@
 // src/components/AnalizadorIA.astro
 ---
 
-<div id="analizador-root" class="analizador-root" aria-label="Analizador IA">
+<div id="analizador-root" aria-label="Analizador IA">
 
     <!-- Skeleton -->
     <div class="an-skeleton" id="an-skeleton">
-        <div class="sk-toprow">
-            <div class="sk-dot"></div>
-            <div class="sk-line" style="width:38%"></div>
-            <div class="sk-pill"></div>
+        <div class="sk-inner">
+            <div class="sk-left">
+                <div class="sk-title"></div>
+                <div class="sk-sub"></div>
+            </div>
+            <div class="sk-tabs">
+                <div class="sk-tab"></div><div class="sk-tab"></div>
+                <div class="sk-tab"></div><div class="sk-tab"></div>
+            </div>
+            <div class="sk-body">
+                <div class="sk-line w90"></div>
+                <div class="sk-line w70"></div>
+                <div class="sk-line w55"></div>
+            </div>
         </div>
-        <div class="sk-tabs">
-            <div class="sk-tab"></div>
-            <div class="sk-tab" style="animation-delay:.1s"></div>
-            <div class="sk-tab" style="animation-delay:.2s"></div>
-            <div class="sk-tab" style="animation-delay:.3s"></div>
-            <div class="sk-tab" style="animation-delay:.4s"></div>
-        </div>
-        <div class="sk-line" style="width:92%;margin-top:.9rem"></div>
-        <div class="sk-line" style="width:70%;margin-top:.45rem"></div>
-        <div class="sk-line" style="width:55%;margin-top:.45rem"></div>
     </div>
 
-    <!-- Card -->
-    <div class="an-card" id="an-card" style="display:none">
+    <!-- Banner principal -->
+    <div class="an-banner" id="an-card" style="display:none">
 
-        <div class="an-header">
-            <div class="an-icon" aria-hidden="true">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2.4"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                    <path d="M2 17l10 5 10-5"/>
-                    <path d="M2 12l10 5 10-5"/>
-                </svg>
+        <!-- Fondo decorativo -->
+        <div class="an-bg-orbs" aria-hidden="true">
+            <div class="orb orb1"></div>
+            <div class="orb orb2"></div>
+            <div class="orb orb3"></div>
+        </div>
+
+        <!-- Header del banner -->
+        <div class="an-top">
+            <div class="an-brand">
+                <span class="an-fire">🔥</span>
+                <div>
+                    <div class="an-title">Analizador IA</div>
+                    <div class="an-subtitle" id="an-fecha">Cargando...</div>
+                </div>
             </div>
-            <div class="an-meta">
-                <span class="an-label">Analizador IA</span>
-                <span class="an-fecha" id="an-fecha"></span>
+            <div class="an-badges">
+                <span class="badge-ai">🤖 Powered by IA</span>
+                <span class="badge-live">⚡ En vivo</span>
             </div>
-            <div class="an-badge">🤖 IA</div>
         </div>
 
         <!-- Tabs de juegos -->
         <div class="an-tabs" id="an-tabs" role="tablist"></div>
 
-        <!-- Panel del juego activo -->
+        <!-- Panel -->
         <div class="an-panel" id="an-panel">
-            <p class="an-texto" id="an-patrones"></p>
-            <p class="an-texto an-tendencias" id="an-tendencias"></p>
-            <div class="an-sugs" id="an-sugs" style="display:none">
-                <span class="an-sugs-label">🎯 Sugerencias</span>
-                <div class="an-balls-row" id="an-balls"></div>
+            <div class="an-cols">
+                <div class="an-col-text">
+                    <div class="an-text-block" id="an-patrones-block">
+                        <span class="block-icon">📊</span>
+                        <p id="an-patrones"></p>
+                    </div>
+                    <div class="an-text-block" id="an-tendencias-block">
+                        <span class="block-icon">📈</span>
+                        <p id="an-tendencias"></p>
+                    </div>
+                </div>
+                <div class="an-col-sugs" id="an-sugs" style="display:none">
+                    <div class="sugs-header">🎯 Sugerencias del día</div>
+                    <div class="an-balls-row" id="an-balls"></div>
+                    <div class="sugs-disclaimer" id="an-advertencia"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Botón -->
-        <div class="an-bottom">
+        <!-- CTA -->
+        <div class="an-cta">
             <button class="an-btn" id="an-btn" type="button">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2.5"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="5 3 19 12 5 21 5 3"/>
-                </svg>
-                Ver sugerencias de hoy
+                🎰 Ver sugerencias de hoy
             </button>
+            <span class="an-cta-hint">Análisis basado en los últimos sorteos</span>
         </div>
 
     </div>
@@ -77,159 +89,190 @@
 </div>
 
 <style>
-    .analizador-root {
-        --ca:     #7c3aed;
-        --cb:     #ddd6fe;
-        --ca-rgb: 124,58,237;
-        font-family: inherit;
-        width: 100%;
-    }
+    /* ── Reset scope ── */
+    #analizador-root * { box-sizing: border-box; }
+    #analizador-root { width: 100%; font-family: inherit; }
 
+    /* ── Skeleton ── */
     .an-skeleton {
-        background: #fff;
-        border: 1px solid rgba(0,0,0,.08);
-        border-radius: 1rem;
-        padding: .9rem 1.2rem 1rem;
+        border-radius: 1.25rem;
+        background: linear-gradient(135deg, #1e1b4b, #4c1d95);
+        padding: 1.25rem 1.5rem;
     }
-    .sk-toprow { display:flex; align-items:center; gap:.55rem; }
-    .sk-dot  { width:1.6rem; height:1.6rem; border-radius:50%;
-               background:rgba(0,0,0,.08); flex-shrink:0;
-               animation:sk-s 1.5s ease-in-out infinite; }
-    .sk-pill { width:3rem; height:1rem; border-radius:2rem;
-               background:rgba(0,0,0,.08); margin-left:auto;
-               animation:sk-s 1.5s ease-in-out infinite; }
-    .sk-line { height:.56rem; border-radius:.4rem;
-               background:linear-gradient(90deg,rgba(0,0,0,.05) 25%,rgba(0,0,0,.1) 50%,rgba(0,0,0,.05) 75%);
-               background-size:200% 100%; animation:sk-s 1.5s ease-in-out infinite; }
-    .sk-tabs { display:flex; gap:.5rem; margin-top:.9rem; }
-    .sk-tab  { height:1.8rem; width:5rem; border-radius:.5rem;
-               background:rgba(0,0,0,.07); animation:sk-s 1.5s ease-in-out infinite; }
-    @keyframes sk-s {
-        0%,100% { background-position:200% center; opacity:.7; }
-        50%      { opacity:1; }
-    }
+    .sk-inner { display:flex; flex-direction:column; gap:.75rem; }
+    .sk-left { display:flex; flex-direction:column; gap:.4rem; }
+    .sk-title { height:.9rem; width:8rem; border-radius:.4rem; background:rgba(255,255,255,.15); animation:skp 1.5s ease-in-out infinite; }
+    .sk-sub   { height:.6rem; width:5rem; border-radius:.4rem; background:rgba(255,255,255,.1);  animation:skp 1.5s ease-in-out infinite .1s; }
+    .sk-tabs  { display:flex; gap:.5rem; }
+    .sk-tab   { height:1.7rem; width:5.5rem; border-radius:.5rem; background:rgba(255,255,255,.1); animation:skp 1.5s ease-in-out infinite; }
+    .sk-body  { display:flex; flex-direction:column; gap:.35rem; }
+    .sk-line  { height:.55rem; border-radius:.3rem; background:rgba(255,255,255,.1); animation:skp 1.5s ease-in-out infinite; }
+    .w90{width:90%} .w70{width:70%} .w55{width:55%}
+    @keyframes skp { 0%,100%{opacity:.5} 50%{opacity:1} }
 
-    .an-card {
-        background: #fff;
-        border: 1px solid rgba(0,0,0,.09);
-        border-radius: 1rem;
+    /* ── Banner ── */
+    .an-banner {
+        border-radius: 1.25rem;
+        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 45%, #6d28d9 100%);
         overflow: hidden;
         position: relative;
-        box-shadow: inset 0 3px 0 var(--ca), 0 2px 8px rgba(0,0,0,.07);
-        animation: an-in .4s cubic-bezier(.22,1,.36,1) both;
+        box-shadow: 0 8px 32px rgba(109,40,217,.45), 0 2px 8px rgba(0,0,0,.2);
+        animation: ban-in .5s cubic-bezier(.22,1,.36,1) both;
     }
-    @keyframes an-in {
-        from { opacity:0; transform:translateY(6px); }
-        to   { opacity:1; transform:translateY(0); }
-    }
-    .an-card::before {
-        content:''; position:absolute; inset:0;
-        background:linear-gradient(160deg, rgba(var(--ca-rgb),.05) 0%, transparent 50%);
-        pointer-events:none; z-index:0;
+    @keyframes ban-in {
+        from { opacity:0; transform:translateY(8px) scale(.99); }
+        to   { opacity:1; transform:translateY(0)   scale(1); }
     }
 
-    .an-header {
-        display:flex; align-items:center; gap:.55rem;
-        padding:.8rem 1.2rem .5rem;
-        position:relative; z-index:1;
-    }
-    .an-icon {
-        width:1.7rem; height:1.7rem; border-radius:50%;
-        background:rgba(var(--ca-rgb),.15); color:var(--ca);
-        display:flex; align-items:center; justify-content:center; flex-shrink:0;
-    }
-    .an-meta { display:flex; flex-direction:column; gap:.05rem; flex:1; min-width:0; }
-    .an-label {
-        font-size:.67rem; font-weight:800; text-transform:uppercase;
-        letter-spacing:.07em; color:var(--ca); line-height:1;
-    }
-    .an-fecha { font-size:.6rem; color:#9ca3af; font-weight:500; }
-    .an-badge {
-        font-size:.6rem; font-weight:700; color:var(--ca);
-        background:rgba(var(--ca-rgb),.1); border:1px solid rgba(var(--ca-rgb),.25);
-        padding:.2rem .6rem; border-radius:2rem; white-space:nowrap; flex-shrink:0;
-    }
+    /* Orbs decorativos */
+    .an-bg-orbs { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+    .orb { position:absolute; border-radius:50%; filter:blur(40px); opacity:.35; }
+    .orb1 { width:220px; height:220px; background:#a855f7; top:-60px; right:-40px; }
+    .orb2 { width:160px; height:160px; background:#f59e0b; bottom:-50px; left:10%; }
+    .orb3 { width:120px; height:120px; background:#06b6d4; top:30%; right:25%; }
 
+    /* Top */
+    .an-top {
+        display: flex; align-items: center;
+        justify-content: space-between; flex-wrap: wrap; gap: .75rem;
+        padding: 1rem 1.4rem .6rem;
+        position: relative; z-index: 1;
+    }
+    .an-brand { display:flex; align-items:center; gap:.65rem; }
+    .an-fire  { font-size:2rem; line-height:1; filter:drop-shadow(0 0 8px rgba(251,146,60,.8)); animation:fire-flicker 2s ease-in-out infinite; }
+    @keyframes fire-flicker {
+        0%,100% { transform:scale(1)   rotate(-2deg); }
+        50%      { transform:scale(1.1) rotate(2deg);  }
+    }
+    .an-title {
+        font-size:1.05rem; font-weight:900; color:#fff;
+        text-transform:uppercase; letter-spacing:.08em;
+        text-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
+    .an-subtitle { font-size:.65rem; color:rgba(255,255,255,.65); font-weight:500; margin-top:.05rem; }
+
+    .an-badges { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .badge-ai, .badge-live {
+        font-size:.62rem; font-weight:700; padding:.25rem .7rem; border-radius:2rem;
+        white-space:nowrap;
+    }
+    .badge-ai   { background:rgba(255,255,255,.15); color:#e9d5ff; border:1px solid rgba(255,255,255,.2); }
+    .badge-live { background:linear-gradient(135deg,#f59e0b,#ef4444); color:#fff; border:none;
+                  box-shadow:0 2px 8px rgba(239,68,68,.5); animation:pulse-live 2s ease-in-out infinite; }
+    @keyframes pulse-live { 0%,100%{box-shadow:0 2px 8px rgba(239,68,68,.5)} 50%{box-shadow:0 2px 16px rgba(239,68,68,.8)} }
+
+    /* Tabs */
     .an-tabs {
         display:flex; gap:.4rem; flex-wrap:wrap;
-        padding:.35rem 1.2rem .55rem;
+        padding:.3rem 1.4rem .6rem;
         position:relative; z-index:1;
-        border-bottom:1px solid rgba(0,0,0,.06);
     }
 
+    /* Panel */
     .an-panel {
-        padding:.75rem 1.2rem .5rem;
-        position:relative; z-index:1;
-        animation: an-fade .25s ease both;
+        margin: 0 1rem .5rem;
+        background: rgba(255,255,255,.08);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,.12);
+        border-radius: 1rem;
+        padding: 1rem 1.1rem .9rem;
+        position: relative; z-index:1;
+        animation: pan-in .25s ease both;
     }
-    @keyframes an-fade { from{opacity:0;} to{opacity:1;} }
+    @keyframes pan-in { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
 
-    .an-texto {
-        font-size:.82rem; color:#374151; line-height:1.6; margin:0 0 .35rem;
+    .an-cols { display:flex; gap:1.25rem; flex-wrap:wrap; }
+    .an-col-text { flex:1; min-width:0; display:flex; flex-direction:column; gap:.6rem; }
+    .an-text-block { display:flex; align-items:flex-start; gap:.5rem; }
+    .block-icon { font-size:1rem; line-height:1.5; flex-shrink:0; }
+    .an-text-block p { font-size:.82rem; color:rgba(255,255,255,.88); line-height:1.6; margin:0; }
+
+    .an-col-sugs { flex-shrink:0; }
+    .sugs-header {
+        font-size:.62rem; font-weight:800; text-transform:uppercase;
+        letter-spacing:.08em; color:#fde68a; margin-bottom:.55rem;
     }
-    .an-tendencias { color:#6b7280; font-style:italic; }
-
-    .an-sugs { margin-top:.65rem; }
-    .an-sugs-label {
-        font-size:.57rem; font-weight:700; text-transform:uppercase;
-        letter-spacing:.07em; color:var(--ca); display:block; margin-bottom:.45rem;
+    .an-balls-row { display:flex; gap:.45rem; flex-wrap:wrap; }
+    .sugs-disclaimer {
+        font-size:.58rem; color:rgba(255,255,255,.45); margin-top:.55rem;
+        font-style:italic; max-width:200px; line-height:1.4;
     }
-    .an-balls-row { display:flex; gap:.4rem; flex-wrap:wrap; }
 
-    .an-bottom {
-        padding:.55rem 1.2rem .85rem;
+    /* CTA */
+    .an-cta {
+        display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
+        padding:.7rem 1.4rem 1rem;
         position:relative; z-index:1;
     }
     .an-btn {
-        display:inline-flex; align-items:center; gap:.45rem;
-        background:linear-gradient(135deg, var(--ca), #a855f7);
-        color:#fff; font-size:.8rem; font-weight:700;
-        padding:.5rem 1.15rem; border-radius:2rem; border:none; cursor:pointer;
-        box-shadow:0 3px 10px rgba(var(--ca-rgb),.35);
-        transition:transform .15s ease, box-shadow .15s ease;
+        display:inline-flex; align-items:center; gap:.4rem;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color:#fff; font-size:.85rem; font-weight:900;
+        padding:.55rem 1.4rem; border-radius:2rem; border:none; cursor:pointer;
+        box-shadow: 0 4px 16px rgba(239,68,68,.5), 0 0 0 0 rgba(239,68,68,.4);
+        letter-spacing:.02em; text-transform:uppercase;
+        transition: transform .15s ease, box-shadow .15s ease;
+        animation: cta-pulse 3s ease-in-out infinite;
     }
-    .an-btn:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(var(--ca-rgb),.4); }
-    .an-btn:active { transform:translateY(0); }
+    @keyframes cta-pulse {
+        0%,100% { box-shadow:0 4px 16px rgba(239,68,68,.5), 0 0 0 0 rgba(239,68,68,.4); }
+        50%      { box-shadow:0 6px 24px rgba(239,68,68,.7), 0 0 0 6px rgba(239,68,68,.0); }
+    }
+    .an-btn:hover { transform:translateY(-2px) scale(1.03); }
+    .an-btn:active { transform:translateY(0) scale(1); }
     .an-btn.done {
-        background:linear-gradient(135deg,#16a34a,#22c55e);
-        box-shadow:0 3px 10px rgba(22,163,74,.35);
-        cursor:default; pointer-events:none;
+        background: linear-gradient(135deg,#16a34a,#22c55e);
+        box-shadow: 0 4px 16px rgba(22,163,74,.5);
+        animation: none; cursor:default; pointer-events:none;
     }
+    .an-cta-hint { font-size:.62rem; color:rgba(255,255,255,.5); font-style:italic; }
 
+    /* Error */
     .an-error {
         font-size:.8rem; color:#9ca3af; padding:.8rem 1rem;
         border:1px dashed rgba(0,0,0,.1); border-radius:1rem; text-align:center;
     }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .an-top { padding:.85rem 1rem .5rem; }
+        .an-tabs { padding:.3rem 1rem .5rem; }
+        .an-panel { margin:0 .75rem .4rem; }
+        .an-cta { padding:.6rem 1rem .85rem; }
+        .an-badges { display:none; }
+    }
 </style>
 
 <style is:global>
+    /* Tabs — creados dinámicamente */
     #analizador-root .an-tab-btn {
-        font-size:.7rem; font-weight:700; text-transform:uppercase;
-        letter-spacing:.04em; padding:.3rem .75rem; border-radius:.5rem;
-        border:1px solid rgba(124,58,237,.22); background:transparent;
-        color:#6b7280; cursor:pointer;
-        transition:background .15s, color .15s;
+        font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em;
+        padding:.3rem .8rem; border-radius:.6rem;
+        border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08);
+        color:rgba(255,255,255,.65); cursor:pointer;
+        transition:background .15s, color .15s, border-color .15s;
     }
     #analizador-root .an-tab-btn:hover {
-        background:rgba(124,58,237,.08); color:#7c3aed;
+        background:rgba(255,255,255,.15); color:#fff;
     }
     #analizador-root .an-tab-btn.active {
-        background:rgba(124,58,237,.12); color:#7c3aed;
-        border-color:rgba(124,58,237,.45); font-weight:800;
+        background: linear-gradient(135deg, rgba(251,191,36,.25), rgba(245,158,11,.15));
+        color:#fde68a; border-color:rgba(251,191,36,.55); font-weight:900;
     }
 
+    /* Bolas */
     #analizador-root .an-ball {
-        width:2.4rem; height:2.4rem; border-radius:50%;
+        width:2.6rem; height:2.6rem; border-radius:50%;
         display:flex; align-items:center; justify-content:center;
-        font-size:.88rem; font-weight:900; color:#fff;
-        background: radial-gradient(circle at 33% 28%, #fff 0%, #ddd6fe 28%, #7c3aed 62%, rgba(0,0,0,.28) 100%);
-        box-shadow: 0 3px 8px rgba(124,58,237,.35), inset 0 -2px 5px rgba(0,0,0,.2), inset 0 2px 4px rgba(255,255,255,.4);
+        font-size:.92rem; font-weight:900; color:#1e1b4b;
+        background: radial-gradient(circle at 35% 28%, #fff 0%, #fde68a 35%, #f59e0b 70%, #b45309 100%);
+        box-shadow: 0 4px 12px rgba(245,158,11,.6), inset 0 -3px 6px rgba(0,0,0,.15), inset 0 2px 5px rgba(255,255,255,.7);
         flex-shrink:0;
-        animation: an-ball-in .4s cubic-bezier(.34,1.56,.64,1) both;
+        animation: ball-pop .45s cubic-bezier(.34,1.56,.64,1) both;
     }
-    @keyframes an-ball-in {
-        from { opacity:0; transform:scale(.3); }
-        to   { opacity:1; transform:scale(1); }
+    @keyframes ball-pop {
+        from { opacity:0; transform:scale(.2) rotate(-20deg); }
+        to   { opacity:1; transform:scale(1)  rotate(0); }
     }
 </style>
 
@@ -243,43 +286,41 @@
     const tendEl     = document.getElementById('an-tendencias') as HTMLElement;
     const sugsEl     = document.getElementById('an-sugs')       as HTMLElement;
     const ballsEl    = document.getElementById('an-balls')      as HTMLElement;
+    const advEl      = document.getElementById('an-advertencia') as HTMLElement;
     const btn        = document.getElementById('an-btn')        as HTMLButtonElement;
     const panelEl    = document.getElementById('an-panel')      as HTMLElement;
 
     const LABELS: Record<string, string> = {
-        juga3: 'Jugá 3', pega_3: 'Pega 3', premia2: 'Premia 2',
-        la_diaria: 'La Diaria', super_premio: 'Súper Premio'
+        juga3: '🎲 Jugá 3', pega_3: '🎯 Pega 3', premia2: '⭐ Premia 2',
+        la_diaria: '🌟 La Diaria', super_premio: '🏆 Súper Premio'
     };
 
     let juegosData: Record<string, any> = {};
     let activeKey = '';
     let revealed = false;
 
-    function renderBolas(nums: (number|string)[]) {
-        ballsEl.innerHTML = '';
-        nums.forEach((n, i) => {
-            const b = document.createElement('div');
-            b.className = 'an-ball';
-            b.textContent = String(n);
-            b.style.animationDelay = `${i * 0.08}s`;
-            ballsEl.appendChild(b);
-        });
-        sugsEl.style.display = nums.length ? 'block' : 'none';
-    }
-
     function renderPanel(key: string, mostrarSugs: boolean) {
         const d = juegosData[key];
         if (!d) return;
-
         panelEl.style.animation = 'none';
         void panelEl.offsetWidth;
         panelEl.style.animation = '';
 
-        patronesEl.textContent = d.patrones  || '';
+        patronesEl.textContent = d.patrones   || '';
         tendEl.textContent     = d.tendencias || '';
 
         if (mostrarSugs) {
-            renderBolas((d.sugerencias || []) as (number|string)[]);
+            const sugs = (d.sugerencias || []) as (number|string)[];
+            ballsEl.innerHTML = '';
+            sugs.forEach((n, i) => {
+                const b = document.createElement('div');
+                b.className = 'an-ball';
+                b.textContent = String(n);
+                b.style.animationDelay = `${i * 0.09}s`;
+                ballsEl.appendChild(b);
+            });
+            if (d.advertencia) advEl.textContent = '⚠️ ' + d.advertencia;
+            sugsEl.style.display = sugs.length ? 'block' : 'none';
         } else {
             sugsEl.style.display = 'none';
         }
@@ -301,7 +342,6 @@
 
         juegosData = data.juegos;
 
-        // Fecha
         if (data.fecha) {
             const [y, m, d] = (data.fecha as string).split('-').map(Number);
             const dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
@@ -312,7 +352,6 @@
                 `${dias[f.getDay()]} ${d} de ${meses[m-1]}`;
         }
 
-        // Tabs
         Object.keys(juegosData).forEach(key => {
             const b = document.createElement('button');
             b.className = 'an-tab-btn';
@@ -326,12 +365,11 @@
         const keys = Object.keys(juegosData);
         if (keys.length) activarTab(keys[0]);
 
-        // Botón
         btn.addEventListener('click', () => {
             window.open('https://omg10.com/4/11134766', '_blank', 'noopener,noreferrer');
             if (!revealed) {
                 revealed = true;
-                btn.textContent = '✓ Sugerencias reveladas';
+                btn.innerHTML = '✅ Sugerencias reveladas';
                 btn.classList.add('done');
                 renderPanel(activeKey, true);
             }
