@@ -340,7 +340,7 @@ function crearCardJuego(key, datos) {
                             return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
                         }).join('')}
                         <div class="mas1-bola" style="animation-delay:${principales.length * 0.1}s">
-                            <img src="/logos/mas1.png" alt="Más 1" class="mas1-logo-img">
+                            <img src="/logos/mas1.png" alt="Más 1" class="mas1-logo-img" width="36" height="36" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;">
                             <span class="mas1-num">${mas1}</span>
                         </div>
                     </div>
