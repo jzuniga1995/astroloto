@@ -81,15 +81,19 @@ function detectarJuego(key) {
     return null;
 }
 
-function formatearNums(datos) {
+function formatearNums(datos, juego) {
     if (!datos) return '—';
-    if (Array.isArray(datos)) return datos.join(' · ');
-    // compatibilidad con formato anterior (objeto con numeros_adicionales)
-    const nums = datos.numeros_adicionales?.length
-        ? datos.numeros_adicionales
-        : datos.numeros_individuales;
-    if (nums?.length) return nums.join(' · ');
-    return datos.numero_ganador ?? '—';
+    const arr = Array.isArray(datos)
+        ? datos
+        : (datos.numeros_adicionales?.length ? datos.numeros_adicionales : datos.numeros_individuales);
+    if (!arr?.length) return datos.numero_ganador ?? '—';
+
+    if (juego === 'la_diaria' && arr.length >= 2) {
+        const principales = arr.slice(0, -1).join(' · ');
+        const mas1 = arr[arr.length - 1];
+        return `${principales} · <span class="mas1-cell"><img src="/logos/mas1.png" alt="Más 1" class="mas1-cell-img">${mas1}</span>`;
+    }
+    return arr.join(' · ');
 }
 
 // ── Procesar datos → filas ────────────────────────────────────────────────────
@@ -172,7 +176,7 @@ function renderTabla() {
             </td>
             ${columnas.map(c => `
                 <td class="td-num" data-label="${JUEGOS_CONFIG[c].label}">
-                    ${formatearNums(celdas[c])}
+                    ${formatearNums(celdas[c], c)}
                 </td>`).join('')}
         </tr>`).join('');
 
@@ -585,6 +589,8 @@ function renderInterfaz() {
         .h-ellipsis         { color: var(--c-muted); font-size: .8rem; padding: 0 .15rem; }
         .h-pag-info         { font-size: .71rem; color: var(--c-muted); font-weight: 500; margin-left: auto; white-space: nowrap; }
         .h-pag-info strong  { color: var(--c-brand2); }
+        .mas1-cell          { display: inline-flex; align-items: center; gap: 2px; }
+        .mas1-cell-img      { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
     </style>
 
     <div class="h-root">

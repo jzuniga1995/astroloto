@@ -322,21 +322,44 @@ function crearCardJuego(key, datos) {
 
     let contenidoPrincipal = '';
 
+    const esDiaria = normalizarNombre(obtenerJuegoBase(key)) === 'ladiaria'
+                  || normalizarNombre(obtenerJuegoBase(key)) === 'diaria';
+
     if (numeros.length > 0) {
-        const titulo = key.toLowerCase().includes('diaria')
-            ? 'NÚMERO · SIGNO · MULTIPLICADOR'
-            : 'NÚMEROS GANADORES';
-        contenidoPrincipal = `
-            <div class="numeros-container">
-                <div class="numeros-titulo">${titulo}</div>
-                <div class="numeros-grid">
-                    ${numeros.map((num, i) => {
-                        const esTexto = isNaN(num) || String(num).trim() === '';
-                        return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
-                    }).join('')}
+        if (esDiaria && numeros.length >= 2) {
+            // La Diaria: primeros N-1 como bolas normales, último con badge Más 1
+            const principales = numeros.slice(0, -1);
+            const mas1        = numeros[numeros.length - 1];
+            const mas1EsNum   = !isNaN(String(mas1).trim()) && String(mas1).trim() !== '';
+            contenidoPrincipal = `
+                <div class="numeros-container">
+                    <div class="numeros-titulo">NÚMERO · SIGNO · MÁS 1</div>
+                    <div class="numeros-grid">
+                        ${principales.map((num, i) => {
+                            const esTexto = isNaN(num) || String(num).trim() === '';
+                            return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
+                        }).join('')}
+                        <div class="mas1-bola" style="animation-delay:${principales.length * 0.1}s">
+                            <img src="/logos/mas1.png" alt="Más 1" class="mas1-logo-img">
+                            <span class="mas1-num">${mas1}</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        } else {
+            const titulo = 'NÚMEROS GANADORES';
+            contenidoPrincipal = `
+                <div class="numeros-container">
+                    <div class="numeros-titulo">${titulo}</div>
+                    <div class="numeros-grid">
+                        ${numeros.map((num, i) => {
+                            const esTexto = isNaN(num) || String(num).trim() === '';
+                            return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
     } else {
         contenidoPrincipal = `<div class="pendiente"><i data-lucide="clock" class="w-5 h-5 inline-block mr-2"></i>Pendiente</div>`;
     }
