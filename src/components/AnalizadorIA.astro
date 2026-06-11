@@ -1,0 +1,402 @@
+---
+// src/components/AnalizadorIA.astro
+---
+
+<div id="analizador-root" class="analizador-root" aria-label="Analizador IA">
+
+    <!-- Skeleton -->
+    <div class="an-skeleton" id="an-skeleton">
+        <div class="sk-toprow">
+            <div class="sk-dot"></div>
+            <div class="sk-line" style="width:40%"></div>
+            <div class="sk-pill"></div>
+        </div>
+        <div class="sk-line" style="width:85%;margin-top:.8rem"></div>
+        <div class="sk-line" style="width:60%;margin-top:.4rem"></div>
+        <div class="sk-balls">
+            <div class="sk-ball"></div>
+            <div class="sk-ball" style="animation-delay:.15s"></div>
+            <div class="sk-ball" style="animation-delay:.3s"></div>
+            <div class="sk-ball" style="animation-delay:.45s"></div>
+        </div>
+    </div>
+
+    <!-- Card -->
+    <div class="an-card" id="an-card" style="display:none">
+
+        <div class="an-header">
+            <div class="an-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.4"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <div class="an-meta">
+                <span class="an-label">Analizador IA</span>
+                <span class="an-fecha" id="an-fecha"></span>
+            </div>
+            <div class="an-badge" id="an-tendencia-badge">📊 Analizando</div>
+        </div>
+
+        <!-- Juego y tendencia -->
+        <div class="an-juego-row">
+            <span class="an-juego-name" id="an-juego"></span>
+            <span class="an-tendencia" id="an-tendencia"></span>
+        </div>
+
+        <!-- Calientes y fríos -->
+        <div class="an-nums-section">
+            <div class="an-nums-col">
+                <span class="an-nums-label an-calientes-label">🔥 Números Calientes</span>
+                <div class="an-balls-row" id="an-calientes"></div>
+            </div>
+            <div class="an-nums-col">
+                <span class="an-nums-label an-frios-label">❄️ Números Fríos</span>
+                <div class="an-balls-row" id="an-frios"></div>
+            </div>
+        </div>
+
+        <!-- Botón y combinaciones -->
+        <div class="an-bottom">
+            <button class="an-btn" id="an-btn" type="button">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                Ver sugerencias de hoy
+            </button>
+
+            <div class="an-combos" id="an-combos" style="display:none">
+                <div class="an-combos-inner" id="an-combos-inner"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Error -->
+    <div class="an-error" id="an-error" style="display:none">
+        🤖 El análisis no está disponible ahora. Volvé más tarde.
+    </div>
+</div>
+
+<style>
+    .analizador-root {
+        --ca:     #7c3aed;
+        --cb:     #ddd6fe;
+        --ca-rgb: 124,58,237;
+        font-family: inherit;
+        width: 100%;
+        max-width: 580px;
+        margin-inline: auto;
+    }
+
+    /* Skeleton */
+    .an-skeleton {
+        background: #fff;
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 1rem;
+        padding: .9rem 1.2rem 1rem;
+    }
+    .sk-toprow { display:flex; align-items:center; gap:.55rem; }
+    .sk-dot  { width:1.6rem; height:1.6rem; border-radius:50%;
+               background:rgba(0,0,0,.08); flex-shrink:0;
+               animation:sk-s 1.5s ease-in-out infinite; }
+    .sk-pill { width:3.8rem; height:1rem; border-radius:2rem;
+               background:rgba(0,0,0,.08); margin-left:auto;
+               animation:sk-s 1.5s ease-in-out infinite; }
+    .sk-line { height:.58rem; border-radius:.4rem;
+               background:linear-gradient(90deg,rgba(0,0,0,.05) 25%,rgba(0,0,0,.1) 50%,rgba(0,0,0,.05) 75%);
+               background-size:200% 100%; animation:sk-s 1.5s ease-in-out infinite; }
+    .sk-balls { display:flex; gap:.7rem; margin-top:1.1rem; }
+    .sk-ball  { width:3rem; height:3rem; border-radius:50%;
+                background:rgba(0,0,0,.08); animation:sk-s 1.5s ease-in-out infinite; }
+    @keyframes sk-s {
+        0%,100% { background-position:200% center; opacity:.7; }
+        50%      { opacity:1; }
+    }
+
+    /* Card */
+    .an-card {
+        background: #fff;
+        border: 1px solid rgba(0,0,0,.09);
+        border-radius: 1rem;
+        overflow: hidden;
+        position: relative;
+        box-shadow:
+            inset 0 3px 0 var(--ca),
+            0 2px 8px rgba(0,0,0,.07);
+        animation: an-in .4s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes an-in {
+        from { opacity:0; transform:translateY(6px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+    .an-card::before {
+        content:''; position:absolute; inset:0;
+        background:linear-gradient(160deg,
+            rgba(var(--ca-rgb),.06) 0%, transparent 55%);
+        pointer-events:none; z-index:0;
+    }
+
+    /* Header */
+    .an-header {
+        display:flex; align-items:center; gap:.55rem;
+        padding:.8rem 1.2rem .55rem;
+        position:relative; z-index:1;
+    }
+    .an-icon {
+        width:1.7rem; height:1.7rem; border-radius:50%;
+        background:rgba(var(--ca-rgb),.15); color:var(--ca);
+        display:flex; align-items:center; justify-content:center;
+        flex-shrink:0;
+    }
+    .an-meta { display:flex; flex-direction:column; gap:.05rem; flex:1; min-width:0; }
+    .an-label {
+        font-size:.67rem; font-weight:800;
+        text-transform:uppercase; letter-spacing:.07em;
+        color:var(--ca); line-height:1;
+    }
+    .an-fecha { font-size:.6rem; color:#9ca3af; font-weight:500; }
+    .an-badge {
+        font-size:.6rem; font-weight:700;
+        color:var(--ca);
+        background:rgba(var(--ca-rgb),.1);
+        border:1px solid rgba(var(--ca-rgb),.25);
+        padding:.2rem .6rem; border-radius:2rem;
+        white-space:nowrap; flex-shrink:0;
+        letter-spacing:.02em;
+    }
+
+    /* Juego y tendencia */
+    .an-juego-row {
+        display:flex; align-items:center; gap:.75rem; flex-wrap:wrap;
+        padding:.1rem 1.2rem .6rem;
+        position:relative; z-index:1;
+    }
+    .an-juego-name {
+        font-size:1rem; font-weight:800;
+        color:#1e1b4b; text-transform:uppercase; letter-spacing:.04em;
+    }
+    .an-tendencia {
+        font-size:.72rem; font-weight:700;
+        color:#6b7280; font-style:italic;
+    }
+
+    /* Sección calientes/fríos */
+    .an-nums-section {
+        display:flex; gap:1.5rem; flex-wrap:wrap;
+        padding:.5rem 1.2rem .8rem;
+        position:relative; z-index:1;
+    }
+    .an-nums-col { display:flex; flex-direction:column; gap:.45rem; }
+    .an-nums-label {
+        font-size:.57rem; font-weight:700;
+        text-transform:uppercase; letter-spacing:.07em;
+    }
+    .an-calientes-label { color:#dc2626; }
+    .an-frios-label     { color:#2563eb; }
+    .an-balls-row { display:flex; gap:.45rem; flex-wrap:wrap; }
+
+    /* Botón */
+    .an-bottom {
+        padding:.7rem 1.2rem .95rem;
+        border-top:1px solid rgba(0,0,0,.05);
+        position:relative; z-index:1;
+    }
+    .an-btn {
+        display:inline-flex; align-items:center; gap:.5rem;
+        background:linear-gradient(135deg, var(--ca), #a855f7);
+        color:#fff; font-size:.82rem; font-weight:700;
+        padding:.55rem 1.2rem; border-radius:2rem;
+        border:none; cursor:pointer;
+        box-shadow: 0 3px 10px rgba(var(--ca-rgb),.35);
+        transition: transform .15s ease, box-shadow .15s ease;
+        letter-spacing:.02em;
+    }
+    .an-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(var(--ca-rgb),.4);
+    }
+    .an-btn:active { transform:translateY(0); }
+
+    /* Combinaciones */
+    .an-combos {
+        margin-top:.9rem;
+        animation: an-in .35s cubic-bezier(.22,1,.36,1) both;
+    }
+    .an-combos-inner {
+        display:flex; flex-direction:column; gap:.6rem;
+    }
+    .an-combo-item {
+        background:rgba(var(--ca-rgb),.05);
+        border:1px solid rgba(var(--ca-rgb),.18);
+        border-radius:.75rem;
+        padding:.6rem .9rem;
+    }
+    .an-combo-nums {
+        display:flex; gap:.4rem; flex-wrap:wrap;
+        margin-bottom:.3rem;
+    }
+    .an-combo-just {
+        font-size:.72rem; color:#6b7280;
+        font-style:italic; line-height:1.45;
+    }
+
+    /* Error */
+    .an-error {
+        font-size:.8rem; color:#9ca3af;
+        padding:.8rem 1rem;
+        border:1px dashed rgba(0,0,0,.1);
+        border-radius:1rem; text-align:center;
+    }
+</style>
+
+<style is:global>
+    /* Bolas calientes */
+    #analizador-root .an-ball-hot {
+        width:2.5rem; height:2.5rem; border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        font-size:.9rem; font-weight:900; color:#fff;
+        background: radial-gradient(circle at 33% 28%, #fff 0%, #fca5a5 28%, #dc2626 62%, rgba(0,0,0,.28) 100%);
+        box-shadow: 0 4px 12px rgba(220,38,38,.35), inset 0 -3px 6px rgba(0,0,0,.2), inset 0 2px 4px rgba(255,255,255,.4);
+        flex-shrink:0;
+        animation: an-ball-in .4s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    /* Bolas frías */
+    #analizador-root .an-ball-cold {
+        width:2.5rem; height:2.5rem; border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        font-size:.9rem; font-weight:900; color:#fff;
+        background: radial-gradient(circle at 33% 28%, #fff 0%, #bfdbfe 28%, #2563eb 62%, rgba(0,0,0,.28) 100%);
+        box-shadow: 0 4px 12px rgba(37,99,235,.35), inset 0 -3px 6px rgba(0,0,0,.2), inset 0 2px 4px rgba(255,255,255,.4);
+        flex-shrink:0;
+        animation: an-ball-in .4s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    /* Bolas combo (sugerencia) */
+    #analizador-root .an-ball-combo {
+        width:2.2rem; height:2.2rem; border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        font-size:.82rem; font-weight:900; color:#fff;
+        background: radial-gradient(circle at 33% 28%, #fff 0%, #ddd6fe 28%, #7c3aed 62%, rgba(0,0,0,.28) 100%);
+        box-shadow: 0 3px 8px rgba(124,58,237,.35), inset 0 -2px 4px rgba(0,0,0,.2), inset 0 2px 3px rgba(255,255,255,.4);
+        flex-shrink:0;
+        animation: an-ball-in .4s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes an-ball-in {
+        from { opacity:0; transform:scale(.3) translateY(8px); }
+        to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+</style>
+
+<script>
+(async () => {
+    const skeleton = document.getElementById('an-skeleton') as HTMLElement;
+    const card     = document.getElementById('an-card')     as HTMLElement;
+    const error    = document.getElementById('an-error')    as HTMLElement;
+
+    function mostrarError() {
+        skeleton.style.display = 'none';
+        error.style.display    = 'block';
+    }
+
+    function crearBola(num: number | string, tipo: 'hot' | 'cold' | 'combo', delay: number): HTMLElement {
+        const el = document.createElement('div');
+        el.className = tipo === 'hot' ? 'an-ball-hot' : tipo === 'cold' ? 'an-ball-cold' : 'an-ball-combo';
+        el.textContent = String(num);
+        el.style.animationDelay = `${delay}s`;
+        return el;
+    }
+
+    try {
+        const resp = await fetch('/api/analizar', { cache: 'no-store' });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+        if (!data) throw new Error('Sin datos');
+
+        // Fecha
+        if (data.fecha) {
+            const [y, m, d] = (data.fecha as string).split('-').map(Number);
+            const dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+            const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                           'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            const fecha = new Date(y, m - 1, d);
+            (document.getElementById('an-fecha') as HTMLElement).textContent =
+                `${dias[fecha.getDay()]} ${d} de ${meses[m-1]}`;
+        }
+
+        // Juego y tendencia
+        if (data.juego) {
+            (document.getElementById('an-juego') as HTMLElement).textContent = data.juego;
+        }
+        if (data.tendencia) {
+            (document.getElementById('an-tendencia') as HTMLElement).textContent = data.tendencia;
+            (document.getElementById('an-tendencia-badge') as HTMLElement).textContent = `📈 ${data.tendencia}`;
+        }
+
+        // Calientes
+        const calEl = document.getElementById('an-calientes') as HTMLElement;
+        ((data.calientes || []) as (number|string)[]).forEach((n, i) => {
+            calEl.appendChild(crearBola(n, 'hot', i * 0.07));
+        });
+
+        // Fríos
+        const frioEl = document.getElementById('an-frios') as HTMLElement;
+        ((data.frios || []) as (number|string)[]).forEach((n, i) => {
+            frioEl.appendChild(crearBola(n, 'cold', i * 0.07));
+        });
+
+        // Botón
+        const btn = document.getElementById('an-btn') as HTMLButtonElement;
+        const combosDiv = document.getElementById('an-combos') as HTMLElement;
+        const combosInner = document.getElementById('an-combos-inner') as HTMLElement;
+        let clicked = false;
+
+        btn.addEventListener('click', () => {
+            // Abrir enlace en nueva pestaña
+            window.open('https://omg10.com/4/11134766', '_blank', 'noopener,noreferrer');
+
+            if (!clicked) {
+                clicked = true;
+                // Revelar combinaciones
+                const combos = (data.combinaciones || []) as Array<{ numeros: (number|string)[], justificacion?: string }>;
+                combos.forEach((combo, ci) => {
+                    const item = document.createElement('div');
+                    item.className = 'an-combo-item';
+
+                    const numsRow = document.createElement('div');
+                    numsRow.className = 'an-combo-nums';
+                    (combo.numeros || []).forEach((n, ni) => {
+                        numsRow.appendChild(crearBola(n, 'combo', ci * 0.15 + ni * 0.07));
+                    });
+                    item.appendChild(numsRow);
+
+                    if (combo.justificacion) {
+                        const just = document.createElement('p');
+                        just.className = 'an-combo-just';
+                        just.textContent = combo.justificacion;
+                        item.appendChild(just);
+                    }
+
+                    combosInner.appendChild(item);
+                });
+
+                combosDiv.style.display = 'block';
+                btn.textContent = '✓ Sugerencias reveladas';
+                btn.style.background = 'linear-gradient(135deg, #16a34a, #22c55e)';
+            }
+        });
+
+        skeleton.style.display = 'none';
+        card.style.display     = 'block';
+
+    } catch (e) {
+        console.warn('AnalizadorIA:', (e as Error).message);
+        mostrarError();
+    }
+})();
+</script>
