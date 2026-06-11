@@ -83,6 +83,8 @@ function detectarJuego(key) {
 
 function formatearNums(datos) {
     if (!datos) return '—';
+    if (Array.isArray(datos)) return datos.join(' · ');
+    // compatibilidad con formato anterior (objeto con numeros_adicionales)
     const nums = datos.numeros_adicionales?.length
         ? datos.numeros_adicionales
         : datos.numeros_individuales;
