@@ -450,18 +450,30 @@ function detectarJuego(key) {
 }
 
 function extraerNumeros(datos, juegoKey) {
-    // Súper Premio: frecuencia de cada bola individual (6 bolas por sorteo)
-    if (juegoKey === 'super_premio') {
-        const nums = [];
-        (datos.numeros_adicionales || []).forEach(n => {
-            const s = String(n).trim();
-            if (s && !isNaN(s)) nums.push(s);
-        });
-        return nums;
+    // Nuevo formato: datos es array directo; viejo formato: objeto con campos
+    const arr = Array.isArray(datos)
+        ? datos
+        : (datos?.numeros_adicionales?.length ? datos.numeros_adicionales : datos?.numeros_individuales);
+
+    if (!arr?.length) {
+        if (datos?.numero_ganador) return [String(datos.numero_ganador).trim()];
+        return [];
     }
-    // Todos los demás juegos: un solo resultado por sorteo
-    if (datos.numero_ganador) return [String(datos.numero_ganador).trim()];
-    return [];
+
+    if (juegoKey === 'super_premio') {
+        // Todas las bolas numéricas (6 por sorteo)
+        return arr.map(n => String(n).trim()).filter(n => n && !isNaN(n));
+    }
+
+    if (juegoKey === 'la_diaria') {
+        // Solo el primer elemento numérico (ignora signo y Más1)
+        const num = arr.find(n => !isNaN(String(n).trim()) && String(n).trim() !== '');
+        return num ? [String(num).trim()] : [];
+    }
+
+    // juga3, pega3, premia2: primer elemento = número ganador
+    const first = arr[0];
+    return first ? [String(first).trim()] : [];
 }
 
 function calcularFrecuencias(historialData) {
