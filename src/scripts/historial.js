@@ -5,12 +5,13 @@
 const HISTORIAL_URL = '/api/historial';
 
 const JUEGOS_CONFIG = {
-    todos:        { label: 'Todos'        },
-    juga3:        { label: 'Jugá 3'       },
-    pega3:        { label: 'Pega 3'       },
-    premia2:      { label: 'Premia 2'     },
-    la_diaria:    { label: 'La Diaria'    },
-    super_premio: { label: 'Súper Premio' },
+    todos:          { label: 'Todos'          },
+    juga3:          { label: 'Jugá 3'         },
+    pega3:          { label: 'Pega 3'         },
+    premia2:        { label: 'Premia 2'       },
+    la_diaria:      { label: 'La Diaria'      },
+    super_premio:   { label: 'Súper Premio'   },
+    bingo_con_todo: { label: 'Bingo con Todo' },
 };
 
 const TANDA_LABELS = {
@@ -78,6 +79,7 @@ function detectarJuego(key) {
     if (key.includes('premia2') || key.includes('premia_2')) return 'premia2';
     if (key.includes('diaria'))                               return 'la_diaria';
     if (key.includes('super'))                                return 'super_premio';
+    if (key.includes('bingo'))                                return 'bingo_con_todo';
     return null;
 }
 
@@ -126,7 +128,7 @@ function getFilas() {
 
 function getColumnas() {
     return filtroJuego === 'todos'
-        ? ['juga3','pega3','premia2','la_diaria','super_premio']
+        ? ['juga3','pega3','premia2','la_diaria','super_premio','bingo_con_todo']
         : [filtroJuego];
 }
 
