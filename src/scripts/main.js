@@ -206,7 +206,7 @@ function esPrincipal(key) {
 }
 
 // Juegos que van en "Otros Juegos" (sin tanda fija)
-const OTROS_PERMITIDOS = new Set(['bingocontodo', 'superpremio', 'multix']);
+const OTROS_PERMITIDOS = new Set(['bingocontodo', 'superpremio']);
 
 function agruparPorTanda(sorteos) {
     const grupos  = { '_11am': [], '_3pm': [], '_9pm': [], 'otros': [] };
