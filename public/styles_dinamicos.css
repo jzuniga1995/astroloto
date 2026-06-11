@@ -359,40 +359,37 @@
    MÁS 1 — La Diaria
    ============================================ */
 .mas1-bola {
-    display: flex;
-    flex-direction: column;
+    display: inline-flex;
+    flex-direction: row;
     align-items: center;
-    gap: 2px;
-    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    flex-shrink: 0;
+    gap: 4px;
 }
 
 .mas1-logo-img {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     object-fit: contain;
+    flex-shrink: 0;
 }
 
 .mas1-num {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #16a34a, #22c55e);
+    background: linear-gradient(135deg, #ca8a04, #eab308);
     color: #fff;
     font-size: 1.25rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.35);
+    box-shadow: 0 3px 8px rgba(202, 138, 4, 0.4);
+    flex-shrink: 0;
 }
 
 @media (max-width: 480px) {
-    .mas1-num {
-        width: 42px;
-        height: 42px;
-        font-size: 1.1rem;
-    }
+    .mas1-logo-img { width: 30px; height: 30px; }
+    .mas1-num { width: 42px; height: 42px; font-size: 1.1rem; }
 }
 
 /* ============================================
