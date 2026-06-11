@@ -70,6 +70,8 @@ function detectarTanda(key) {
     if (key.includes('11am') || key.includes('10am') || key.includes('manana') || key.includes('mañana')) return '11am';
     if (key.includes('3pm')  || key.includes('2pm')  || key.includes('tarde'))  return '3pm';
     if (key.includes('9pm')  || key.includes('noche') || key.includes('super')) return '9pm';
+    // Juegos sin sufijo de tanda → tanda nocturna por defecto
+    if (key === 'bingo_con_todo') return '9pm';
     return null;
 }
 
