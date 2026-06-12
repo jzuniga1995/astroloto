@@ -52,7 +52,13 @@
 
         <!-- Panel -->
         <div class="an-panel" id="an-panel">
-            <div class="an-cols">
+            <!-- Estado bloqueado: teaser sin números -->
+            <div class="an-teaser" id="an-teaser">
+                <span class="teaser-icon">🔒</span>
+                <p class="teaser-txt">El análisis completo con patrones, tendencias y sugerencias está listo.<br>Hacé clic en el botón para desbloquearlo.</p>
+            </div>
+            <!-- Contenido real: solo visible tras ver el anuncio -->
+            <div class="an-cols" id="an-cols" style="display:none">
                 <div class="an-col-text">
                     <div class="an-text-block">
                         <span class="block-icon">📊</span>
@@ -63,7 +69,6 @@
                         <p id="an-tendencias"></p>
                     </div>
                 </div>
-                <!-- Sugerencias: solo visibles tras clic -->
                 <div class="an-col-sugs" id="an-sugs" style="display:none">
                     <div class="sugs-header">🎯 Sugerencias del día</div>
                     <div id="an-combos-wrap"></div>
@@ -202,6 +207,17 @@
     }
     .an-btn:hover  { transform:translateY(-2px) scale(1.03); }
     .an-btn:active { transform:translateY(0) scale(1); }
+    /* Teaser bloqueado */
+    .an-teaser {
+        display:flex; align-items:center; gap:.75rem;
+        padding:.25rem 0;
+    }
+    .teaser-icon { font-size:1.6rem; flex-shrink:0; opacity:.85; }
+    .teaser-txt {
+        font-size:.82rem; color:rgba(255,255,255,.7);
+        line-height:1.55; margin:0; font-style:italic;
+    }
+
     .an-locked { display:flex; flex-direction:column; gap:.45rem; align-items:flex-start; }
     .an-revealed-msg { display:flex; flex-direction:column; gap:.35rem; align-items:flex-start; }
     .an-revealed-tag {
@@ -289,6 +305,8 @@
 
     const lockedEl  = document.getElementById('an-locked')       as HTMLElement;
     const revMsgEl  = document.getElementById('an-revealed-msg') as HTMLElement;
+    const teaserEl  = document.getElementById('an-teaser')       as HTMLElement;
+    const colsEl    = document.getElementById('an-cols')         as HTMLElement;
 
     function crearBola(val: string|number, delay: number): HTMLElement {
         const s = String(val).trim();
@@ -325,13 +343,19 @@
     }
 
     function mostrarBloqueado() {
-        sugsEl.style.display   = 'none';
+        teaserEl.style.display  = 'flex';
+        colsEl.style.display    = 'none';
+        sugsEl.style.display    = 'none';
         lockedEl.style.display  = 'flex';
         revMsgEl.style.display  = 'none';
         btn.innerHTML = '🎰 Ver sugerencias de hoy';
     }
 
     function mostrarRevelado(d: any) {
+        patronesEl.textContent = d.patrones   || '';
+        tendEl.textContent     = d.tendencias || '';
+        teaserEl.style.display  = 'none';
+        colsEl.style.display    = 'flex';
         renderSugerencias(d.sugerencias || []);
         if (d.advertencia) advEl.textContent = '⚠️ ' + d.advertencia;
         lockedEl.style.display  = 'none';
@@ -344,8 +368,6 @@
         panelEl.style.animation = 'none';
         void panelEl.offsetWidth;
         panelEl.style.animation = '';
-        patronesEl.textContent = d.patrones   || '';
-        tendEl.textContent     = d.tendencias || '';
         if (activeRevealed) {
             mostrarRevelado(d);
         } else {
