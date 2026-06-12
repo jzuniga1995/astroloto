@@ -197,6 +197,8 @@ function detectarTanda(key) {
     if (k.endsWith('_11am') || k.endsWith('_10am')) return '_11am';
     if (k.endsWith('_3pm')  || k.endsWith('_2pm'))  return '_3pm';
     if (k.endsWith('_9pm'))                          return '_9pm';
+    // multi_x sin sufijo → el backend lo envía sin tanda = mañana
+    if (k === 'multi_x') return '_11am';
     return 'otros';
 }
 

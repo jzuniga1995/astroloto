@@ -74,10 +74,18 @@
 
         <!-- CTA -->
         <div class="an-cta" id="an-cta">
-            <button class="an-btn" id="an-btn" type="button">
-                🎰 Ver sugerencias de hoy
-            </button>
-            <span class="an-cta-hint">Análisis basado en los últimos sorteos</span>
+            <!-- Estado bloqueado (default) -->
+            <div class="an-locked" id="an-locked">
+                <button class="an-btn" id="an-btn" type="button">
+                    🎰 Ver sugerencias de hoy
+                </button>
+                <span class="an-cta-hint">📢 Ver un anuncio ayuda a mantener la plataforma actualizada</span>
+            </div>
+            <!-- Estado revelado -->
+            <div class="an-revealed-msg" id="an-revealed-msg" style="display:none">
+                <span class="an-revealed-tag">✅ Sugerencias reveladas</span>
+                <span class="an-cta-hint">Cambiá de juego para ver más análisis</span>
+            </div>
         </div>
 
     </div>
@@ -194,12 +202,14 @@
     }
     .an-btn:hover  { transform:translateY(-2px) scale(1.03); }
     .an-btn:active { transform:translateY(0) scale(1); }
-    .an-btn.done {
-        background:linear-gradient(135deg,#16a34a,#22c55e);
-        box-shadow:0 4px 16px rgba(22,163,74,.5);
-        animation:none; cursor:default; pointer-events:none;
+    .an-locked { display:flex; flex-direction:column; gap:.45rem; align-items:flex-start; }
+    .an-revealed-msg { display:flex; flex-direction:column; gap:.35rem; align-items:flex-start; }
+    .an-revealed-tag {
+        display:inline-flex; align-items:center; gap:.4rem;
+        font-size:.85rem; font-weight:800; color:#4ade80;
+        text-shadow:0 0 12px rgba(74,222,128,.5);
     }
-    .an-cta-hint { font-size:.62rem; color:rgba(255,255,255,.5); font-style:italic; }
+    .an-cta-hint { font-size:.62rem; color:rgba(255,255,255,.55); font-style:italic; line-height:1.4; }
 
     .an-error {
         font-size:.8rem; color:#9ca3af; padding:.8rem 1rem;
@@ -275,9 +285,11 @@
 
     let juegosData: Record<string,any> = {};
     let activeKey = '';
-    const revealed: Set<string> = new Set();
+    let activeRevealed = false;  // se resetea en cada cambio de tab
 
-    /* Crea una bola individual */
+    const lockedEl  = document.getElementById('an-locked')       as HTMLElement;
+    const revMsgEl  = document.getElementById('an-revealed-msg') as HTMLElement;
+
     function crearBola(val: string|number, delay: number): HTMLElement {
         const s = String(val).trim();
         const esNum = /^\d+$/.test(s);
@@ -288,16 +300,11 @@
         return el;
     }
 
-    /* Renderiza sugerencias: soporta array plano o array de arrays */
     function renderSugerencias(sugs: any[]) {
         combosWrap.innerHTML = '';
         if (!sugs.length) { sugsEl.style.display = 'none'; return; }
-
-        /* Detectar si es array de arrays (combos) o plano */
         const esAnidado = Array.isArray(sugs[0]);
-
         if (esAnidado) {
-            /* [ [43,"Mono","2X"], [23,"Ladrón","3X"] ] */
             (sugs as any[][]).forEach((combo, ci) => {
                 const row = document.createElement('div');
                 row.className = 'an-combo';
@@ -305,17 +312,30 @@
                 combosWrap.appendChild(row);
             });
         } else {
-            /* Array plano: agrupar de 3 en 3 si La Diaria, sino todo en una fila */
             const chunkSize = sugs.length >= 6 ? 3 : sugs.length;
             for (let i = 0; i < sugs.length; i += chunkSize) {
-                const chunk = sugs.slice(i, i + chunkSize);
                 const row = document.createElement('div');
                 row.className = 'an-combo';
-                chunk.forEach((v, ni) => row.appendChild(crearBola(v, (i / chunkSize) * 0.15 + ni * 0.08)));
+                sugs.slice(i, i + chunkSize).forEach((v, ni) =>
+                    row.appendChild(crearBola(v, (i / chunkSize) * 0.15 + ni * 0.08)));
                 combosWrap.appendChild(row);
             }
         }
         sugsEl.style.display = 'block';
+    }
+
+    function mostrarBloqueado() {
+        sugsEl.style.display   = 'none';
+        lockedEl.style.display  = 'flex';
+        revMsgEl.style.display  = 'none';
+        btn.innerHTML = '🎰 Ver sugerencias de hoy';
+    }
+
+    function mostrarRevelado(d: any) {
+        renderSugerencias(d.sugerencias || []);
+        if (d.advertencia) advEl.textContent = '⚠️ ' + d.advertencia;
+        lockedEl.style.display  = 'none';
+        revMsgEl.style.display  = 'flex';
     }
 
     function renderPanel(key: string) {
@@ -324,24 +344,19 @@
         panelEl.style.animation = 'none';
         void panelEl.offsetWidth;
         panelEl.style.animation = '';
-
         patronesEl.textContent = d.patrones   || '';
         tendEl.textContent     = d.tendencias || '';
-
-        if (revealed.has(key)) {
-            renderSugerencias(d.sugerencias || []);
-            if (d.advertencia) advEl.textContent = '⚠️ ' + d.advertencia;
-            btn.innerHTML = '✅ Sugerencias reveladas';
-            btn.classList.add('done');
+        if (activeRevealed) {
+            mostrarRevelado(d);
         } else {
-            sugsEl.style.display = 'none';
-            btn.innerHTML = '🎰 Ver sugerencias de hoy';
-            btn.classList.remove('done');
+            mostrarBloqueado();
         }
     }
 
     function activarTab(key: string) {
-        activeKey = key;
+        // Cambiar tab siempre resetea el estado revelado
+        activeKey      = key;
+        activeRevealed = false;
         tabsEl.querySelectorAll<HTMLButtonElement>('.an-tab-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.key === key);
         });
@@ -378,10 +393,10 @@
         const keys = Object.keys(juegosData);
         if (keys.length) activarTab(keys[0]);
 
-        /* Cada clic en el botón abre el anuncio y revela sugerencias del juego activo */
+        // Clic en botón: abre anuncio y revela sugerencias del juego activo
         btn.addEventListener('click', () => {
             window.open('https://omg10.com/4/11134766', '_blank', 'noopener,noreferrer');
-            revealed.add(activeKey);
+            activeRevealed = true;
             renderPanel(activeKey);
         });
 
