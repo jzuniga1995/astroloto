@@ -185,11 +185,23 @@ function filtrarSorteos(sorteos, tipoJuego) {
 // ============================================
 
 const TANDAS = {
-    '_11am': { label: 'SORTEO DE LA MAÑANA',  hora: '11:00 AM', icono: 'sunrise' },
-    '_3pm':  { label: 'SORTEO DE LA TARDE',   hora: '3:00 PM',  icono: 'sun'     },
-    '_9pm':  { label: 'SORTEO DE LA NOCHE',   hora: '9:00 PM',  icono: 'moon'    },
-    'otros': { label: 'OTROS JUEGOS',          hora: null,       icono: 'layers'  }
+    '_11am': { label: 'SORTEO DE LA MAÑANA',  hora: '11:00 AM', icono: 'sunrise', horaNum: 11 },
+    '_3pm':  { label: 'SORTEO DE LA TARDE',   hora: '3:00 PM',  icono: 'sun',     horaNum: 15 },
+    '_9pm':  { label: 'SORTEO DE LA NOCHE',   hora: '9:00 PM',  icono: 'moon',    horaNum: 21 },
+    'otros': { label: 'OTROS JUEGOS',          hora: null,       icono: 'layers',  horaNum: null }
 };
+
+// Devuelve el HTML del badge de estado de una tanda según la hora actual en Honduras (UTC-6)
+function estadoTandaHTML(horaNum) {
+    if (horaNum == null) return '';
+    const ahora = new Date();
+    const utc = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
+    const horaHN = new Date(utc + (3600000 * -6)).getHours();
+    const completado = horaHN >= horaNum;
+    return completado
+        ? '<span class="tanda-estado completado"><span class="dot"></span>Completado</span>'
+        : '<span class="tanda-estado pendiente"><span class="dot"></span>Pendiente</span>';
+}
 
 // _10am y _2pm son alias de la tanda de mañana y tarde respectivamente
 function detectarTanda(key) {
@@ -287,6 +299,7 @@ function preloadLogos(sorteos) {
 
 function crearCardJuego(key, datos) {
     const card = document.createElement('div');
+    card.dataset.juego = canonicalizar(normalizarNombre(obtenerJuegoBase(key)));
 
     if (!datos.fecha_sorteo) {
         card.className = 'game-card resultado-anterior';
@@ -343,7 +356,7 @@ function crearCardJuego(key, datos) {
                         }).join('')}
                         <div class="mas1-bola" style="display:inline-flex;flex-direction:row;align-items:center;gap:6px;animation-delay:${principales.length * 0.1}s">
                             <img src="/logos/mas1.png" alt="Más 1" width="32" height="32" style="width:32px;height:32px;object-fit:contain;flex-shrink:0;display:block;">
-                            <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ca8a04,#eab308);color:#fff;font-size:1.25rem;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(202,138,4,0.4);flex-shrink:0;">${mas1}</div>
+                            <div class="mas1-num">${mas1}</div>
                         </div>
                     </div>
                 </div>
@@ -500,7 +513,7 @@ async function cargarResultados() {
             const etiqueta = tandaInfo.hora
                 ? `${tandaInfo.label} - ${tandaInfo.hora}`
                 : tandaInfo.label;
-            header.innerHTML = `<i data-lucide="${tandaInfo.icono}" class="w-6 h-6 inline-block mr-2"></i>${etiqueta}`;
+            header.innerHTML = `<i data-lucide="${tandaInfo.icono}" class="w-6 h-6 inline-block mr-2"></i>${etiqueta}${estadoTandaHTML(tandaInfo.horaNum)}`;
 
             const grid = document.createElement('div');
             grid.className = esPaginaIndividual || lista.length <= 3

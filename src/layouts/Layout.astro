@@ -33,8 +33,12 @@ const { bodyClass = '' } = Astro.props;
     
     <!-- Preconexiones -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    
+
+    <!-- Tipografía con personalidad: Outfit (display) + DM Sans (cuerpo) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap">
+
     <!-- Preload logos críticos -->
     <link rel="preload" href="/logos/juga3.png" as="image">
     <link rel="preload" href="/logos/pega3.png" as="image">
@@ -111,9 +115,33 @@ const { bodyClass = '' } = Astro.props;
 </html>
 
 <style is:global>
+    :root {
+        --font-display: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    }
+
     html, body {
         overflow-x: hidden;
         max-width: 100%;
+    }
+
+    body {
+        font-family: var(--font-body);
+        /* Patrón de puntos muy tenue sobre el gradiente violeta */
+        background-image:
+            radial-gradient(circle at 1px 1px, rgba(124, 58, 237, 0.06) 1px, transparent 0);
+        background-size: 26px 26px;
+        background-attachment: fixed;
+    }
+
+    /* Títulos con la fuente display (sin tocar el contenido) */
+    h1, h2, h3, .game-name, .sorteo-header, .hist-title {
+        font-family: var(--font-display);
+    }
+
+    /* Números siempre alineados (tabular) */
+    .bola, .mas1-num, #relojHonduras, .td-num, .td-fecha {
+        font-variant-numeric: tabular-nums;
     }
 
     @keyframes spin {
