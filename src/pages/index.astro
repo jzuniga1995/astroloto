@@ -13,19 +13,22 @@ import { Dice3, Calendar, Clock, Target, Zap, Dice6, BarChart3, Flame, Snowflake
         <AnalizadorIA />
     </div>
 
-<header class="bg-white rounded-2xl shadow-sm px-5 py-3 mb-6 flex items-center justify-between flex-wrap gap-3">
+<header class="bg-white rounded-2xl shadow-sm border-t-4 border-violet-600 px-5 py-3 mb-6 flex items-center justify-between flex-wrap gap-3">
     <h1 class="text-lg md:text-xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
         <Dice3 class="w-5 h-5 text-violet-600" />
         Resultados Loto Honduras
+        <span class="inline-flex items-center gap-1 text-[10px] font-extrabold tracking-wide text-red-600 bg-red-50 px-2 py-0.5 rounded-full uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse-scale"></span>En vivo
+        </span>
     </h1>
-    <div class="flex items-center gap-4 text-sm text-gray-500">
+    <div class="flex items-center gap-3 text-sm text-gray-500">
         <div id="fechaActual" class="flex items-center gap-1.5">
             <Calendar class="w-4 h-4 text-violet-400" />
             <span>Cargando...</span>
         </div>
-        <div class="flex items-center gap-1.5 font-mono text-violet-600">
-            <Clock class="w-4 h-4" />
-            <time id="relojHonduras" datetime="">--:--:--</time>
+        <div class="flex items-center gap-1.5 font-mono bg-indigo-950 text-emerald-300 px-2.5 py-1 rounded-lg shadow-inner">
+            <Clock class="w-4 h-4 text-emerald-400" />
+            <time id="relojHonduras" datetime="" class="tabular-nums tracking-widest font-semibold">--:--:--</time>
         </div>
     </div>
 </header>
