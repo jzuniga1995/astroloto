@@ -123,11 +123,11 @@ Cada página sigue este patrón en el `<slot name="head">`:
 6. Open Graph completo — `og:image:width/height/alt`, `og:locale:alternate`.
 7. Twitter Card — `@LotoHN` en `twitter:site` y `twitter:creator`.
 8. Hreflang — 5 variantes: `es-HN`, `es-CR`, `es-US`, `es`, `x-default`.
-9. Schema.org — `WebPage` o `Article` + `FAQPage` + `BreadcrumbList`.
-10. Bloque SEO oculto — `clip:rect(0,0,0,0)` + `aria-hidden="true"`, 200+ palabras geolocalizadas.
-11. Contenido visible — Párrafos reales, FAQ visible, links internos. **No solo texto oculto.**
+9. Schema.org — `WebPage` o `Article` + `FAQPage` + `BreadcrumbList`. `Organization` global vive en `Layout.astro`.
+10. Cobertura geográfica VISIBLE — componente `CoberturaPaises.astro` (HN · CR · US con ciudades). Sustituye a los antiguos bloques ocultos.
+11. Contenido visible — Párrafos reales, FAQ visible, links internos. Un solo `<h1>` por página.
 
-**Regla crítica:** No modificar bloques SEO existentes que ya funcionan. Solo agregar encima o debajo.
+**Regla crítica (anti-penalización):** PROHIBIDO el texto oculto para SEO (`clip:rect(0,0,0,0)`, `left:-9999px`, `display:none`, `aria-hidden` con keywords). Google lo penaliza como cloaking. Todo el contenido con keywords debe ser **visible y legible**; para las palabras geolocalizadas usar `<CoberturaPaises />`. Nada de listas de keywords separadas por comas: integrarlas en prosa natural.
 
 ## Monetización
 

@@ -1,0 +1,102 @@
+---
+// src/components/CoberturaPaises.astro
+// Sección VISIBLE de cobertura geográfica (HN · CR · US).
+// Reemplaza los antiguos bloques de texto oculto: mismas palabras clave,
+// ahora en contenido real y legible para usuarios y buscadores.
+const { tema = 'los resultados de Loto Honduras' } = Astro.props;
+---
+
+<section class="cobertura" aria-label="Cobertura por país">
+    <h2 class="cobertura-title">
+        <span aria-hidden="true">📍</span>
+        Consultá {tema} desde Honduras, Costa Rica y Estados Unidos
+    </h2>
+    <p class="cobertura-intro">
+        LotoHN es gratis y se actualiza en tiempo real, estés donde estés. Cada día
+        miles de hondureños y centroamericanos siguen los sorteos desde los tres países.
+    </p>
+
+    <div class="cobertura-grid">
+        <div class="cobertura-card">
+            <span class="cobertura-flag" aria-hidden="true">🇭🇳</span>
+            <h3>Honduras</h3>
+            <p>
+                Tegucigalpa, San Pedro Sula, La Ceiba, Choloma, El Progreso, Choluteca,
+                Comayagua, Puerto Cortés, Danlí y Siguatepeque — y todo el país.
+            </p>
+        </div>
+        <div class="cobertura-card">
+            <span class="cobertura-flag" aria-hidden="true">🇨🇷</span>
+            <h3>Costa Rica</h3>
+            <p>
+                Para la comunidad hondureña en San José, Alajuela, Heredia, Cartago,
+                Liberia, Puntarenas y Limón. Misma zona horaria que Honduras (UTC−6).
+            </p>
+        </div>
+        <div class="cobertura-card">
+            <span class="cobertura-flag" aria-hidden="true">🇺🇸</span>
+            <h3>Estados Unidos</h3>
+            <p>
+                Para la diáspora hondureña en Miami, Nueva York, Houston, Los Ángeles,
+                Atlanta, Chicago, Dallas, Washington DC, Orlando y Tampa.
+            </p>
+        </div>
+    </div>
+</section>
+
+<style>
+    .cobertura {
+        background: #fff;
+        border: 1px solid #ede9fe;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    @media (min-width: 768px) {
+        .cobertura { padding: 2rem; }
+    }
+    .cobertura-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #1e1b4b;
+        line-height: 1.35;
+        margin: 0 0 0.6rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: baseline;
+    }
+    .cobertura-intro {
+        color: #4b5563;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0 0 1.25rem;
+    }
+    .cobertura-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    @media (min-width: 640px) {
+        .cobertura-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .cobertura-card {
+        background: linear-gradient(160deg, #faf5ff, #f5f3ff);
+        border: 1px solid #ede9fe;
+        border-radius: 0.75rem;
+        padding: 1rem 1.1rem;
+    }
+    .cobertura-flag { font-size: 1.6rem; line-height: 1; }
+    .cobertura-card h3 {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #6d28d9;
+        margin: 0.4rem 0 0.4rem;
+    }
+    .cobertura-card p {
+        color: #4b5563;
+        font-size: 0.85rem;
+        line-height: 1.55;
+        margin: 0;
+    }
+</style>
