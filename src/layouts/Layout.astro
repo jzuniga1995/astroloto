@@ -21,8 +21,9 @@ const { bodyClass = '' } = Astro.props;
     </script>
     
     <!-- Favicon + PWA -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#7c3aed">
     <meta name="mobile-web-app-capable" content="yes">
@@ -53,6 +54,31 @@ const { bodyClass = '' } = Astro.props;
 
     <!-- Monetag -->
     <meta name="monetag" content="7c18f2290e896637ac9b67ada7270ad8">
+
+    <!-- Organization (entidad de marca) — global en todo el sitio -->
+    <script type="application/ld+json" is:inline>
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://lotohn.com/#organization",
+      "name": "LotoHN",
+      "alternateName": "Loto Honduras",
+      "url": "https://lotohn.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://lotohn.com/logo.png",
+        "width": 512,
+        "height": 512
+      },
+      "description": "Portal de resultados de las loterías de Honduras: Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio.",
+      "areaServed": [
+        { "@type": "Country", "name": "Honduras" },
+        { "@type": "Country", "name": "Costa Rica" },
+        { "@type": "Country", "name": "United States" }
+      ],
+      "sameAs": ["https://twitter.com/LotoHN"]
+    }
+    </script>
 
     <!-- Slot para SEO de cada página -->
     <slot name="head" />
