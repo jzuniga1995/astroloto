@@ -68,10 +68,9 @@ function esHoy(fechaKey) {
 // FIX: super_premio siempre tanda noche (juega mié y sáb a las 9pm)
 function detectarTanda(key) {
     if (key.includes('11am') || key.includes('10am') || key.includes('manana') || key.includes('mañana')) return '11am';
-    if (key.includes('3pm')  || key.includes('2pm')  || key.includes('tarde'))  return '3pm';
+    if (key.includes('bingo')) return '3pm'; // bingo con todo → todos los días a las 4pm = tarde
+    if (key.includes('3pm')  || key.includes('2pm')  || key.includes('4pm') || key.includes('tarde')) return '3pm';
     if (key.includes('9pm')  || key.includes('noche') || key.includes('super')) return '9pm';
-    // Juegos sin sufijo de tanda → tanda nocturna por defecto
-    if (key === 'bingo_con_todo') return '9pm';
     return null;
 }
 

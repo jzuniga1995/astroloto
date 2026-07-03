@@ -127,12 +127,12 @@ function normalizarNombre(str) {
     return str.toLowerCase().replace(/_/g, '').replace(/\s/g, '');
 }
 
-// Quita el sufijo de tanda (_11am, _10am, _3pm, _2pm, _9pm)
+// Quita el sufijo de tanda (_11am, _10am, _3pm, _2pm, _4pm, _9pm)
 function obtenerJuegoBase(key) {
-    return key.toLowerCase().replace(/_(11am|10am|3pm|2pm|9pm)$/, '');
+    return key.toLowerCase().replace(/_(11am|10am|3pm|2pm|4pm|9pm)$/, '');
 }
 
-const JUEGOS_PRINCIPALES_NORM = ['juga3', 'pega3', 'premia2', 'ladiaria', 'diaria', 'multix'];
+const JUEGOS_PRINCIPALES_NORM = ['juga3', 'pega3', 'premia2', 'ladiaria', 'diaria', 'multix', 'bingocontodo'];
 
 // Mapea variantes al nombre canónico para deduplicación
 function canonicalizar(normName) {
@@ -187,6 +187,7 @@ function filtrarSorteos(sorteos, tipoJuego) {
 const TANDAS = {
     '_11am': { label: 'SORTEO DE LA MAÑANA',  hora: '11:00 AM', icono: 'sunrise', horaNum: 11 },
     '_3pm':  { label: 'SORTEO DE LA TARDE',   hora: '3:00 PM',  icono: 'sun',     horaNum: 15 },
+    '_4pm':  { label: 'SORTEO DEL BINGO',     hora: '4:00 PM',  icono: 'dices',   horaNum: 16 },
     '_9pm':  { label: 'SORTEO DE LA NOCHE',   hora: '9:00 PM',  icono: 'moon',    horaNum: 21 },
     'otros': { label: 'OTROS JUEGOS',          hora: null,       icono: 'layers',  horaNum: null }
 };
@@ -209,6 +210,8 @@ function detectarTanda(key) {
     if (k.endsWith('_11am') || k.endsWith('_10am')) return '_11am';
     if (k.endsWith('_3pm')  || k.endsWith('_2pm'))  return '_3pm';
     if (k.endsWith('_9pm'))                          return '_9pm';
+    // bingo con todo → todos los días a las 4pm (el backend lo envía sin sufijo)
+    if (k.endsWith('_4pm') || k.includes('bingo')) return '_4pm';
     // multi_x sin sufijo → el backend lo envía sin tanda = mañana
     if (k === 'multi_x') return '_11am';
     return 'otros';
@@ -219,11 +222,11 @@ function esPrincipal(key) {
     return JUEGOS_PRINCIPALES_NORM.includes(normalizarNombre(obtenerJuegoBase(key)));
 }
 
-// Juegos que van en "Otros Juegos" (sin tanda fija)
-const OTROS_PERMITIDOS = new Set(['bingocontodo', 'superpremio']);
+// Juegos que van en "Otros Juegos" (sin tanda diaria fija)
+const OTROS_PERMITIDOS = new Set(['superpremio']);
 
 function agruparPorTanda(sorteos) {
-    const grupos  = { '_11am': [], '_3pm': [], '_9pm': [], 'otros': [] };
+    const grupos  = { '_11am': [], '_3pm': [], '_4pm': [], '_9pm': [], 'otros': [] };
     const vistos  = new Set(); // deduplicar: gameNorm+tanda
 
     sorteos.forEach(([key, datos]) => {
@@ -318,7 +321,7 @@ function crearCardJuego(key, datos) {
     card.className = esFechaHoy(datos.fecha_sorteo) ? 'game-card' : 'game-card resultado-anterior';
 
     const nombreBase = datos.nombre_juego
-        .replace(/\s*(11:00 AM|3:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '')
+        .replace(/\s*(11:00 AM|3:00 PM|4:00 PM|9:00 PM|10:00 AM|2:00 PM)/gi, '')
         .trim();
 
     const logoSrc  = resolverLogo(key);
@@ -417,7 +420,8 @@ function ordenarPorFechaYHora(sorteos) {
     const ordenHoras = {
         '11:00 AM': 1, '10:00 AM': 1,
         '3:00 PM':  2, '2:00 PM':  2, '15:00': 2,
-        '9:00 PM':  3, '21:00':    3
+        '4:00 PM':  3, '16:00':    3,
+        '9:00 PM':  4, '21:00':    4
     };
 
     return Object.entries(sorteos).sort((a, b) => {
@@ -567,6 +571,7 @@ function obtenerIntervaloActualizacion() {
     if (
         (hour === 11 && minute <= 30) ||
         (hour === 15 && minute <= 30) ||
+        (hour === 16 && minute <= 30) ||
         (hour === 21 && minute <= 30)
     ) {
         return 1 * 60 * 1000;  // cada 1 min cerca de los sorteos
