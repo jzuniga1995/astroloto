@@ -11,7 +11,7 @@ const isActive = (href: string) => {
 ---
 
 <nav class="bg-white shadow-lg sticky top-0 z-50 w-full">
-    <div class="max-w-7xl mx-auto px-4">
+    <div class="max-w-7xl mx-auto px-2.5 sm:px-4">
         <div class="flex justify-between items-center py-3 gap-2">
 
             <!-- Logo -->
@@ -32,7 +32,7 @@ const isActive = (href: string) => {
             <!-- ✅ SIGNOS PILL — siempre visible en móvil -->
             <a
                 href="/signos-la-diaria"
-                class={`lg:hidden relative flex items-center gap-1 px-2.5 py-1.5 rounded-lg font-semibold overflow-hidden signos-link text-xs flex-shrink-0 ${
+                class={`lg:hidden relative flex items-center gap-1 px-2 py-1.5 rounded-lg font-semibold overflow-hidden signos-link text-xs flex-shrink-0 ${
                     isActive('/signos-la-diaria')
                         ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white'
                         : 'bg-gradient-to-r from-indigo-950 to-violet-950 text-yellow-300 border border-violet-700'
@@ -52,38 +52,38 @@ const isActive = (href: string) => {
             </button>
 
             <!-- Menú desktop -->
-            <div class="hidden lg:flex items-center gap-2">
-                <a href="/" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all shadow-md hover:shadow-lg ${isActive('/') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+            <div class="hidden lg:flex items-center gap-2 flex-wrap justify-end">
+                <a href="/" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all shadow-md hover:shadow-lg ${isActive('/') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <Home class="w-4 h-4" /><span>Inicio</span>
                 </a>
-                <a href="/juga-3" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/juga-3') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+                <a href="/juga-3" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all ${isActive('/juga-3') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <span>Jugá 3</span>
                 </a>
-                <a href="/pega-3" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/pega-3') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+                <a href="/pega-3" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all ${isActive('/pega-3') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <span>Pega 3</span>
                 </a>
-                <a href="/premia-2" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/premia-2') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+                <a href="/premia-2" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all ${isActive('/premia-2') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <span>Premia 2</span>
                 </a>
-                <a href="/la-diaria" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/la-diaria') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+                <a href="/la-diaria" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all ${isActive('/la-diaria') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <span>La Diaria</span>
                 </a>
-                <a href="/loto-super-premio" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/loto-super-premio') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+                <a href="/loto-super-premio" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all ${isActive('/loto-super-premio') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <span>Súper Premio</span>
                 </a>
                 <!-- ✅ HISTORIAL -->
-                <a href="/historial" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/historial') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+                <a href="/historial" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all ${isActive('/historial') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <History class="w-4 h-4" /><span>Historial</span>
                 </a>
                 <!-- ✅ ESTADÍSTICAS -->
-                <a href="/estadisticas" class={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${isActive('/estadisticas') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
+                <a href="/estadisticas" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all ${isActive('/estadisticas') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                     <span>Estadísticas</span>
                 </a>
                 <!-- ✅ SIGNOS DESKTOP -->
                 <a
                     href="/signos-la-diaria"
-                    class={`relative flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all overflow-hidden signos-link ${
+                    class={`relative flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all overflow-hidden signos-link ${
                         isActive('/signos-la-diaria')
                             ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md'
                             : 'bg-gradient-to-r from-indigo-950 to-violet-950 text-yellow-300 border border-violet-700 hover:border-yellow-400 hover:shadow-[0_0_12px_rgba(250,204,21,0.3)]'

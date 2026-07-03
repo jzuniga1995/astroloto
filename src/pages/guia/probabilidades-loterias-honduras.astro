@@ -101,7 +101,7 @@ import Layout from '../../layouts/Layout.astro';
       .guia-section p { color:#374151; line-height:1.7; font-size:.95rem; margin-bottom:.75rem; }
       .guia-section ul { color:#374151; font-size:.95rem; padding-left:1.25rem; }
       .guia-section ul li { margin-bottom:.4rem; line-height:1.6; }
-      .guia-table { width:100%; border-collapse:collapse; font-size:.86rem; margin:.75rem 0; overflow-x:auto; display:block; }
+      .guia-table { width:100%; border-collapse:collapse; font-size:.86rem; margin:.75rem 0; }
       .guia-table th { background:linear-gradient(135deg,#5b21b6,#9333ea); color:#fff; padding:.6rem .8rem; text-align:left; font-size:.76rem; font-weight:700; text-transform:uppercase; white-space:nowrap; }
       .guia-table td { padding:.55rem .8rem; border-bottom:1px solid #f3f4f6; color:#374151; white-space:nowrap; }
       .guia-table tr:last-child td { border-bottom:none; }
@@ -123,6 +123,7 @@ import Layout from '../../layouts/Layout.astro';
 
 <section class="guia-section">
     <h2>📊 Tabla Comparativa de Todos los Juegos</h2>
+    <div class="overflow-x-auto">
     <table class="guia-table">
         <thead><tr><th>Juego</th><th>Modalidad</th><th>Probabilidad</th><th>Premio aprox.</th><th>Relación riesgo-premio</th></tr></thead>
         <tbody>
@@ -137,6 +138,7 @@ import Layout from '../../layouts/Layout.astro';
             <tr><td><a href="/loto-super-premio" style="color:#7c3aed;font-weight:600;">Súper Premio</a></td><td>Jackpot</td><td><strong>Muy baja</strong></td><td>Millones de L.</td><td>🔴 Muy baja / enorme premio</td></tr>
         </tbody>
     </table>
+    </div>
 </section>
 
 <section class="guia-section">

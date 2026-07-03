@@ -102,7 +102,7 @@ import Layout from '../../layouts/Layout.astro';
       .guia-section p { color:#374151; line-height:1.7; font-size:.95rem; margin-bottom:.75rem; }
       .guia-section ul { color:#374151; font-size:.95rem; padding-left:1.25rem; }
       .guia-section ul li { margin-bottom:.4rem; line-height:1.6; }
-      .guia-table { width:100%; border-collapse:collapse; font-size:.84rem; margin:.75rem 0; overflow-x:auto; display:block; }
+      .guia-table { width:100%; border-collapse:collapse; font-size:.84rem; margin:.75rem 0; }
       .guia-table th { background:linear-gradient(135deg,#5b21b6,#9333ea); color:#fff; padding:.55rem .7rem; text-align:left; font-size:.74rem; font-weight:700; text-transform:uppercase; white-space:nowrap; }
       .guia-table td { padding:.5rem .7rem; border-bottom:1px solid #f3f4f6; color:#374151; white-space:nowrap; }
       .guia-table tr:last-child td { border-bottom:none; }
@@ -130,6 +130,7 @@ import Layout from '../../layouts/Layout.astro';
 <section class="guia-section">
     <h2>🕐 Horarios en tu Ciudad de EE.UU.</h2>
     <p>Honduras está en la zona <strong>UTC-6</strong> (sin horario de verano). Los horarios en EE.UU. varían según la zona. Durante el horario de verano de EE.UU. (marzo–noviembre), restale 1 hora a los horarios ET.</p>
+    <div class="overflow-x-auto">
     <table class="guia-table">
         <thead><tr><th>Tanda HN</th><th>🇭🇳 Honduras</th><th>🌆 Miami/NY (ET)</th><th>🤠 Houston/Chi (CT)</th><th>🏔️ Denver (MT)</th><th>🎬 Los Ángeles (PT)</th></tr></thead>
         <tbody>
@@ -139,6 +140,7 @@ import Layout from '../../layouts/Layout.astro';
             <tr><td>🏆 Súper Premio (Mié/Sáb)</td><td>9:00 PM</td><td><strong>10:00 PM</strong></td><td><strong>9:00 PM</strong></td><td><strong>8:00 PM</strong></td><td><strong>7:00 PM</strong></td></tr>
         </tbody>
     </table>
+    </div>
     <p><em>En horario de verano de EE.UU., restá 1 hora a la columna ET (Miami/NY pasa a ser 11 AM, 3 PM, 9 PM).</em></p>
 </section>
 

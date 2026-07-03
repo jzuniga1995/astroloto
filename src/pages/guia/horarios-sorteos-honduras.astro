@@ -102,7 +102,7 @@ import Layout from '../../layouts/Layout.astro';
       .guia-section h2 { font-size:1.25rem; font-weight:800; color:#3b0764; margin-bottom:1rem; }
       .guia-section h3 { font-size:1rem; font-weight:700; color:#5b21b6; margin:.75rem 0 .4rem; }
       .guia-section p { color:#374151; line-height:1.7; font-size:.95rem; margin-bottom:.75rem; }
-      .guia-table { width:100%; border-collapse:collapse; font-size:.86rem; margin:.75rem 0; overflow-x:auto; display:block; }
+      .guia-table { width:100%; border-collapse:collapse; font-size:.86rem; margin:.75rem 0; }
       .guia-table th { background:linear-gradient(135deg,#5b21b6,#9333ea); color:#fff; padding:.6rem .8rem; text-align:left; font-size:.76rem; font-weight:700; text-transform:uppercase; white-space:nowrap; }
       .guia-table td { padding:.55rem .8rem; border-bottom:1px solid #f3f4f6; color:#374151; white-space:nowrap; }
       .guia-table tr:last-child td { border-bottom:none; }
@@ -127,6 +127,7 @@ import Layout from '../../layouts/Layout.astro';
 <section class="guia-section">
     <h2>🕐 Horarios Diarios (Jugá 3, Pega 3, Premia 2, La Diaria)</h2>
     <p>De <strong>lunes a sábado</strong>, los cuatro juegos principales tienen sorteos en tres tandas:</p>
+    <div class="overflow-x-auto">
     <table class="guia-table">
         <thead><tr><th>Tanda</th><th>🇭🇳 Honduras</th><th>🇨🇷 Costa Rica</th><th>🇺🇸 Miami/NY (ET)</th><th>🇺🇸 Houston/Chi (CT)</th><th>🇺🇸 Denver (MT)</th><th>🇺🇸 Los Ángeles (PT)</th></tr></thead>
         <tbody>
@@ -144,12 +145,14 @@ import Layout from '../../layouts/Layout.astro';
             </tr>
         </tbody>
     </table>
+    </div>
     <p><em>Honduras y Costa Rica comparten la zona horaria UTC-6. Los horarios de EE.UU. pueden variar en ±1 hora durante el horario de verano.</em></p>
 </section>
 
 <section class="guia-section">
     <h2>🏆 Horario del Súper Premio</h2>
     <p>El <strong>Súper Premio</strong> se sortea únicamente <strong>dos veces por semana</strong>:</p>
+    <div class="overflow-x-auto">
     <table class="guia-table">
         <thead><tr><th>Día</th><th>🇭🇳 Honduras</th><th>🇨🇷 Costa Rica</th><th>🇺🇸 Miami/NY (ET)</th><th>🇺🇸 Houston (CT)</th><th>🇺🇸 Los Ángeles (PT)</th></tr></thead>
         <tbody>
@@ -157,10 +160,12 @@ import Layout from '../../layouts/Layout.astro';
             <tr><td>🗓️ <strong>Sábado</strong></td><td><strong>9:00 PM</strong></td><td>9:00 PM</td><td>10:00 PM</td><td>9:00 PM</td><td>7:00 PM</td></tr>
         </tbody>
     </table>
+    </div>
 </section>
 
 <section class="guia-section">
     <h2>📅 Días de Sorteo por Juego</h2>
+    <div class="overflow-x-auto">
     <table class="guia-table">
         <thead><tr><th>Juego</th><th>Días</th><th>Tandas</th></tr></thead>
         <tbody>
@@ -171,6 +176,7 @@ import Layout from '../../layouts/Layout.astro';
             <tr><td><a href="/loto-super-premio" style="color:#7c3aed;font-weight:600;">Súper Premio</a></td><td>Miércoles y Sábado</td><td>9 PM</td></tr>
         </tbody>
     </table>
+    </div>
     <p>Los domingos <strong>no hay sorteos</strong> de ningún juego de Loto Honduras.</p>
 </section>
 
