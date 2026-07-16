@@ -21,7 +21,7 @@ Frontend estático. Los datos vienen del backend Python separado (`C:\Users\Jose
 |----------|-------------|-------|
 | `/api/resultados-v2` | Resultados del día por juego y tanda | `no-cache` |
 | `/api/historial` | Historial acumulado `{ "YYYY-MM-DD": { ... } }` | `no-cache` |
-| `/api/oraculo` | Cábala del día `{ acertijo, numeros[], frase, fecha }` | `no-cache` |
+| `/api/analizar` | Análisis IA del día `{ fecha, juegos: { patrones, tendencias, sugerencias[] } }` | `no-store` |
 
 ### Estructura de datos de `/api/resultados-v2`
 
@@ -93,8 +93,9 @@ Frontend estático. Los datos vienen del backend Python separado (`C:\Users\Jose
 
 - **`Header.astro`** — Navegación sticky. Nav desktop + menú móvil hamburguesa. Links: Inicio, Jugá 3, Pega 3, Premia 2, La Diaria, Súper Premio, Historial, Estadísticas, Signos.
 - **`Footer.astro`** — Nav de resultados + sección Guías (11 links) + nav legal.
-- **`Oraculo.astro`** — Card de cábala del día. Fetch a `/api/oraculo`. Colores por día de la semana.
-- **`Layout.astro`** — Template base: Ezoic CMP, Google Analytics, PWA (manifest + SW), preload logos, estilos globales.
+- **`AnalizadorIA.astro`** — Banner de análisis IA con tabs por juego. Fetch a `/api/analizar`. Sugerencias se revelan al hacer clic.
+- **`CoberturaPaises.astro`** — Sección visible de cobertura geográfica (HN · CR · US con ciudades).
+- **`Layout.astro`** — Template base: Google Analytics, PWA (manifest + SW), preload logos, estilos globales.
 
 ## Scripts client-side
 
@@ -109,7 +110,7 @@ Frontend estático. Los datos vienen del backend Python separado (`C:\Users\Jose
 ## PWA
 
 - `public/manifest.webmanifest` — Instalable. Shortcuts a Jugá 3, La Diaria e Historial.
-- `public/sw.js` — Service worker **mínimo**. Sin caché offline — garantiza carga de anuncios y datos frescos.
+- `public/sw.js` — Service worker **mínimo**. Sin caché offline — garantiza datos frescos en cada visita.
 
 ## SEO — Patrón por página
 
@@ -131,15 +132,7 @@ Cada página sigue este patrón en el `<slot name="head">`:
 
 ## Monetización
 
-En `Layout.astro`:
-
-| Red | Estado |
-|-----|--------|
-| Ezoic (gatekeeperconsent + ezojs) | ✅ Activo |
-| Adsterra Native Banner (effectivegatecpm.com) | ❌ Comentado |
-| Adsterra Banner 300×250 (highperformanceformat.com) | ❌ Comentado |
-| Adsterra Popunder (effectivegatecpm.com) | ❌ Comentado |
-| Adsterra Social Bar (effectivegatecpm.com) | ❌ Comentado |
+**Sin anuncios (julio 2026).** Todo el código de redes publicitarias (Monetag, Adsterra, Ezoic) fue eliminado del sitio durante la recuperación de tráfico: los formatos intrusivos (push, vignette, smartlinks) coincidieron con caídas de indexación en Google. **No reintroducir anuncios hasta que el tráfico orgánico se recupere de forma estable**, y en ese momento usar solo formatos no intrusivos (nada de popunders, push, vignettes ni smartlinks).
 
 ## Google Analytics
 

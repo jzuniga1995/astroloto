@@ -1,2 +1,28 @@
-/ads.txt https://srv.adstxtmanager.com/19390/lotohn.com 301
+# Canonicalización: variantes .html indexadas → URL limpia
+/index.html                                      /                                            301!
+/juga-3.html                                     /juga-3                                      301!
+/pega-3.html                                     /pega-3                                      301!
+/premia-2.html                                   /premia-2                                    301!
+/la-diaria.html                                  /la-diaria                                   301!
+/loto-super-premio.html                          /loto-super-premio                           301!
+/historial.html                                  /historial                                   301!
+/estadisticas.html                               /estadisticas                                301!
+/signos-la-diaria.html                           /signos-la-diaria                            301!
+/contacto.html                                   /contacto                                    301!
+/sobre-nosotros.html                             /sobre-nosotros                              301!
+/privacidad.html                                 /privacidad                                  301!
+/terminos.html                                   /terminos                                    301!
+/guia/como-jugar-juga-3.html                     /guia/como-jugar-juga-3                      301!
+/guia/como-jugar-pega-3.html                     /guia/como-jugar-pega-3                      301!
+/guia/como-jugar-premia-2.html                   /guia/como-jugar-premia-2                    301!
+/guia/como-jugar-la-diaria.html                  /guia/como-jugar-la-diaria                   301!
+/guia/como-jugar-super-premio.html               /guia/como-jugar-super-premio                301!
+/guia/horarios-sorteos-honduras.html             /guia/horarios-sorteos-honduras              301!
+/guia/donde-cobrar-premios-honduras.html         /guia/donde-cobrar-premios-honduras          301!
+/guia/probabilidades-loterias-honduras.html      /guia/probabilidades-loterias-honduras       301!
+/guia/estrategias-loto-honduras.html             /guia/estrategias-loto-honduras              301!
+/guia/loto-honduras-desde-costa-rica.html        /guia/loto-honduras-desde-costa-rica         301!
+/guia/loto-honduras-desde-estados-unidos.html    /guia/loto-honduras-desde-estados-unidos     301!
+
+# Quitar barra final
 /*/  /:splat  301

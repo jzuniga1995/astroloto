@@ -1,5 +1,5 @@
 // Service Worker mínimo — solo habilita instalación PWA.
-// Sin caché offline para garantizar carga de anuncios y datos frescos.
+// Sin caché offline para garantizar datos frescos en cada visita.
 
 self.addEventListener('install', () => self.skipWaiting());
 

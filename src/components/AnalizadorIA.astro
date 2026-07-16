@@ -84,7 +84,7 @@
                 <button class="an-btn" id="an-btn" type="button">
                     🎰 Ver sugerencias de hoy
                 </button>
-                <span class="an-cta-hint">📢 Ver un anuncio ayuda a mantener la plataforma actualizada</span>
+                <span class="an-cta-hint">Análisis gratuito actualizado cada día</span>
             </div>
             <!-- Estado revelado -->
             <div class="an-revealed-msg" id="an-revealed-msg" style="display:none">
@@ -415,9 +415,8 @@
         const keys = Object.keys(juegosData);
         if (keys.length) activarTab(keys[0]);
 
-        // Clic en botón: abre anuncio y revela sugerencias del juego activo
+        // Clic en botón: revela sugerencias del juego activo
         btn.addEventListener('click', () => {
-            window.open('https://omg10.com/4/11134766', '_blank', 'noopener,noreferrer');
             activeRevealed = true;
             renderPanel(activeKey);
         });
