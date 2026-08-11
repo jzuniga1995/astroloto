@@ -334,20 +334,14 @@ function crearCardJuego(key, datos) {
 
     let contenidoPrincipal = '';
 
-    const esDiaria = normalizarNombre(obtenerJuegoBase(key)) === 'ladiaria'
-                  || normalizarNombre(obtenerJuegoBase(key)) === 'diaria';
-
     if (numeros.length > 0) {
-        // La Diaria: la fuente muestra número y signo juntos en la misma bola
-        const valores = esDiaria && numeros.length >= 2
-            ? [`${numeros[0]} ${numeros[1]}`, ...numeros.slice(2)]
-            : numeros;
-
+        // Una esfera por valor: en La Diaria el número, el signo, el
+        // multiplicador y el dígito final van cada uno por separado
         contenidoPrincipal = `
             <div class="numeros-container">
                 <div class="numeros-titulo">NÚMEROS GANADORES</div>
                 <div class="numeros-grid">
-                    ${valores.map((num, i) => {
+                    ${numeros.map((num, i) => {
                         const esTexto = isNaN(num) || String(num).trim() === '';
                         return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${i * 0.1}s">${num}</div>`;
                     }).join('')}

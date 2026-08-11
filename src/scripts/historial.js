@@ -82,17 +82,13 @@ function detectarJuego(key) {
     return null;
 }
 
-function formatearNums(datos, juego) {
+function formatearNums(datos) {
     if (!datos) return '—';
     const arr = Array.isArray(datos)
         ? datos
         : (datos.numeros_adicionales?.length ? datos.numeros_adicionales : datos.numeros_individuales);
     if (!arr?.length) return datos.numero_ganador ?? '—';
 
-    // La Diaria: la fuente muestra número y signo juntos
-    if (juego === 'la_diaria' && arr.length >= 2) {
-        return [`${arr[0]} ${arr[1]}`, ...arr.slice(2)].join(' · ');
-    }
     return arr.join(' · ');
 }
 
@@ -176,7 +172,7 @@ function renderTabla() {
             </td>
             ${columnas.map(c => `
                 <td class="td-num" data-label="${JUEGOS_CONFIG[c].label}">
-                    ${formatearNums(celdas[c], c)}
+                    ${formatearNums(celdas[c])}
                 </td>`).join('')}
         </tr>`).join('');
 
@@ -263,7 +259,7 @@ async function exportar() {
                 fechaKey,
                 dias[fecha.getDay()],
                 TANDA_LABELS[tanda] || tanda,
-                ...columnas.map(c => formatearNums(celdas[c], c))
+                ...columnas.map(c => formatearNums(celdas[c]))
             ]);
         });
 
