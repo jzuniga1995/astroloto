@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Service worker de terceros que se colo en la raiz; el bueno es public/sw.js
+/sw.js
