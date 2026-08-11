@@ -426,50 +426,6 @@
 }
 
 /* ============================================
-   MÁS 1 — La Diaria
-   ============================================ */
-.mas1-bola {
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-}
-
-.mas1-logo-img {
-    width: 36px !important;
-    height: 36px !important;
-    max-width: 36px !important;
-    max-height: 36px !important;
-    object-fit: contain;
-    flex-shrink: 0;
-    display: block;
-}
-
-.mas1-num {
-    position: relative;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 32% 28%, #facc15, #ca8a04 60%, #a16207 100%);
-    color: #fff;
-    font-size: 1.3rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow:
-        0 4px 10px rgba(202, 138, 4, 0.45),
-        inset -3px -4px 8px rgba(0, 0, 0, 0.25),
-        inset 2px 2px 6px rgba(255, 255, 255, 0.35);
-    flex-shrink: 0;
-}
-
-@media (max-width: 480px) {
-    .mas1-logo-img { width: 30px; height: 30px; }
-    .mas1-num { width: 46px; height: 46px; font-size: 1.15rem; }
-}
-
-/* ============================================
    RESULTADOS ANTERIORES - SOLO BOLAS Y FECHA ROJAS
    ============================================ */
 .game-card.resultado-anterior .bola {

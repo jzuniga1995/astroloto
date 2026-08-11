@@ -89,10 +89,9 @@ function formatearNums(datos, juego) {
         : (datos.numeros_adicionales?.length ? datos.numeros_adicionales : datos.numeros_individuales);
     if (!arr?.length) return datos.numero_ganador ?? '—';
 
+    // La Diaria: la fuente muestra número y signo juntos
     if (juego === 'la_diaria' && arr.length >= 2) {
-        const principales = arr.slice(0, -1).join(' · ');
-        const mas1 = arr[arr.length - 1];
-        return `${principales} · <span class="mas1-cell"><img src="/logos/mas1.png" alt="Más 1" class="mas1-cell-img">${mas1}</span>`;
+        return [`${arr[0]} ${arr[1]}`, ...arr.slice(2)].join(' · ');
     }
     return arr.join(' · ');
 }
@@ -264,7 +263,7 @@ async function exportar() {
                 fechaKey,
                 dias[fecha.getDay()],
                 TANDA_LABELS[tanda] || tanda,
-                ...columnas.map(c => formatearNums(celdas[c]))
+                ...columnas.map(c => formatearNums(celdas[c], c))
             ]);
         });
 
@@ -590,8 +589,6 @@ function renderInterfaz() {
         .h-ellipsis         { color: var(--c-muted); font-size: .8rem; padding: 0 .15rem; }
         .h-pag-info         { font-size: .71rem; color: var(--c-muted); font-weight: 500; margin-left: auto; white-space: nowrap; }
         .h-pag-info strong  { color: var(--c-brand2); }
-        .mas1-cell          { display: inline-flex; align-items: center; gap: 2px; }
-        .mas1-cell-img      { width: 18px; height: 18px; object-fit: contain; vertical-align: middle; }
     </style>
 
     <div class="h-root">
