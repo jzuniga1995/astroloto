@@ -343,10 +343,10 @@ function crearCardJuego(key, datos) {
             const principales = numeros.slice(0, -1);
             const mas1        = numeros[numeros.length - 1];
             const mas1EsNum   = !isNaN(String(mas1).trim()) && String(mas1).trim() !== '';
-            // la fuente manda número, signo, multiplicador y Más 1
+            // el Más 1 no se nombra en el título: su bola ya lleva el distintivo
             const tituloDiaria = principales.length >= 3
-                ? 'NÚMERO · SIGNO · MULTIPLICADOR · MÁS 1'
-                : 'NÚMERO · SIGNO · MÁS 1';
+                ? 'NÚMERO · SIGNO · MULTIPLICADOR'
+                : 'NÚMERO · SIGNO';
             contenidoPrincipal = `
                 <div class="numeros-container">
                     <div class="numeros-titulo">${tituloDiaria}</div>
