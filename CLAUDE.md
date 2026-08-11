@@ -42,16 +42,34 @@ Frontend estático. Los datos vienen del backend Python separado (`C:\Users\Jose
 }
 ```
 
+La Diaria trae 4 valores en `numeros_adicionales` / `numeros_individuales`:
+número, signo, multiplicador y Más 1 (`["87", "León", "JG", "4"]`).
+
 ### Estructura de datos de `/api/historial`
+
+Cada sorteo es un **array** de números (el mismo `numeros_adicionales`), no un objeto:
 
 ```json
 {
-  "2026-06-01": {
-    "juga3_11am": { "numero_ganador": "326", "numeros_adicionales": ["326"], ... },
-    "pega3_10am": { ... }
+  "2026-08-10": {
+    "juga3_11am":   ["457"],
+    "premia2_11am": ["38", "24"],
+    "pega_3_11am":  ["35", "36", "39"],
+    "diaria_11am":  ["87", "León", "JG", "4"],
+    "super_premio": ["01", "04", "05", "10", "20", "28"]
   }
 }
 ```
+
+### Juegos vigentes
+
+Jugá 3, Premia 2, Pega 3 y La Diaria (11:00 AM, 3:00 PM y 9:00 PM) más Súper
+Premio (miércoles y sábado, 9:00 PM). **Bingo con Todo, Multi X, InstaCash,
+Apostemos y Ganagol se eliminaron**: la fuente dejó de publicarlos.
+
+Las claves del historial cambiaron de forma con el tiempo (`pega3_10am` /
+`pega_3_11am`, `la_diaria_10am` / `diaria_11am`), así que los scripts las
+detectan por coincidencia parcial y no por igualdad exacta.
 
 ## Páginas
 
@@ -152,4 +170,4 @@ El build compila sin errores. Las advertencias del IDE sobre `is:inline` en scri
 
 ## Backend relacionado
 
-`C:\Users\Jose\loto` — Python. Scraper con Playwright + generador de Oráculo con Gemini. Corre vía GitHub Actions (`workflow_dispatch` — sin cron automático). Genera `resultados_hoy.json`, `historial.json` y `oraculo.json`.
+`jzuniga1995/lotohn` — Python. Scraper con Playwright sobre `loteriasdehonduras.com` + analizador. Corre vía GitHub Actions (`workflow_dispatch` — sin cron automático). Genera `resultados_hoy.json`, `historial.json` y `analisis.json`.

@@ -11,7 +11,6 @@ const JUEGOS_CONFIG = {
     premia2:        { label: 'Premia 2'       },
     la_diaria:      { label: 'La Diaria'      },
     super_premio:   { label: 'Súper Premio'   },
-    bingo_con_todo: { label: 'Bingo con Todo' },
 };
 
 const TANDA_LABELS = {
@@ -68,7 +67,6 @@ function esHoy(fechaKey) {
 // FIX: super_premio siempre tanda noche (juega mié y sáb a las 9pm)
 function detectarTanda(key) {
     if (key.includes('11am') || key.includes('10am') || key.includes('manana') || key.includes('mañana')) return '11am';
-    if (key.includes('bingo')) return '3pm'; // bingo con todo → todos los días a las 4pm = tarde
     if (key.includes('3pm')  || key.includes('2pm')  || key.includes('4pm') || key.includes('tarde')) return '3pm';
     if (key.includes('9pm')  || key.includes('noche') || key.includes('super')) return '9pm';
     return null;
@@ -80,7 +78,7 @@ function detectarJuego(key) {
     if (key.includes('premia2') || key.includes('premia_2')) return 'premia2';
     if (key.includes('diaria'))                               return 'la_diaria';
     if (key.includes('super'))                                return 'super_premio';
-    if (key.includes('bingo'))                                return 'bingo_con_todo';
+    // Bingo con Todo y Multi X quedan fuera: la fuente ya no los publica
     return null;
 }
 
@@ -129,7 +127,7 @@ function getFilas() {
 
 function getColumnas() {
     return filtroJuego === 'todos'
-        ? ['juga3','pega3','premia2','la_diaria','super_premio','bingo_con_todo']
+        ? ['juga3','pega3','premia2','la_diaria','super_premio']
         : [filtroJuego];
 }
 
