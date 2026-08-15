@@ -2,6 +2,8 @@
 // HISTORIAL — tabla (desktop) + cards (mobile) + paginación + exportar XLSX
 // ============================================
 
+import { fetchJSON } from './api.js';
+
 const HISTORIAL_URL = '/api/historial';
 
 const JUEGOS_CONFIG = {
@@ -647,11 +649,7 @@ async function cargarHistorial() {
     if (!wrap) return;
 
     try {
-        const resp = await fetch(HISTORIAL_URL, {
-            cache: 'no-cache'
-        });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        historialData = await resp.json();
+        historialData = await fetchJSON(HISTORIAL_URL);
         renderInterfaz();
     } catch (err) {
         if (loading) loading.style.display = 'none';

@@ -281,6 +281,8 @@
 </style>
 
 <script>
+import { fetchJSON } from '../scripts/api.js';
+
 (async () => {
     const skeleton   = document.getElementById('an-skeleton')    as HTMLElement;
     const card       = document.getElementById('an-card')        as HTMLElement;
@@ -386,9 +388,7 @@
     }
 
     try {
-        const resp = await fetch('/api/analizar', { cache: 'no-store' });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const data = await resp.json();
+        const data = await fetchJSON('/api/analizar');
         if (!data?.juegos) throw new Error('Sin datos');
 
         juegosData = data.juegos;

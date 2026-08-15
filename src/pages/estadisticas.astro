@@ -399,6 +399,8 @@ import CoberturaPaises from '../components/CoberturaPaises.astro';
 </div>
 
 <script>
+import { fetchJSON } from '../scripts/api.js';
+
 const HISTORIAL_URL = '/api/historial';
 
 const JUEGOS = [
@@ -717,9 +719,7 @@ function renderEstadisticas(historialData) {
 
 async function cargarEstadisticas() {
     try {
-        const resp = await fetch('/api/historial', { cache: 'no-cache' });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const data = await resp.json();
+        const data = await fetchJSON('/api/historial');
         renderEstadisticas(data);
     } catch (err) {
         const loading = document.getElementById('stats-loading');

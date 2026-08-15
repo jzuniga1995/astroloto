@@ -2,6 +2,8 @@
 // CONFIGURACIÓN
 // ============================================
 
+import { fetchJSON } from './api.js';
+
 const JSON_URL = '/api/resultados-v2';
 
 const DATOS_EMBEBIDOS = null;
@@ -416,21 +418,30 @@ function ordenarPorFechaYHora(sorteos) {
 // CARGAR RESULTADOS
 // ============================================
 
-async function cargarResultados() {
+// Momento del último intento de carga: lo usa el refresco al volver a la
+// página para no repetir la petición si acaba de hacerse.
+let ultimaCarga = 0;
+
+// `mostrarSkeleton: false` es el refresco de fondo: no borra lo que ya está en
+// pantalla, así que no parpadea el "CARGANDO..." ni se pierde un resultado
+// bueno si la petición falla.
+async function cargarResultados({ mostrarSkeleton = true } = {}) {
     const contenido = document.getElementById('contenido');
     if (!contenido) return;
 
-    contenido.innerHTML = `
-        <div class="sorteo-section">
-            <h2 class="sorteo-header">
-                <i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i>
-                CARGANDO RESULTADOS...
-            </h2>
-            <div class="sorteo-grid">${crearSkeletonCards(3)}</div>
-        </div>
-    `;
+    if (mostrarSkeleton) {
+        contenido.innerHTML = `
+            <div class="sorteo-section">
+                <h2 class="sorteo-header">
+                    <i data-lucide="loader-2" class="w-6 h-6 animate-spin"></i>
+                    CARGANDO RESULTADOS...
+                </h2>
+                <div class="sorteo-grid">${crearSkeletonCards(3)}</div>
+            </div>
+        `;
 
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
 
     try {
         let data;
@@ -438,11 +449,7 @@ async function cargarResultados() {
         if (DATOS_EMBEBIDOS) {
             data = DATOS_EMBEBIDOS;
         } else {
-            const response = await fetch(JSON_URL, {
-                cache: 'no-cache'
-            });
-            if (!response.ok) throw new Error('No se pudieron cargar los resultados.');
-            data = await response.json();
+            data = await fetchJSON(JSON_URL);
         }
 
         const fechaElement = document.getElementById('fechaActual');
@@ -456,13 +463,15 @@ async function cargarResultados() {
         const sorteosFiltrados = filtrarSorteos(sorteos, tipoJuego);
 
         if (Object.keys(sorteosFiltrados).length === 0) {
-            contenido.innerHTML = `
-                <div class="error-message">
-                    <i data-lucide="info" class="w-6 h-6 inline-block mr-2"></i>
-                    No hay resultados disponibles todavía.
-                </div>
-            `;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            if (mostrarSkeleton) {
+                contenido.innerHTML = `
+                    <div class="error-message">
+                        <i data-lucide="info" class="w-6 h-6 inline-block mr-2"></i>
+                        No hay resultados disponibles todavía.
+                    </div>
+                `;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
             return;
         }
 
@@ -504,15 +513,20 @@ async function cargarResultados() {
 
     } catch (error) {
         console.error('Error:', error);
-        contenido.innerHTML = `
-            <div class="error-message">
-                <i data-lucide="alert-triangle" class="w-6 h-6 inline-block mr-2"></i>
-                Error al cargar los resultados<br>
-                <small>${error.message}</small>
-            </div>
-        `;
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+        // En un refresco de fondo se conserva lo que ya está en pantalla: vale
+        // más un resultado de hace un minuto que un cartel de error.
+        if (mostrarSkeleton) {
+            contenido.innerHTML = `
+                <div class="error-message">
+                    <i data-lucide="alert-triangle" class="w-6 h-6 inline-block mr-2"></i>
+                    Error al cargar los resultados<br>
+                    <small>${error.message}</small>
+                </div>
+            `;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
     } finally {
+        ultimaCarga = Date.now();
         const loading = document.getElementById('loading');
         if (loading) loading.style.display = 'none';
     }
@@ -527,29 +541,64 @@ if (document.readyState === 'loading') {
 }
 
 // ============================================
+// REFRESCO AL VOLVER A LA PÁGINA
+// ============================================
+//
+// El temporizador no alcanza cuando la pestaña estuvo en segundo plano (el
+// navegador lo frena) o cuando se vuelve al home con el botón atrás, que
+// restaura la página tal cual estaba desde la bfcache sin ejecutar de nuevo el
+// script. Sin esto, el visitante se queda mirando el sorteo anterior.
+
+const EDAD_MAXIMA_MS = 20 * 1000;
+
+function refrescarSiEstaVieja() {
+    if (document.visibilityState !== 'visible') return;
+    if (!document.getElementById('contenido')) return;
+    if (Date.now() - ultimaCarga < EDAD_MAXIMA_MS) return;
+    cargarResultados({ mostrarSkeleton: false });
+}
+
+document.addEventListener('visibilitychange', refrescarSiEstaVieja);
+window.addEventListener('pageshow', (e) => {
+    if (e.persisted) refrescarSiEstaVieja();   // vuelta desde la bfcache
+});
+
+// ============================================
 // ACTUALIZACIÓN AUTOMÁTICA
 // ============================================
 
-function obtenerIntervaloActualizacion() {
-    const ahora = new Date();
-    const utc   = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
-    const horaHN = new Date(utc + (3600000 * -6));
-    const hour   = horaHN.getHours();
-    const minute = horaHN.getMinutes();
+// Los sorteos son a las 11:00, 15:00 y 21:00 (hora Honduras) y el backend
+// publica unos minutos después. La ventana rápida cubre la hora y cuarto
+// siguiente a cada sorteo — no solo los primeros 30 minutos — porque si una
+// corrida del scraper se atrasa el resultado puede llegar bastante más tarde.
+const HORAS_SORTEO       = [11, 15, 21];
+const VENTANA_RAPIDA_MIN = 75;
 
-    if (
-        (hour === 11 && minute <= 30) ||
-        (hour === 15 && minute <= 30) ||
-        (hour === 21 && minute <= 30)
-    ) {
-        return 1 * 60 * 1000;  // cada 1 min cerca de los sorteos
-    }
-    return 5 * 60 * 1000;      // cada 5 min el resto del día
+function minutosDesdeUltimoSorteo() {
+    const ahora  = new Date();
+    const utc    = ahora.getTime() + (ahora.getTimezoneOffset() * 60000);
+    const horaHN = new Date(utc + (3600000 * -6));
+    const minutosDelDia = horaHN.getHours() * 60 + horaHN.getMinutes();
+
+    let menor = Infinity;
+    HORAS_SORTEO.forEach(hora => {
+        const delta = minutosDelDia - hora * 60;
+        if (delta >= 0 && delta < menor) menor = delta;
+    });
+    return menor;
+}
+
+function obtenerIntervaloActualizacion() {
+    return minutosDesdeUltimoSorteo() <= VENTANA_RAPIDA_MIN
+        ? 1 * 60 * 1000   // cada 1 min mientras se espera el resultado
+        : 5 * 60 * 1000;  // cada 5 min el resto del día
 }
 
 function programarSiguienteActualizacion() {
     setTimeout(() => {
-        if (document.getElementById('contenido')) cargarResultados();
+        if (document.getElementById('contenido')) {
+            cargarResultados({ mostrarSkeleton: false });
+        }
         programarSiguienteActualizacion();
     }, obtenerIntervaloActualizacion());
 }
