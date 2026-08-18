@@ -7,7 +7,9 @@ Portal de resultados de loterías hondureñas. Muestra resultados en vivo de Jug
 - **Astro 5** — SSG, sin SSR. Todo el dinamismo es client-side JS.
 - **Tailwind CSS 3** — Estilos utilitarios.
 - **Lucide Astro** — Iconos SVG.
-- **Hosting:** Netlify (`public/_redirects`).
+- **Hosting:** Cloudflare Pages (`public/_redirects`), con el dominio detrás
+  del proxy de Cloudflare. `/api/*` NO es una Pages Function de este
+  proyecto (no hay `functions/`): lo sirve algo aparte en la misma zona.
 - **Dominio:** https://lotohn.com
 - **Repo:** https://github.com/jzuniga1995/astroloto
 
@@ -35,8 +37,8 @@ tampoco responde, deja el placeholder de siempre. **Un fallo de red nunca tumba
 el build.**
 
 **Un sorteo nuevo necesita un despliegue nuevo.** El workflow del backend
-dispara un build hook de Netlify cuando cambian los números (ver *Backend
-relacionado*). Sin ese hook el HTML se queda con el sorteo del último
+dispara un deploy hook de Cloudflare Pages cuando cambian los números (ver
+*Backend relacionado*). Sin ese hook el HTML se queda con el sorteo del último
 despliegue: los visitantes lo ven igual, los bots no.
 
 ### Endpoints consumidos
@@ -240,10 +242,13 @@ El build compila sin errores. Las advertencias del IDE sobre `is:inline` en scri
 
 `jzuniga1995/lotohn` — Python. Scraper con Playwright sobre `loteriasdehonduras.com` + analizador. Corre vía GitHub Actions (`workflow_dispatch` — sin cron automático). Genera `resultados_hoy.json`, `historial.json` y `analisis.json`.
 
-Tras publicar y purgar Cloudflare, el workflow dispara el build hook de Netlify
-para que el HTML se regenere con el sorteo nuevo. Requiere el secret
-`NETLIFY_BUILD_HOOK` en el repo del backend; sin él, el paso simplemente se
-salta.
+Tras publicar y purgar Cloudflare, el workflow dispara el deploy hook de
+Cloudflare Pages para que el HTML se regenere con el sorteo nuevo. Requiere el
+secret `CF_PAGES_DEPLOY_HOOK` en el repo del backend; sin él, el paso
+simplemente se salta.
+
+Son ~3 despliegues al día (uno por tanda con números nuevos), muy por debajo de
+los 500 builds/mes del plan gratuito de Pages.
 
 El disparo va por `firma_resultados.py` (hash de los números, sin sellos de
 tiempo) y **no** por el `git diff`: `resultados_hoy.json` cambia en todas las
