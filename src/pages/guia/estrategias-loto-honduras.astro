@@ -1,6 +1,32 @@
 ---
 // src/pages/guia/estrategias-loto-honduras.astro
 import Layout from '../../layouts/Layout.astro';
+import { modificadoDePagina } from '../../lib/fechas.js';
+
+// dateModified salía de una constante escrita a mano que envejecía sola.
+// Git sabe cuándo se editó de verdad esta guía; la fecha vieja queda de
+// respaldo por si el checkout no trae historial del archivo.
+const modificado = modificadoDePagina('src/pages/guia/estrategias-loto-honduras.astro', '2026-06-01');
+
+const schemaArticulo = `
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Estrategias para Jugar Loto Honduras – Guía Práctica",
+      "description": "Consejos y estrategias basadas en datos para jugar Loto Honduras de manera más informada y responsable.",
+      "url": "https://lotohn.com/guia/estrategias-loto-honduras",
+      "inLanguage": "es-HN",
+      "author": { "@type": "Organization", "name": "LotoHN", "url": "https://lotohn.com" },
+      "publisher": { "@type": "Organization", "name": "LotoHN", "url": "https://lotohn.com", "logo": { "@type": "ImageObject", "url": "https://lotohn.com/logo.png" } },
+      "datePublished": "2026-01-01",
+      "dateModified": "${modificado}",
+      "breadcrumb": { "@type": "BreadcrumbList", "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://lotohn.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Guías", "item": "https://lotohn.com/guia/" },
+        { "@type": "ListItem", "position": 3, "name": "Estrategias", "item": "https://lotohn.com/guia/estrategias-loto-honduras" }
+      ]}
+    }
+`;
 ---
 
 <Layout>
@@ -57,25 +83,8 @@ import Layout from '../../layouts/Layout.astro';
     <link rel="alternate" hreflang="es-US" href="https://lotohn.com/guia/estrategias-loto-honduras">
     <link rel="alternate" hreflang="es"    href="https://lotohn.com/guia/estrategias-loto-honduras">
     <link rel="alternate" hreflang="x-default" href="https://lotohn.com/guia/estrategias-loto-honduras">
-    <script type="application/ld+json" is:inline>
-    {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "Estrategias para Jugar Loto Honduras – Guía Práctica",
-      "description": "Consejos y estrategias basadas en datos para jugar Loto Honduras de manera más informada y responsable.",
-      "url": "https://lotohn.com/guia/estrategias-loto-honduras",
-      "inLanguage": "es-HN",
-      "author": { "@type": "Organization", "name": "LotoHN", "url": "https://lotohn.com" },
-      "publisher": { "@type": "Organization", "name": "LotoHN", "url": "https://lotohn.com", "logo": { "@type": "ImageObject", "url": "https://lotohn.com/logo.png" } },
-      "datePublished": "2026-01-01",
-      "dateModified": "2026-06-01",
-      "breadcrumb": { "@type": "BreadcrumbList", "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://lotohn.com/" },
-        { "@type": "ListItem", "position": 2, "name": "Guías", "item": "https://lotohn.com/guia/" },
-        { "@type": "ListItem", "position": 3, "name": "Estrategias", "item": "https://lotohn.com/guia/estrategias-loto-honduras" }
-      ]}
-    }
-    </script>
+    <meta property="article:modified_time" content={modificado}>
+    <script type="application/ld+json" is:inline set:html={schemaArticulo} />
     <style>
       .guia-hero { background:#fff; border-radius:1rem; box-shadow:0 2px 12px rgba(124,58,237,.1); padding:2rem 1.5rem; margin-bottom:1.5rem; }
       .guia-breadcrumb { font-size:.78rem; color:#9ca3af; margin-bottom:1rem; display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }

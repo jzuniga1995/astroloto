@@ -1,6 +1,35 @@
 ---
 // src/pages/guia/como-jugar-juga-3.astro
 import Layout from '../../layouts/Layout.astro';
+import { modificadoDePagina } from '../../lib/fechas.js';
+
+// dateModified salía de una constante escrita a mano que envejecía sola.
+// Git sabe cuándo se editó de verdad esta guía; la fecha vieja queda de
+// respaldo por si el checkout no trae historial del archivo.
+const modificado = modificadoDePagina('src/pages/guia/como-jugar-juga-3.astro', '2026-06-01');
+
+const schemaArticulo = `
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Cómo Jugar Jugá 3 Honduras – Guía Completa",
+      "description": "Guía completa de Jugá 3 Honduras. Reglas, tipos de apuesta, premios, horarios y consejos para jugadores nuevos y experimentados.",
+      "url": "https://lotohn.com/guia/como-jugar-juga-3",
+      "inLanguage": "es-HN",
+      "author": { "@type": "Organization", "name": "LotoHN", "url": "https://lotohn.com" },
+      "publisher": { "@type": "Organization", "name": "LotoHN", "url": "https://lotohn.com", "logo": { "@type": "ImageObject", "url": "https://lotohn.com/logo.png" } },
+      "datePublished": "2026-01-01",
+      "dateModified": "${modificado}",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://lotohn.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Guías", "item": "https://lotohn.com/guia/" },
+          { "@type": "ListItem", "position": 3, "name": "Cómo Jugar Jugá 3", "item": "https://lotohn.com/guia/como-jugar-juga-3" }
+        ]
+      }
+    }
+`;
 ---
 
 <Layout>
@@ -79,28 +108,8 @@ import Layout from '../../layouts/Layout.astro';
     <link rel="alternate" hreflang="x-default" href="https://lotohn.com/guia/como-jugar-juga-3">
 
     <!-- ============== SCHEMA.ORG ============== -->
-    <script type="application/ld+json" is:inline>
-    {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "Cómo Jugar Jugá 3 Honduras – Guía Completa",
-      "description": "Guía completa de Jugá 3 Honduras. Reglas, tipos de apuesta, premios, horarios y consejos para jugadores nuevos y experimentados.",
-      "url": "https://lotohn.com/guia/como-jugar-juga-3",
-      "inLanguage": "es-HN",
-      "author": { "@type": "Organization", "name": "LotoHN", "url": "https://lotohn.com" },
-      "publisher": { "@type": "Organization", "name": "LotoHN", "url": "https://lotohn.com", "logo": { "@type": "ImageObject", "url": "https://lotohn.com/logo.png" } },
-      "datePublished": "2026-01-01",
-      "dateModified": "2026-06-01",
-      "breadcrumb": {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://lotohn.com/" },
-          { "@type": "ListItem", "position": 2, "name": "Guías", "item": "https://lotohn.com/guia/" },
-          { "@type": "ListItem", "position": 3, "name": "Cómo Jugar Jugá 3", "item": "https://lotohn.com/guia/como-jugar-juga-3" }
-        ]
-      }
-    }
-    </script>
+    <meta property="article:modified_time" content={modificado}>
+    <script type="application/ld+json" is:inline set:html={schemaArticulo} />
 
     <script type="application/ld+json" is:inline>
     {

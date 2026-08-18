@@ -1,0 +1,15 @@
+---
+// article:published_time / article:modified_time con la fecha real del dato.
+//
+// Estaban clavadas en 2026-01-01 mientras el resultado cambiaba tres veces al
+// día: para un buscador la página parecía sin tocar desde enero. `published`
+// sigue fija —es cuándo nació la página— y `modified` sale del
+// `fecha_actualizacion` que escribe el scraper.
+import { obtenerResultados, fechaModificacion } from '../lib/datos-build.js';
+import { PUBLICADO_SITIO } from '../lib/seo.js';
+
+const datos = await obtenerResultados();
+const modificado = fechaModificacion(datos);
+---
+<meta property="article:published_time" content={PUBLICADO_SITIO}>
+<meta property="article:modified_time" content={modificado}>

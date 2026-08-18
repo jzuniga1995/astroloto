@@ -15,6 +15,30 @@ Portal de resultados de loterías hondureñas. Muestra resultados en vivo de Jug
 
 Frontend estático. Los datos vienen del backend Python separado (`C:\Users\Jose\loto`) que hace scraping de `loteriasdehonduras.com` y sirve 3 endpoints JSON.
 
+### Los resultados se pintan dos veces
+
+1. **En el build** (`src/lib/datos-build.js`): `astro build` pide
+   `/api/resultados-v2` y deja el último sorteo escrito en el HTML. Es lo único
+   que ve un rastreador que no ejecuta JavaScript.
+2. **En el cliente** (`src/scripts/main.js`): al cargar repinta con el dato
+   fresco y sigue refrescando solo. El visitante nunca ve algo más viejo que el
+   último despliegue.
+
+Los dos lados generan el HTML con las **mismas funciones** (`src/lib/sorteos.js`),
+así que no pueden divergir. El bloque pre-renderizado lleva
+`data-prerender="true"`; el cliente lo quita al tomar el control, y ese atributo
+es lo que decide si la primera carga muestra skeleton o refresca por detrás.
+
+Si el build no logra leer la API cae a un respaldo
+(`raw.githubusercontent.com/jzuniga1995/lotohn/main/resultados_hoy.json`) y, si
+tampoco responde, deja el placeholder de siempre. **Un fallo de red nunca tumba
+el build.**
+
+**Un sorteo nuevo necesita un despliegue nuevo.** El workflow del backend
+dispara un build hook de Netlify cuando cambian los números (ver *Backend
+relacionado*). Sin ese hook el HTML se queda con el sorteo del último
+despliegue: los visitantes lo ven igual, los bots no.
+
 ### Endpoints consumidos
 
 | Endpoint | Descripción | Cache |
@@ -114,6 +138,24 @@ detectan por coincidencia parcial y no por igualdad exacta.
 - **`AnalizadorIA.astro`** — Banner de análisis IA con tabs por juego. Fetch a `/api/analizar`. Sugerencias se revelan al hacer clic.
 - **`CoberturaPaises.astro`** — Sección visible de cobertura geográfica (HN · CR · US con ciudades).
 - **`Layout.astro`** — Template base: Google Analytics, PWA (manifest + SW), preload logos, estilos globales.
+- **`ResultadosSorteos.astro`** — `#contenido` con los sorteos ya pintados en el build. Props: `tipoJuego`, `ariaLabel`, `textoCargando`.
+- **`SchemaResultados.astro`** — JSON-LD `WebPage` + `ItemList` con los resultados y el `dateModified` real.
+- **`FechasSEO.astro`** — `article:published_time` / `article:modified_time`.
+
+## Librerías compartidas (`src/lib/`)
+
+- **`sorteos.js`** — Toda la lógica de agrupar, ordenar y pintar sorteos. Sin DOM
+  ni `window`: la usan el build y el navegador. Escapa todo lo que llega del
+  scraper antes de meterlo en el HTML.
+- **`datos-build.js`** — Lee la API durante el build. Una sola petición por
+  build (cacheada en `globalThis`, que es lo que comparten `astro.config.mjs` y
+  el render de páginas). Nunca lanza.
+- **`iconos.js`** — SVG inline. El sitio nunca cargó el runtime `lucide`, así
+  que los `<i data-lucide="…">` que generaba el JS quedaban en un `<i>` vacío y
+  el icono no aparecía. **No volver a `data-lucide` en HTML generado.**
+- **`fechas.js`** — `dateModified` de las guías a partir del último commit de
+  git, con la fecha escrita a mano de respaldo si el checkout no trae historial.
+- **`seo.js`** — `PUBLICADO_SITIO`, fijo a propósito.
 
 ## Scripts client-side
 
@@ -143,10 +185,36 @@ Cada página sigue este patrón en el `<slot name="head">`:
 7. Twitter Card — `@LotoHN` en `twitter:site` y `twitter:creator`.
 8. Hreflang — 5 variantes: `es-HN`, `es-CR`, `es-US`, `es`, `x-default`.
 9. Schema.org — `WebPage` o `Article` + `FAQPage` + `BreadcrumbList`. `Organization` global vive en `Layout.astro`.
+   En las páginas de resultados el `WebPage` lo emite `<SchemaResultados />` con
+   `dateModified` real y un `ItemList` de los sorteos.
+   **Nada de `Event` para los sorteos**: Google reserva esas rich results para
+   cosas a las que se asiste y su guía antispam de datos estructurados trata como
+   abuso etiquetar de `Event` lo que no lo es.
 10. Cobertura geográfica VISIBLE — componente `CoberturaPaises.astro` (HN · CR · US con ciudades). Sustituye a los antiguos bloques ocultos.
 11. Contenido visible — Párrafos reales, FAQ visible, links internos. Un solo `<h1>` por página.
 
+**Regla de fechas:** `datePublished` es fijo (cuándo nació la página, en
+`src/lib/seo.js`). `dateModified` y `article:modified_time` salen del
+`fecha_actualizacion` que escribe el scraper — en UTC y sin sufijo de zona, hay
+que parsearlo como UTC o sale corrido seis horas. En las guías la fecha viene
+del último commit de git. **Nunca volver a escribir una fecha de modificación a
+mano.**
+
+Los bloques `<script type="application/ld+json" is:inline>` **no interpolan
+expresiones de Astro**: un `{variable}` ahí dentro sale literal en el HTML. Para
+JSON-LD con datos hay que usar `set:html={...}` (ver `SchemaResultados.astro` y
+las guías).
+
 **Regla crítica (anti-penalización):** PROHIBIDO el texto oculto para SEO (`clip:rect(0,0,0,0)`, `left:-9999px`, `display:none`, `aria-hidden` con keywords). Google lo penaliza como cloaking. Todo el contenido con keywords debe ser **visible y legible**; para las palabras geolocalizadas usar `<CoberturaPaises />`. Nada de listas de keywords separadas por comas: integrarlas en prosa natural.
+
+## Sitemap
+
+`lastmod` en `astro.config.mjs`:
+
+- Resultados, historial y estadísticas → el timestamp del dato, **no** la hora
+  del build. Si un despliegue no trajo sorteo nuevo, la fecha no se mueve.
+- Guías y páginas estáticas → fecha del último commit del archivo.
+- Sin fecha fiable → se omite `lastmod` en vez de inventar uno.
 
 ## Monetización
 
@@ -171,3 +239,14 @@ El build compila sin errores. Las advertencias del IDE sobre `is:inline` en scri
 ## Backend relacionado
 
 `jzuniga1995/lotohn` — Python. Scraper con Playwright sobre `loteriasdehonduras.com` + analizador. Corre vía GitHub Actions (`workflow_dispatch` — sin cron automático). Genera `resultados_hoy.json`, `historial.json` y `analisis.json`.
+
+Tras publicar y purgar Cloudflare, el workflow dispara el build hook de Netlify
+para que el HTML se regenere con el sorteo nuevo. Requiere el secret
+`NETLIFY_BUILD_HOOK` en el repo del backend; sin él, el paso simplemente se
+salta.
+
+El disparo va por `firma_resultados.py` (hash de los números, sin sellos de
+tiempo) y **no** por el `git diff`: `resultados_hoy.json` cambia en todas las
+corridas porque `fecha_actualizacion` y cada `fecha_consulta` llevan la hora de
+la corrida, así que el diff nunca está vacío. Enganchar el hook ahí sería
+reconstruir el sitio cada pocos minutos sin motivo.

@@ -3,6 +3,16 @@
 import Layout from '../layouts/Layout.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Dice3, Calendar, Clock, Target, Star, CheckCircle, Gamepad2, CircleDollarSign, Calculator, Flame, Snowflake, Wallet, TrendingUp, OctagonX, Repeat, Clock4, MapPin, AlertTriangle, GraduationCap, Lightbulb, Clover,Check,} from 'lucide-astro';
+import ResultadosSorteos from '../components/ResultadosSorteos.astro';
+import SchemaResultados from '../components/SchemaResultados.astro';
+import FechasSEO from '../components/FechasSEO.astro';
+import { formatearFechaLarga, horaHondurasTexto, fechaHondurasISO } from '../lib/sorteos.js';
+
+// La fecha y el reloj salían como "Cargando..." y "--:--:--" en el HTML: se
+// escriben con la hora de Honduras del build y el script los pone al día.
+const fechaLarga = formatearFechaLarga();
+const horaHN     = horaHondurasTexto();
+const horaISO    = fechaHondurasISO();
 ---
 
 <Layout>
@@ -101,7 +111,18 @@ import { Dice3, Calendar, Clock, Target, Star, CheckCircle, Gamepad2, CircleDoll
     <link rel="alternate" hreflang="es"    href="https://lotohn.com/juga-3">
     <link rel="alternate" hreflang="x-default" href="https://lotohn.com/juga-3">
 
+    <!-- ============== FECHAS DEL ÚLTIMO RESULTADO ============== -->
+    <FechasSEO />
+
     <!-- ============== SCHEMA.ORG ============== -->
+    <SchemaResultados
+        url="https://lotohn.com/juga-3"
+        nombre="Resultados Jugá 3 Honduras"
+        descripcion="Números ganadores de Jugá 3 Honduras en los sorteos de las 11:00 AM, 3:00 PM y 9:00 PM."
+        tipoJuego="juga3"
+        tituloLista="Resultados de Jugá 3 de hoy"
+    />
+
     <script type="application/ld+json" is:inline>
     {
       "@context": "https://schema.org",
@@ -204,20 +225,19 @@ import { Dice3, Calendar, Clock, Target, Star, CheckCircle, Gamepad2, CircleDoll
     <div class="flex items-center gap-4 text-sm text-gray-500">
         <div id="fechaActual" class="flex items-center gap-1.5">
             <Calendar class="w-4 h-4 text-violet-400" />
-            <span>Cargando...</span>
+            <span>{fechaLarga}</span>
         </div>
         <div class="flex items-center gap-1.5 font-mono text-violet-600">
             <Clock class="w-4 h-4" />
-            <time id="relojHonduras" datetime="">--:--:--</time>
+            <time id="relojHonduras" datetime={horaISO}>{horaHN}</time>
         </div>
     </div>
 </header>
-    <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
-        <div class="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>
-        <p class="text-gray-600 text-lg">Cargando resultados de Jugá 3...</p>
-    </div>
-
-    <section id="contenido" aria-label="Resultados de Jugá 3"></section>
+    <ResultadosSorteos
+        tipoJuego="juga3"
+        ariaLabel="Resultados de Jugá 3"
+        textoCargando="Cargando resultados de Jugá 3..."
+    />
 
     <!-- ============== CONTENIDO SEO ESPECÍFICO JUGÁ 3 ============== -->
     <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">

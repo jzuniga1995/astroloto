@@ -3,6 +3,16 @@
 import Layout from '../layouts/Layout.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Star, Calendar, Clock, Target, Zap, CheckCircle, Sparkles, CircleDollarSign, BarChart3, Gem, HelpCircle, Gift, GraduationCap, MapPin, AlertTriangle, TrendingUp, Award, Heart, RefreshCw, Phone, Check, Clover, BarChart2,Dice3 } from 'lucide-astro';
+import ResultadosSorteos from '../components/ResultadosSorteos.astro';
+import SchemaResultados from '../components/SchemaResultados.astro';
+import FechasSEO from '../components/FechasSEO.astro';
+import { formatearFechaLarga, horaHondurasTexto, fechaHondurasISO } from '../lib/sorteos.js';
+
+// La fecha y el reloj salían como "Cargando..." y "--:--:--" en el HTML: se
+// escriben con la hora de Honduras del build y el script los pone al día.
+const fechaLarga = formatearFechaLarga();
+const horaHN     = horaHondurasTexto();
+const horaISO    = fechaHondurasISO();
 ---
 
 <Layout>
@@ -101,7 +111,18 @@ import { Star, Calendar, Clock, Target, Zap, CheckCircle, Sparkles, CircleDollar
     <link rel="alternate" hreflang="es"    href="https://lotohn.com/la-diaria">
     <link rel="alternate" hreflang="x-default" href="https://lotohn.com/la-diaria">
 
+    <!-- ============== FECHAS DEL ÚLTIMO RESULTADO ============== -->
+    <FechasSEO />
+
     <!-- ============== SCHEMA.ORG ============== -->
+    <SchemaResultados
+        url="https://lotohn.com/la-diaria"
+        nombre="Resultados La Diaria Honduras"
+        descripcion="Número, signo, multiplicador y Más 1 de La Diaria Honduras en los sorteos de las 11:00 AM, 3:00 PM y 9:00 PM."
+        tipoJuego="diaria"
+        tituloLista="Resultados de La Diaria de hoy"
+    />
+
     <script type="application/ld+json" is:inline>
     {
       "@context": "https://schema.org",
@@ -204,21 +225,20 @@ import { Star, Calendar, Clock, Target, Zap, CheckCircle, Sparkles, CircleDollar
     <div class="flex items-center gap-4 text-sm text-gray-500">
         <div id="fechaActual" class="flex items-center gap-1.5">
             <Calendar class="w-4 h-4 text-violet-400" />
-            <span>Cargando...</span>
+            <span>{fechaLarga}</span>
         </div>
         <div class="flex items-center gap-1.5 font-mono text-violet-600">
             <Clock class="w-4 h-4" />
-            <time id="relojHonduras" datetime="">--:--:--</time>
+            <time id="relojHonduras" datetime={horaISO}>{horaHN}</time>
         </div>
     </div>
 </header>
     
-    <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
-        <div class="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>
-        <p class="text-gray-600 text-lg">Cargando resultados de La Diaria...</p>
-    </div>
-
-    <section id="contenido" aria-label="Resultados de La Diaria"></section>
+    <ResultadosSorteos
+        tipoJuego="diaria"
+        ariaLabel="Resultados de La Diaria"
+        textoCargando="Cargando resultados de La Diaria..."
+    />
 
     <!-- ============== CONTENIDO SEO ESPECÍFICO LA DIARIA ============== -->
     <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">

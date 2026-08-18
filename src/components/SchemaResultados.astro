@@ -1,0 +1,82 @@
+---
+// WebPage con la fecha real del último resultado + la lista de sorteos del día.
+//
+// Por qué ItemList y no Event: Google reserva las rich results de Event para
+// cosas a las que alguien asiste, y su guía antispam de datos estructurados
+// marca como abuso etiquetar de Event lo que no lo es. Un sorteo publicado no
+// califica, así que se describe como lista de resultados —válido, sin riesgo de
+// acción manual— y el trabajo pesado de frescura lo hace `dateModified`.
+import { obtenerResultados, fechaModificacion } from '../lib/datos-build.js';
+import {
+    filtrarSorteos, ordenarPorFechaYHora, nombreBaseJuego,
+    numerosParaTexto, formatearFechaSorteo,
+} from '../lib/sorteos.js';
+import { PUBLICADO_SITIO } from '../lib/seo.js';
+
+const {
+    url,
+    nombre,
+    descripcion,
+    tipoJuego = 'todos',
+    tituloLista = 'Resultados de Loto Honduras',
+} = Astro.props;
+
+const datos = await obtenerResultados();
+
+// Un sorteo por entrada, el más reciente primero, sin los que todavía no tienen
+// número. El tope evita que el bloque crezca sin control si el backend empieza
+// a arrastrar sorteos viejos.
+const items = [];
+if (datos.sorteos) {
+    const lista = ordenarPorFechaYHora(filtrarSorteos(datos.sorteos, tipoJuego));
+    for (const [, sorteo] of lista) {
+        const numeros = numerosParaTexto(sorteo);
+        if (numeros.length === 0 || !sorteo.fecha_sorteo) continue;
+
+        const juego = nombreBaseJuego(sorteo) || sorteo.nombre_juego;
+        const fecha = formatearFechaSorteo(sorteo.fecha_sorteo);
+        items.push({
+            '@type': 'ListItem',
+            position: items.length + 1,
+            name: `${juego}${sorteo.hora_sorteo ? ` ${sorteo.hora_sorteo}` : ''}`,
+            description: `${numeros.length > 1 ? 'Números ganadores' : 'Número ganador'}: ${numeros.join(' · ')}`
+                       + ` — sorteo del ${fecha}${sorteo.hora_sorteo ? ` a las ${sorteo.hora_sorteo}` : ''}.`,
+        });
+        if (items.length >= 15) break;
+    }
+}
+
+const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${url}#webpage`,
+    url,
+    name: nombre,
+    description: descripcion,
+    inLanguage: 'es-HN',
+    // Nodo completo y no una referencia suelta: el bloque WebSite que ya
+    // existe en estas páginas describe cada juego, no el sitio.
+    isPartOf: {
+        '@type': 'WebSite',
+        '@id': 'https://lotohn.com/#website',
+        url: 'https://lotohn.com',
+        name: 'LotoHN',
+    },
+    publisher: { '@id': 'https://lotohn.com/#organization' },
+    datePublished: PUBLICADO_SITIO,
+    dateModified: fechaModificacion(datos),
+    ...(items.length > 0 && {
+        mainEntity: {
+            '@type': 'ItemList',
+            name: tituloLista,
+            numberOfItems: items.length,
+            itemListOrder: 'https://schema.org/ItemListOrderDescending',
+            itemListElement: items,
+        },
+    }),
+};
+
+// `</script>` dentro de un valor cerraría la etiqueta antes de tiempo.
+const json = JSON.stringify(schema).replace(/</g, '\\u003c');
+---
+<script type="application/ld+json" is:inline set:html={json} />

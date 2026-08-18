@@ -3,6 +3,7 @@
 import Layout from '../layouts/Layout.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { History, Calendar } from 'lucide-astro';
+import FechasSEO from '../components/FechasSEO.astro';
 ---
 
 <Layout>
@@ -91,6 +92,8 @@ import { History, Calendar } from 'lucide-astro';
     <link rel="alternate" hreflang="x-default" href="https://lotohn.com/historial">
 
     <!-- ============== SCHEMA.ORG ============== -->
+    <FechasSEO />
+
     <script type="application/ld+json" is:inline>
     {
       "@context": "https://schema.org",

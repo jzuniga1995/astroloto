@@ -3,6 +3,16 @@
 import Layout from '../layouts/Layout.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Award, Calendar, Clock, Dice6, Target, Gamepad2, CircleDollarSign, TrendingUp, Clock4, MapPin, HelpCircle, Trophy, Lightbulb, Clover, Dice3, Star, Coins, BarChart2, BarChart4, MessageCircleQuestion, BookOpen, PieChart, Sparkles, ShieldCheck, Phone, CheckSquare, User, Briefcase, UserRound, Users2, Flame, AlertCircle, Minus, Snowflake, Binary, FlipHorizontal, ListOrdered, Layers, Clock3, Store, Tv, CheckCircle, Check, RefreshCw as RefreshCwIcon } from 'lucide-astro';
+import ResultadosSorteos from '../components/ResultadosSorteos.astro';
+import SchemaResultados from '../components/SchemaResultados.astro';
+import FechasSEO from '../components/FechasSEO.astro';
+import { formatearFechaLarga, horaHondurasTexto, fechaHondurasISO } from '../lib/sorteos.js';
+
+// La fecha y el reloj salían como "Cargando..." y "--:--:--" en el HTML: se
+// escriben con la hora de Honduras del build y el script los pone al día.
+const fechaLarga = formatearFechaLarga();
+const horaHN     = horaHondurasTexto();
+const horaISO    = fechaHondurasISO();
 ---
 
 <Layout>
@@ -101,7 +111,18 @@ import { Award, Calendar, Clock, Dice6, Target, Gamepad2, CircleDollarSign, Tren
     <link rel="alternate" hreflang="es"    href="https://lotohn.com/premia-2">
     <link rel="alternate" hreflang="x-default" href="https://lotohn.com/premia-2">
 
+    <!-- ============== FECHAS DEL ÚLTIMO RESULTADO ============== -->
+    <FechasSEO />
+
     <!-- ============== SCHEMA.ORG ============== -->
+    <SchemaResultados
+        url="https://lotohn.com/premia-2"
+        nombre="Resultados Premia 2 Honduras"
+        descripcion="Números ganadores de Premia 2 Honduras en los sorteos de las 11:00 AM, 3:00 PM y 9:00 PM."
+        tipoJuego="premia2"
+        tituloLista="Resultados de Premia 2 de hoy"
+    />
+
     <script type="application/ld+json" is:inline>
     {
       "@context": "https://schema.org",
@@ -204,28 +225,20 @@ import { Award, Calendar, Clock, Dice6, Target, Gamepad2, CircleDollarSign, Tren
     <div class="flex items-center gap-4 text-sm text-gray-500">
         <div id="fechaActual" class="flex items-center gap-1.5">
             <Calendar class="w-4 h-4 text-violet-400" />
-            <span>Cargando...</span>
+            <span>{fechaLarga}</span>
         </div>
         <div class="flex items-center gap-1.5 font-mono text-violet-600">
             <Clock class="w-4 h-4" />
-            <time id="relojHonduras" datetime="">--:--:--</time>
+            <time id="relojHonduras" datetime={horaISO}>{horaHN}</time>
         </div>
     </div>
 </header>
 
-    <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
-        <div class="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>
-        <p class="text-gray-600 text-lg">Cargando resultados de Premia 2...</p>
-    </div>
-
-    <section id="contenido" aria-label="Resultados de Premia 2" style="min-height: 400px;">
-        <!-- Placeholders estáticos -->
-        <div style="min-height:320px; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem;">
-            <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
-            <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
-            <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
-        </div>
-    </section>
+    <ResultadosSorteos
+        tipoJuego="premia2"
+        ariaLabel="Resultados de Premia 2"
+        textoCargando="Cargando resultados de Premia 2..."
+    />
 
     <!-- ============== CONTENIDO SEO ESPECÍFICO PREMIA 2 ============== -->
     <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">

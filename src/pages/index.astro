@@ -4,6 +4,16 @@ import Layout from '../layouts/Layout.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import AnalizadorIA from '../components/AnalizadorIA.astro';
 import { Dice3, Calendar, Clock, Target, Zap, Dice6, BarChart3, Flame, Snowflake, TrendingUp, ShieldCheck, Clock4, DollarSign, MapPin, AlertTriangle, HelpCircle, Star, Smartphone, CircleDollarSign, Lock, Flag, Lightbulb, Clover,X } from 'lucide-astro';
+import ResultadosSorteos from '../components/ResultadosSorteos.astro';
+import SchemaResultados from '../components/SchemaResultados.astro';
+import FechasSEO from '../components/FechasSEO.astro';
+import { formatearFechaLarga, horaHondurasTexto, fechaHondurasISO } from '../lib/sorteos.js';
+
+// La fecha y el reloj salían como "Cargando..." y "--:--:--" en el HTML: se
+// escriben con la hora de Honduras del build y el script los pone al día.
+const fechaLarga = formatearFechaLarga();
+const horaHN     = horaHondurasTexto();
+const horaISO    = fechaHondurasISO();
 ---
 
 <Layout>
@@ -88,8 +98,7 @@ import { Dice3, Calendar, Clock, Target, Zap, Dice6, BarChart3, Flame, Snowflake
     <meta property="og:locale:alternate" content="es_CR">
     <meta property="og:locale:alternate" content="es_US">
     <meta property="og:locale:alternate" content="es_ES">
-    <meta property="article:published_time" content="2026-01-01T00:00:00-06:00">
-    <meta property="article:modified_time" content="2026-01-01T00:00:00-06:00">
+    <FechasSEO />
     <meta property="article:section" content="Lotería">
     <meta property="article:tag" content="Loto Honduras, Resultados, Jugá 3, Pega 3">
 
@@ -118,6 +127,14 @@ import { Dice3, Calendar, Clock, Target, Zap, Dice6, BarChart3, Flame, Snowflake
     <link rel="alternate" hreflang="x-default" href="https://lotohn.com/">
 
     <!-- ============== SCHEMA.ORG ============== -->
+    <SchemaResultados
+        url="https://lotohn.com/"
+        nombre="Resultados Loto Honduras HOY en Vivo"
+        descripcion="Resultados de Loto Honduras en vivo: La Diaria, Pega 3, Jugá 3, Premia 2 y Súper Premio de los sorteos de las 11:00 AM, 3:00 PM y 9:00 PM."
+        tipoJuego="todos"
+        tituloLista="Resultados de Loto Honduras de hoy"
+    />
+
     <script type="application/ld+json" is:inline>
     {
       "@context": "https://schema.org",
@@ -245,28 +262,20 @@ import { Dice3, Calendar, Clock, Target, Zap, Dice6, BarChart3, Flame, Snowflake
     <div class="flex items-center gap-3 text-sm text-gray-500">
         <div id="fechaActual" class="flex items-center gap-1.5">
             <Calendar class="w-4 h-4 text-violet-400" />
-            <span>Cargando...</span>
+            <span>{fechaLarga}</span>
         </div>
         <div class="flex items-center gap-1.5 font-mono bg-indigo-950 text-emerald-300 px-2.5 py-1 rounded-lg shadow-inner">
             <Clock class="w-4 h-4 text-emerald-400" />
-            <time id="relojHonduras" datetime="" class="tabular-nums tracking-widest font-semibold">--:--:--</time>
+            <time id="relojHonduras" datetime={horaISO} class="tabular-nums tracking-widest font-semibold">{horaHN}</time>
         </div>
     </div>
 </header>
 
-    <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
-        <div class="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>
-        <p class="text-gray-600 text-lg">Cargando resultados...</p>
-    </div>
-
-    <section id="contenido" aria-label="Resultados de sorteos" style="min-height: 400px;">
-        <!-- Placeholders estáticos -->
-        <div style="min-height:320px; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem;">
-            <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
-            <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
-            <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
-        </div>
-    </section>
+    <ResultadosSorteos
+        tipoJuego="todos"
+        ariaLabel="Resultados de sorteos"
+        textoCargando="Cargando resultados..."
+    />
 
     <!-- ============== CONTENIDO SEO VISIBLE ULTRA COMPLETO ============== -->
     <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">

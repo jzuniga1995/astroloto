@@ -1,0 +1,40 @@
+---
+// Bloque de resultados. Se pinta en el build con el último sorteo conocido para
+// que el HTML servido ya traiga los números; `main.js` lo repinta en cuanto
+// carga y luego lo va refrescando solo.
+//
+// Si el build no pudo leer la API cae al placeholder de siempre y el navegador
+// hace todo el trabajo, igual que antes: un fallo de red no deja la página en
+// blanco ni tumba el despliegue.
+import { obtenerResultados } from '../lib/datos-build.js';
+import { seccionesHTML } from '../lib/sorteos.js';
+
+const {
+    tipoJuego = 'todos',
+    ariaLabel = 'Resultados de sorteos',
+    textoCargando = 'Cargando resultados...',
+} = Astro.props;
+
+const { sorteos } = await obtenerResultados();
+const html = sorteos ? seccionesHTML(sorteos, tipoJuego) : '';
+---
+
+{html ? (
+    <section id="contenido" aria-label={ariaLabel} data-prerender="true" set:html={html} />
+) : (
+    <>
+        <div id="loading" class="flex flex-col items-center justify-center py-12" role="status" aria-live="polite">
+            <div class="w-16 h-16 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mb-4" aria-hidden="true"></div>
+            <p class="text-gray-600 text-lg">{textoCargando}</p>
+        </div>
+
+        <section id="contenido" aria-label={ariaLabel} style="min-height: 400px;">
+            <!-- Placeholders estáticos: reservan el alto para que no salte el layout -->
+            <div style="min-height:320px; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem;">
+                <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
+                <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
+                <div style="min-height:280px; background:#f3f4f6; border-radius:1rem; border:1px solid #e5e7eb;"></div>
+            </div>
+        </section>
+    </>
+)}
