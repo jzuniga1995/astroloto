@@ -18,8 +18,9 @@
 const FUENTES = [
     // Producción: la API que ya consume el navegador (Cloudflare al frente).
     process.env.LOTO_API_URL || 'https://lotohn.com/api/resultados-v2',
-    // Respaldo: el JSON crudo que publica el scraper. Misma forma, con campos
-    // de más que el frontend ignora.
+    // Respaldo: el mismo archivo, sin el Worker en medio. La API no transforma
+    // nada —sólo reenvía este JSON—, así que el respaldo no devuelve un dato
+    // peor, devuelve el mismo.
     'https://raw.githubusercontent.com/jzuniga1995/lotohn/main/resultados_hoy.json',
 ];
 

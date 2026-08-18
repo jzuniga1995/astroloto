@@ -8,8 +8,9 @@ Portal de resultados de loterías hondureñas. Muestra resultados en vivo de Jug
 - **Tailwind CSS 3** — Estilos utilitarios.
 - **Lucide Astro** — Iconos SVG.
 - **Hosting:** Cloudflare Pages (`public/_redirects`), con el dominio detrás
-  del proxy de Cloudflare. `/api/*` NO es una Pages Function de este
-  proyecto (no hay `functions/`): lo sirve algo aparte en la misma zona.
+  del proxy de Cloudflare.
+- **`/api/*`:** un Cloudflare Worker aparte (no hay `functions/` en este repo).
+  No tiene lógica propia: reenvía el JSON crudo del repo del backend tal cual.
 - **Dominio:** https://lotohn.com
 - **Repo:** https://github.com/jzuniga1995/astroloto
 
@@ -43,11 +44,28 @@ despliegue: los visitantes lo ven igual, los bots no.
 
 ### Endpoints consumidos
 
-| Endpoint | Descripción | Cache |
-|----------|-------------|-------|
-| `/api/resultados-v2` | Resultados del día por juego y tanda | `no-cache` |
-| `/api/historial` | Historial acumulado `{ "YYYY-MM-DD": { ... } }` | `no-cache` |
-| `/api/analizar` | Análisis IA del día `{ fecha, juegos: { patrones, tendencias, sugerencias[] } }` | `no-store` |
+El Worker enruta por prefijo y devuelve el archivo del repo `lotohn` sin tocarlo
+(sólo le quita el BOM):
+
+| Endpoint | Archivo que sirve | Descripción |
+|----------|-------------------|-------------|
+| `/api/historial` | `historial.json` | Historial acumulado `{ "YYYY-MM-DD": { ... } }` |
+| `/api/analizar` | `analisis.json` | Análisis IA del día `{ fecha, juegos: { patrones, tendencias, sugerencias[] } }` |
+| *cualquier otra* | `resultados_hoy.json` | Resultados del día por juego y tanda |
+
+`/api/resultados-v2` cae en el `else`: no es una ruta declarada, es el caso por
+defecto. Los tres responden `no-store, no-cache, must-revalidate`, y el Worker
+cachea en el borde su petición a GitHub 30 s (`cacheTtl: 30`).
+
+`Access-Control-Allow-Origin` está fijado a `https://lotohn.com`, así que en un
+preview de Pages (`*.pages.dev`) el fetch del navegador no pasa. Desde que el
+resultado va incrustado en el build, un preview igual muestra números — los del
+momento en que se construyó.
+
+**Por eso el respaldo del build no es un plan B degradado:** el Worker sirve
+exactamente `raw.githubusercontent.com/jzuniga1995/lotohn/main/resultados_hoy.json`,
+que es justo lo que `datos-build.js` pide si la API no responde. Mismo archivo,
+mismos bytes.
 
 ### Estructura de datos de `/api/resultados-v2`
 
