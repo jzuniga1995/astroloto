@@ -1,0 +1,126 @@
+---
+// src/components/AnunciosGlobales.astro
+// Todo lo publicitario que no vive en el flujo de la página: los dos rieles
+// laterales, el ancla inferior de móvil y el script global de la red.
+// Lo pinta `Layout.astro` una sola vez, al final del <body>.
+import { ANUNCIOS_ACTIVOS, SCRIPT_GLOBAL, MEDIDAS, PERMISOS_IFRAME } from '../lib/anuncios.js';
+
+const vertical = MEDIDAS['160x600'];
+const columna  = MEDIDAS['160x300'];
+const ancla    = MEDIDAS['320x50'];
+---
+
+{ANUNCIOS_ACTIVOS && (
+    <>
+        {/* Rieles: solo aparecen cuando sobra ancho a los lados de la columna
+            de contenido (max-w-7xl = 1280px). Por debajo de eso no existen, así
+            que no piden anuncio ni tapan nada. */}
+        <aside class="anuncio-riel anuncio-riel--izq" aria-label="Publicidad">
+            <span class="anuncio-etiqueta">Publicidad</span>
+            <iframe
+                class="anuncio-marco"
+                data-anuncio="vertical"
+                style={`--anch-e:${vertical.ancho}px;--alto-e:${vertical.alto}px`}
+                sandbox={PERMISOS_IFRAME}
+                scrolling="no" frameborder="0" loading="lazy"
+                title="Publicidad" aria-hidden="true" tabindex="-1"
+            ></iframe>
+        </aside>
+
+        <aside class="anuncio-riel anuncio-riel--der" aria-label="Publicidad">
+            <span class="anuncio-etiqueta">Publicidad</span>
+            <iframe
+                class="anuncio-marco"
+                data-anuncio="columna"
+                style={`--anch-e:${columna.ancho}px;--alto-e:${columna.alto}px`}
+                sandbox={PERMISOS_IFRAME}
+                scrolling="no" frameborder="0" loading="lazy"
+                title="Publicidad" aria-hidden="true" tabindex="-1"
+            ></iframe>
+        </aside>
+
+        {/* Ancla de móvil: el hueco más rentable del sitio. Se cierra con la X y
+            no vuelve en toda la sesión. */}
+        <div id="anuncioAncla" class="anuncio-ancla" aria-label="Publicidad">
+            <button type="button" class="anuncio-ancla-cerrar" aria-label="Cerrar publicidad">&times;</button>
+            <iframe
+                class="anuncio-marco"
+                data-anuncio="ancla"
+                style={`--anch-m:${ancla.ancho}px;--alto-m:${ancla.alto}px`}
+                sandbox={PERMISOS_IFRAME}
+                scrolling="no" frameborder="0" loading="lazy"
+                title="Publicidad" aria-hidden="true" tabindex="-1"
+            ></iframe>
+        </div>
+
+        <script src="../scripts/anuncios.js"></script>
+
+        {/* Script global de la red. Va al final del <body> a propósito: si
+            hiciera `document.write()` escribiría al final del documento en vez
+            de borrar la página. */}
+        <script src={SCRIPT_GLOBAL} is:inline></script>
+    </>
+)}
+
+<style is:global>
+    /* ---------- Rieles laterales ---------- */
+    .anuncio-riel {
+        display: none;
+        position: fixed;
+        top: 96px;
+        z-index: 30;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .anuncio-riel--izq { left: 16px; }
+    .anuncio-riel--der { right: 16px; }
+
+    /* 1280px de contenido + 160px de riel + aire a cada lado. Por debajo de
+       este ancho los rieles se comerían el contenido. */
+    @media (min-width: 1660px) {
+        .anuncio-riel { display: flex; }
+    }
+
+    /* ---------- Ancla inferior (móvil) ---------- */
+    .anuncio-ancla {
+        display: none;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 60;
+        justify-content: center;
+        align-items: center;
+        padding: 3px 0;
+        background: rgba(255, 255, 255, 0.96);
+        border-top: 1px solid #ede9fe;
+        box-shadow: 0 -2px 12px rgba(76, 29, 149, 0.12);
+    }
+
+    @media (max-width: 799px) {
+        .anuncio-ancla { display: flex; }
+        /* Le devuelve al final de la página el espacio que tapa el ancla. */
+        body.con-ancla { padding-bottom: 62px; }
+    }
+
+    .anuncio-ancla-cerrar {
+        position: absolute;
+        top: -13px;
+        right: 6px;
+        width: 26px;
+        height: 26px;
+        line-height: 1;
+        font-size: 18px;
+        font-weight: 700;
+        color: #6d28d9;
+        background: #fff;
+        border: 1px solid #ede9fe;
+        border-radius: 999px;
+        box-shadow: 0 1px 6px rgba(76, 29, 149, 0.18);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>

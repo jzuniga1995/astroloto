@@ -1,6 +1,7 @@
 ---
 // src/pages/premia-2.astro
 import Layout from '../layouts/Layout.astro';
+import Anuncio from '../components/Anuncio.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Award, Calendar, Clock, Dice6, Target, Gamepad2, CircleDollarSign, TrendingUp, Clock4, MapPin, HelpCircle, Trophy, Lightbulb, Clover, Dice3, Star, Coins, BarChart2, BarChart4, MessageCircleQuestion, BookOpen, PieChart, Sparkles, ShieldCheck, Phone, CheckSquare, User, Briefcase, UserRound, Users2, Flame, AlertCircle, Minus, Snowflake, Binary, FlipHorizontal, ListOrdered, Layers, Clock3, Store, Tv, CheckCircle, Check, RefreshCw as RefreshCwIcon } from 'lucide-astro';
 import ResultadosSorteos from '../components/ResultadosSorteos.astro';
@@ -239,6 +240,8 @@ const horaISO    = fechaHondurasISO();
         ariaLabel="Resultados de Premia 2"
         textoCargando="Cargando resultados de Premia 2..."
     />
+
+    <Anuncio formato="rectangulo" />
 
     <!-- ============== CONTENIDO SEO ESPECÍFICO PREMIA 2 ============== -->
     <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">
@@ -662,6 +665,8 @@ const horaISO    = fechaHondurasISO();
             </div>
         </div>
 
+        <Anuncio formato="nativo" />
+
         <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
             <Clock4 class="w-7 h-7 text-purple-600" />
             Horarios Detallados de Premia 2
@@ -974,6 +979,8 @@ const horaISO    = fechaHondurasISO();
         <p class="text-gray-700 leading-relaxed mb-6">
             Ambas estrategias tienen mérito. Jugar los mismos números aumenta las probabilidades de que "eventualmente" salgan. Diversificar cubre más combinaciones pero con menor frecuencia por número. La mayoría de ganadores combinan ambas: números favoritos principales + algunos aleatorios.
         </p>
+
+        <Anuncio formato="medio" />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-6 mt-8 flex items-center gap-2">
             <Trophy class="w-7 h-7 text-purple-600" />

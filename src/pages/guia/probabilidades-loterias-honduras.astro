@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/probabilidades-loterias-honduras.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -150,6 +151,8 @@ const schemaArticulo = `
     </div>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>🎯 ¿Qué Juego Conviene Más?</h2>
     <h3>Si querés ganar con más frecuencia</h3>
@@ -165,6 +168,8 @@ const schemaArticulo = `
     <p>Las probabilidades de la lotería son fijas — cada sorteo es independiente. Que el número 327 no haya salido en 30 días <strong>no aumenta su probabilidad</strong> de salir mañana. Cada sorteo tiene exactamente las mismas chances.</p>
     <p>Sin embargo, analizar el <a href="/historial" style="color:#7c3aed;font-weight:600;">historial de resultados</a> y las <a href="/estadisticas" style="color:#7c3aed;font-weight:600;">estadísticas de frecuencia</a> puede ayudarte a identificar patrones y tomar decisiones más informadas.</p>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>❓ Preguntas Frecuentes</h2>

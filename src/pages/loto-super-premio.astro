@@ -1,6 +1,7 @@
 ---
 // src/pages/loto-super-premio.astro
 import Layout from '../layouts/Layout.astro';
+import Anuncio from '../components/Anuncio.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Trophy, Calendar, Clock, Gem, Target, Award, CheckCircle, BarChart3, Lightbulb, Users, Heart, ShieldCheck,HelpCircle, Gift, Phone, AlertTriangle, Dice3, Clover,  Check } from 'lucide-astro';
 import ResultadosSorteos from '../components/ResultadosSorteos.astro';
@@ -242,6 +243,8 @@ const horaISO    = fechaHondurasISO();
         textoCargando="Cargando resultados del Loto Súper Premio..."
     />
 
+    <Anuncio formato="rectangulo" />
+
     <!-- ============== CONTENIDO SEO ESPECÍFICO LOTO SÚPER PREMIO ============== -->
     <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">
         <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -329,6 +332,8 @@ const horaISO    = fechaHondurasISO();
                 <p class="text-gray-700 text-sm">Premio menor garantizado. Desde L.50 hasta miles. ¡Recuperas tu inversión y más!</p>
             </div>
         </div>
+
+        <Anuncio formato="nativo" />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
             <BarChart3 class="w-7 h-7 text-violet-600" />
@@ -454,6 +459,8 @@ const horaISO    = fechaHondurasISO();
                 <p class="text-gray-700 text-sm">"Casi pierdo mi boleto ganador de L.50M. Ahora los guardo en lugar seguro y verifico SIEMPRE en LotoHN." - Ganador 2023</p>
             </div>
         </div>
+
+        <Anuncio formato="medio" />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
             <Clock class="w-7 h-7 text-violet-600" />

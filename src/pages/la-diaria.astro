@@ -1,6 +1,7 @@
 ---
 // src/pages/la-diaria.astro
 import Layout from '../layouts/Layout.astro';
+import Anuncio from '../components/Anuncio.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Star, Calendar, Clock, Target, Zap, CheckCircle, Sparkles, CircleDollarSign, BarChart3, Gem, HelpCircle, Gift, GraduationCap, MapPin, AlertTriangle, TrendingUp, Award, Heart, RefreshCw, Phone, Check, Clover, BarChart2,Dice3 } from 'lucide-astro';
 import ResultadosSorteos from '../components/ResultadosSorteos.astro';
@@ -240,6 +241,8 @@ const horaISO    = fechaHondurasISO();
         textoCargando="Cargando resultados de La Diaria..."
     />
 
+    <Anuncio formato="rectangulo" />
+
     <!-- ============== CONTENIDO SEO ESPECÍFICO LA DIARIA ============== -->
     <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">
         <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -389,6 +392,8 @@ const horaISO    = fechaHondurasISO();
             </table>
         </div>
         <p class="text-sm text-gray-600 italic mb-6"><em>Nota: Los premios son aproximados y varían según la apuesta. Consulta siempre las condiciones en tu agencia.</em></p>
+
+        <Anuncio formato="nativo" />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
             <Sparkles class="w-7 h-7 text-violet-600" />
@@ -601,6 +606,8 @@ const horaISO    = fechaHondurasISO();
             <li><strong>Premios con multiplicador (L. 5,000 - L. 20,000):</strong> Algunas agencias grandes. Lleva identificación.</li>
             <li><strong>Premios mayores y jackpots:</strong> Oficinas centrales de Loto Honduras con boleto original, identidad y formularios.</li>
         </ol>
+
+        <Anuncio formato="medio" />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
             <GraduationCap class="w-7 h-7 text-violet-600" />

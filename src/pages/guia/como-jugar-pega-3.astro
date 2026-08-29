@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/como-jugar-pega-3.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -176,6 +177,8 @@ const schemaArticulo = `
     <p><em>Ejemplo práctico:</em> Si apostás 20 Lempiras en directo al 458 y sale 458, ganás aproximadamente <strong>10,000–12,000 Lempiras</strong>.</p>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>🕐 Horarios de Sorteo de Pega 3</h2>
     <div class="overflow-x-auto">
@@ -198,6 +201,8 @@ const schemaArticulo = `
     <div class="guia-step"><div class="guia-step-num">4</div><div class="guia-step-body"><strong>Guardar el boleto</strong>El boleto físico es imprescindible para cobrar. Guardalo bien.</div></div>
     <div class="guia-step"><div class="guia-step-num">5</div><div class="guia-step-body"><strong>Verificar en LotoHN</strong>Revisá el resultado en <a href="/pega-3" style="color:#0369a1;font-weight:700;">la página de Pega 3</a> minutos después del sorteo.</div></div>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>💡 Consejos para Pega 3</h2>

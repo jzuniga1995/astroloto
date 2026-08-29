@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/loto-honduras-desde-estados-unidos.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -153,6 +154,8 @@ const schemaArticulo = `
     <p><em>En horario de verano de EE.UU., restá 1 hora a la columna ET (Miami/NY pasa a ser 11 AM, 3 PM, 9 PM).</em></p>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>📍 Ciudades donde nos visita la Diáspora</h2>
     <div class="ciudad-grid">
@@ -180,6 +183,8 @@ const schemaArticulo = `
         <li>Podés ver <a href="/historial" style="color:#7c3aed;font-weight:600;">el historial completo</a> para confirmar resultados anteriores.</li>
     </ul>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>❓ Preguntas Frecuentes</h2>

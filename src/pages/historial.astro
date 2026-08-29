@@ -1,6 +1,7 @@
 ---
 // src/pages/historial.astro
 import Layout from '../layouts/Layout.astro';
+import Anuncio from '../components/Anuncio.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { History, Calendar } from 'lucide-astro';
 import FechasSEO from '../components/FechasSEO.astro';
@@ -274,6 +275,8 @@ import FechasSEO from '../components/FechasSEO.astro';
 
 <!-- Contenido generado por historial.js -->
 <section id="historial-contenido" aria-label="Historial de resultados"></section>
+
+<Anuncio formato="nativo" />
 
 <script src="../scripts/historial.js"></script>
     <CoberturaPaises tema="el historial de Loto Honduras" />

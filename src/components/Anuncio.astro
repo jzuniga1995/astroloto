@@ -1,0 +1,117 @@
+---
+// src/components/Anuncio.astro
+// Un hueco publicitario en el flujo de la página.
+//
+// El banner NO se pinta en el HTML: sale un iframe vacío con el alto ya
+// reservado y `src/scripts/anuncios.js` le mete el `srcdoc` cuando el hueco se
+// acerca a la pantalla. Así el script del proveedor no bloquea el parser, no
+// puede tocar el DOM del sitio y el layout no salta.
+//
+// `formato="nativo"` es el otro caso: ese sí va inline porque trae su propio
+// contenedor, carga `async` y no usa `atOptions`. Solo uno por página — el id
+// del contenedor lo fija el proveedor.
+import { ANUNCIOS_ACTIVOS, FORMATOS, MEDIDAS, PERMISOS_IFRAME, NATIVO } from '../lib/anuncios.js';
+
+const {
+    formato = 'lider',
+    etiqueta = true,
+    class: clase = '',
+} = Astro.props;
+
+const esNativo = formato === 'nativo';
+const cfg = FORMATOS[formato];
+const mostrar = ANUNCIOS_ACTIVOS && (esNativo || Boolean(cfg));
+
+const escritorio = cfg?.escritorio ? MEDIDAS[cfg.escritorio] : null;
+const movil = cfg?.movil ? MEDIDAS[cfg.movil] : null;
+
+// Solo hay medida en un tamaño de pantalla → en el otro el hueco no existe.
+const soloEn = !movil ? 'escritorio' : !escritorio ? 'movil' : 'ambos';
+
+const vars = [
+    escritorio && `--anch-e:${escritorio.ancho}px`,
+    escritorio && `--alto-e:${escritorio.alto}px`,
+    movil && `--anch-m:${movil.ancho}px`,
+    movil && `--alto-m:${movil.alto}px`,
+].filter(Boolean).join(';');
+---
+
+{mostrar && (esNativo ? (
+    <aside class={`anuncio anuncio--nativo ${clase}`} aria-label="Publicidad">
+        {etiqueta && <span class="anuncio-etiqueta">Publicidad</span>}
+        <div id={NATIVO.contenedor}></div>
+        <script async data-cfasync="false" src={NATIVO.src} is:inline></script>
+    </aside>
+) : (
+    <aside
+        class={`anuncio ${clase}`}
+        data-solo={soloEn}
+        style={vars}
+        aria-label="Publicidad"
+    >
+        {etiqueta && <span class="anuncio-etiqueta">Publicidad</span>}
+        <iframe
+            class="anuncio-marco"
+            data-anuncio={formato}
+            sandbox={PERMISOS_IFRAME}
+            scrolling="no"
+            frameborder="0"
+            loading="lazy"
+            title="Publicidad"
+            aria-hidden="true"
+            tabindex="-1"
+        ></iframe>
+    </aside>
+))}
+
+<style is:global>
+    .anuncio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        margin: 1.5rem auto;
+        max-width: 100%;
+        /* Ningún creativo se sale de su caja ni empuja el resto de la página. */
+        overflow: hidden;
+    }
+
+    .anuncio-etiqueta {
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #a78bfa;
+        line-height: 1;
+    }
+
+    .anuncio-marco {
+        display: block;
+        border: 0;
+        max-width: 100%;
+        /* El alto se reserva desde el HTML: sin esto el creativo entra de golpe
+           y desplaza todo lo que tiene debajo (CLS). */
+        width: var(--anch-e, 300px);
+        height: var(--alto-e, 250px);
+    }
+
+    @media (max-width: 799px) {
+        .anuncio-marco {
+            width: var(--anch-m, 300px);
+            height: var(--alto-m, 250px);
+        }
+        .anuncio[data-solo='escritorio'] { display: none; }
+    }
+
+    @media (min-width: 800px) {
+        .anuncio[data-solo='movil'] { display: none; }
+    }
+
+    /* El nativo trae su propio alto; se le reserva un mínimo para que la
+       aparición no mueva el contenido de abajo. */
+    .anuncio--nativo {
+        width: 100%;
+        min-height: 260px;
+    }
+    .anuncio--nativo > div { width: 100%; }
+</style>

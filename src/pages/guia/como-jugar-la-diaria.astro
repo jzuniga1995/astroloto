@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/como-jugar-la-diaria.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -185,6 +186,8 @@ const schemaArticulo = `
     </div>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>🃏 Modalidades de Apuesta</h2>
     <div class="overflow-x-auto">
@@ -213,6 +216,8 @@ const schemaArticulo = `
     </table>
     </div>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>💡 Consejos para La Diaria</h2>

@@ -161,6 +161,8 @@ detectan por coincidencia parcial y no por igualdad exacta.
 - **`ResultadosSorteos.astro`** — `#contenido` con los sorteos ya pintados en el build. Props: `tipoJuego`, `ariaLabel`, `textoCargando`.
 - **`SchemaResultados.astro`** — JSON-LD `WebPage` + `ItemList` con los resultados y el `dateModified` real.
 - **`FechasSEO.astro`** — `article:published_time` / `article:modified_time`.
+- **`Anuncio.astro`** — Un hueco publicitario. Prop `formato` (ver *Monetización*).
+- **`AnunciosGlobales.astro`** — Rieles laterales, ancla de móvil y script global de la red. Lo pinta `Layout.astro` una vez.
 
 ## Librerías compartidas (`src/lib/`)
 
@@ -176,11 +178,14 @@ detectan por coincidencia parcial y no por igualdad exacta.
 - **`fechas.js`** — `dateModified` de las guías a partir del último commit de
   git, con la fecha escrita a mano de respaldo si el checkout no trae historial.
 - **`seo.js`** — `PUBLICADO_SITIO`, fijo a propósito.
+- **`anuncios.js`** — Claves y medidas de la red publicitaria, más el interruptor
+  general `ANUNCIOS_ACTIVOS`. Sin DOM ni `window`: la usan el build y el navegador.
 
 ## Scripts client-side
 
 - **`src/scripts/main.js`** — Fetch `/api/resultados-v2` con `cache: 'no-cache'`. Renderiza cards por tanda. Auto-refresh 1 min en horarios de sorteo, 5 min el resto. Reloj Honduras (UTC-6).
 - **`src/scripts/historial.js`** — Tabla interactiva, filtros juego/tanda, paginación 20 filas, exportar XLSX vía SheetJS CDN.
+- **`src/scripts/anuncios.js`** — Carga perezosa de los huecos publicitarios y cierre del ancla de móvil.
 
 ## Estilos
 
@@ -238,7 +243,74 @@ las guías).
 
 ## Monetización
 
-**Sin anuncios (julio 2026).** Todo el código de redes publicitarias (Monetag, Adsterra, Ezoic) fue eliminado del sitio durante la recuperación de tráfico: los formatos intrusivos (push, vignette, smartlinks) coincidieron con caídas de indexación en Google. **No reintroducir anuncios hasta que el tráfico orgánico se recupere de forma estable**, y en ese momento usar solo formatos no intrusivos (nada de popunders, push, vignettes ni smartlinks).
+**Con anuncios de Adsterra (agosto 2026).** En julio de 2026 el sitio quedó sin
+publicidad: los formatos intrusivos (push, vignette, smartlinks) de Monetag,
+Adsterra y Ezoic coincidieron con caídas de indexación y se quitó todo. La
+publicidad volvió en agosto de 2026, esta vez con display y nativo, montada de
+forma que no pueda repetir el daño.
+
+Todo vive en tres archivos:
+
+| Archivo | Papel |
+|---------|-------|
+| `src/lib/anuncios.js` | Claves, medidas, formatos. **Único sitio donde tocar nada.** |
+| `src/components/Anuncio.astro` | Un hueco en el flujo de la página |
+| `src/components/AnunciosGlobales.astro` | Rieles laterales, ancla de móvil y script global |
+| `src/scripts/anuncios.js` | Carga perezosa por `IntersectionObserver` |
+
+**`ANUNCIOS_ACTIVOS = false` en `src/lib/anuncios.js` apaga todo el sitio de un
+golpe:** los huecos dejan de renderizarse y no se pide un solo script de
+terceros. Es la palanca a usar si la indexación vuelve a moverse.
+
+### Por qué cada banner va dentro de un iframe
+
+El `invoke.js` de los banners hace dos cosas incompatibles con una página con
+varios huecos: lee un **`atOptions` global** al ejecutarse (dos banners se
+pisan) y pinta con **`document.write()`** (inyectado después de cargar, borra la
+página entera). Metiendo cada banner en un iframe con `srcdoc` los dos problemas
+desaparecen —documento aparte, `atOptions` aparte, `document.write` encerrado— y
+de paso el script del proveedor deja de bloquear el parser.
+
+El `srcdoc` **no** viaja en el HTML: el build deja el iframe vacío con el alto ya
+reservado y `anuncios.js` se lo pone cuando el hueco se acerca a la pantalla. De
+ahí salen tres propiedades que importan:
+
+- **Cero terceros en la carga inicial** → el LCP no lo paga.
+- **Cero salto de layout** → el alto está reservado desde el HTML.
+- **Un hueco oculto por CSS nunca intersecta**, así que los rieles no piden
+  anuncios en móvil ni el ancla en escritorio.
+
+Los iframes van con `sandbox` explícito: el creativo puede pintarse, abrir su
+enlace al hacer clic y enviar formularios, pero **no puede navegar la pestaña sin
+que el usuario haga clic** (`allow-top-navigation-by-user-activation`). Eso corta
+los redirects automáticos, que es justo el comportamiento que hundió la
+indexación en julio.
+
+### Huecos por página
+
+`Layout.astro` pone el líder de cabecera y el de cierre, así que **toda ruta
+nueva los hereda sin tocar su archivo**. El resto se coloca a mano:
+
+| Formato | Escritorio | Móvil | Dónde |
+|---------|-----------|-------|-------|
+| `lider` | 728×90 | 320×50 | Cabecera y cierre (en `Layout.astro`) |
+| `rectangulo` | 300×250 | 300×250 | Bajo los sorteos, y a un tercio de las guías |
+| `medio` | 468×60 | 300×250 | Fondo del artículo SEO |
+| `nativo` | — | — | A un tercio del contenido. **Uno por página**: el id del contenedor lo fija el proveedor |
+| `vertical` / `columna` | 160×600 / 160×300 | oculto | Rieles laterales, solo a partir de 1660 px |
+| `ancla` | oculto | 320×50 | Barra inferior de móvil, con X que la cierra por toda la sesión |
+
+**El banner nativo es el único que va inline** en el HTML: trae su propio
+contenedor, carga `async` y no usa `atOptions`.
+
+Las páginas legales (`privacidad`, `terminos`) y las de formulario se quedan
+solo con los dos huecos del layout: nada de llenar de anuncios una política de
+privacidad.
+
+**Reglas al añadir huecos:** nada de popunders, push, vignettes ni smartlinks —
+son exactamente los formatos que costaron la indexación. Un solo `nativo` por
+página. Y cualquier hueco nuevo se declara con `<Anuncio />`, nunca pegando el
+snippet del proveedor en el HTML.
 
 ## Google Analytics
 

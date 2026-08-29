@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/como-jugar-super-premio.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -170,6 +171,8 @@ const schemaArticulo = `
     <div class="guia-step"><div class="guia-step-num">5</div><div class="guia-step-body"><strong>Cobrar si ganás</strong>Si acertás el jackpot, llevá tu boleto a la oficina central de Loto Honduras para cobrar el premio.</div></div>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>💰 Premios del Súper Premio</h2>
     <div class="overflow-x-auto">
@@ -198,6 +201,8 @@ const schemaArticulo = `
     </table>
     </div>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>💡 Consejos para el Súper Premio</h2>

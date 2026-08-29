@@ -1,6 +1,7 @@
 ---
 // src/pages/pega-3.astro
 import Layout from '../layouts/Layout.astro';
+import Anuncio from '../components/Anuncio.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import {
     Target, Calendar, Clock, Star, CheckCircle, Gamepad2,
@@ -247,6 +248,8 @@ const horaISO    = fechaHondurasISO();
         ariaLabel="Resultados de Pega 3"
         textoCargando="Cargando resultados de Pega 3..."
     />
+
+    <Anuncio formato="rectangulo" />
 
     <!-- ============== CONTENIDO SEO ESPECÍFICO PEGA 3 ============== -->
     <article class="bg-white rounded-2xl shadow-xl p-6 md:p-8 mt-6 prose max-w-none">
@@ -528,6 +531,8 @@ const horaISO    = fechaHondurasISO();
             </table>
         </div>
 
+        <Anuncio formato="nativo" />
+
         <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
             <BarChart3 class="w-7 h-7 text-indigo-600" />
             Análisis Estadístico de Pega 3
@@ -754,6 +759,8 @@ const horaISO    = fechaHondurasISO();
         <p class="text-gray-700 leading-relaxed mb-6">
             Los números sorteados son los mismos para ambas modalidades. Lo que cambia es cómo ganas: en directo necesitas orden exacto, en combinado cualquier orden funciona. Usa nuestro histórico en LotoHN para ver patrones.
         </p>
+
+        <Anuncio formato="medio" />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-6 mt-8 flex items-center gap-2">
             <Trophy class="w-7 h-7 text-indigo-600" />

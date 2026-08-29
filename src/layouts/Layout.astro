@@ -2,6 +2,8 @@
 // src/layouts/Layout.astro
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Anuncio from '../components/Anuncio.astro';
+import AnunciosGlobales from '../components/AnunciosGlobales.astro';
 const { bodyClass = '' } = Astro.props;
 ---
 
@@ -89,8 +91,15 @@ const { bodyClass = '' } = Astro.props;
     <div class="max-w-7xl mx-auto pt-4">
         <main class="p-4 md:p-6">
 
+            <!-- Publicidad: cabecera. Va antes del contenido de cada página, así
+                 que todas las rutas del sitio la llevan sin tocar sus archivos. -->
+            <Anuncio formato="lider" class="anuncio--cabecera" />
+
             <!-- Contenido de cada página -->
             <slot />
+
+            <!-- Publicidad: cierre de contenido, justo antes del pie. -->
+            <Anuncio formato="lider" class="anuncio--pie" />
 
         </main>
     </div>
@@ -99,6 +108,9 @@ const { bodyClass = '' } = Astro.props;
     
     <!-- Scripts globales -->
     <script src="../scripts/main.js"></script>
+
+    <!-- Rieles laterales, ancla de móvil y script global de la red -->
+    <AnunciosGlobales />
 
 </body>
 </html>

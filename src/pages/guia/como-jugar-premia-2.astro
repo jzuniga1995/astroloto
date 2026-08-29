@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/como-jugar-premia-2.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -169,6 +170,8 @@ const schemaArticulo = `
     </div>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>🕐 Horarios de Sorteo de Premia 2</h2>
     <div class="overflow-x-auto">
@@ -193,6 +196,8 @@ const schemaArticulo = `
         <li>Combiná Ordena2 y Mixea2 en el mismo número para cubrir ambas opciones.</li>
     </ul>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>❓ Preguntas Frecuentes</h2>

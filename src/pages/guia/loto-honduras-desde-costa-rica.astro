@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/loto-honduras-desde-costa-rica.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -153,6 +154,8 @@ const schemaArticulo = `
     </div>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>📱 Cómo Ver los Resultados desde Costa Rica</h2>
     <ul>
@@ -178,6 +181,8 @@ const schemaArticulo = `
         <div class="ciudad-chip">🏙️ Desamparados</div>
     </div>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>❓ Preguntas Frecuentes</h2>

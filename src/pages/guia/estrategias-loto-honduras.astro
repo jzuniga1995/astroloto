@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/estrategias-loto-honduras.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -136,6 +137,8 @@ const schemaArticulo = `
     </div>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>🃏 Estrategia 2 — Elegir la Modalidad Correcta</h2>
     <p>La elección de modalidad es quizás la decisión más importante antes de apostar:</p>
@@ -162,6 +165,8 @@ const schemaArticulo = `
         <p>Si perdiste en la tanda de mañana, no aumentes la apuesta en la tarde para "recuperar". Eso es la trampa más común en el juego de azar.</p>
     </div>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>🛡️ Juego Responsable</h2>

@@ -1,6 +1,7 @@
 ---
 // src/pages/signos-la-diaria.astro
 import Layout from '../layouts/Layout.astro';
+import Anuncio from '../components/Anuncio.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Star, Search, Hash, BookOpen, Sparkles, HelpCircle, TrendingUp, Lightbulb, Target, Flame, Zap } from 'lucide-astro';
 
@@ -224,6 +225,8 @@ const signos = [
       </div>
     </div>
 
+    <Anuncio formato="nativo" />
+
     <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
       <Lightbulb class="w-7 h-7 text-violet-600" />
       ¿Cómo Usar los Signos de La Diaria para Ganar?
@@ -334,6 +337,8 @@ const signos = [
         </ul>
       </div>
     </div>
+
+    <Anuncio formato="medio" />
 
     <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
       <HelpCircle class="w-7 h-7 text-violet-600" />

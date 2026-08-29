@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/como-jugar-juga-3.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -236,6 +237,8 @@ const schemaArticulo = `
 </section>
 
 <!-- MODALIDADES -->
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>🃏 Modalidades de Juego y Premios</h2>
     <p>Jugá 3 ofrece dos formas principales de apostar:</p>
@@ -269,6 +272,8 @@ const schemaArticulo = `
 </section>
 
 <!-- CONSEJOS -->
+<Anuncio formato="rectangulo" />
+
 <section class="guia-section">
     <h2>💡 Consejos para Jugadores</h2>
     <ul>

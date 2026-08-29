@@ -1,6 +1,7 @@
 ---
 // src/pages/guia/horarios-sorteos-honduras.astro
 import Layout from '../../layouts/Layout.astro';
+import Anuncio from '../../components/Anuncio.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -172,6 +173,8 @@ const schemaArticulo = `
     </div>
 </section>
 
+<Anuncio formato="nativo" />
+
 <section class="guia-section">
     <h2>📅 Días de Sorteo por Juego</h2>
     <div class="overflow-x-auto">
@@ -194,6 +197,8 @@ const schemaArticulo = `
     <p>LotoHN actualiza los resultados <strong>automáticamente</strong> minutos después de cada sorteo. Durante los horarios de sorteo, la página se refresca cada <strong>1 minuto</strong>. El resto del día, cada <strong>5 minutos</strong>.</p>
     <p>Para seguir el sorteo de noche desde Estados Unidos, accedé a <a href="/" style="color:#7c3aed;font-weight:600;">LotoHN</a> a partir de las 10 PM ET / 9 PM CT / 7 PM PT y los resultados aparecerán automáticamente.</p>
 </section>
+
+<Anuncio formato="rectangulo" />
 
 <section class="guia-section">
     <h2>❓ Preguntas Frecuentes</h2>
