@@ -286,12 +286,16 @@ export function tarjetaHTML(key, datos, referencia = new Date()) {
     // numerosParaTexto() ya devuelve el valor sin partir, que es lo que usan
     // el schema y las descripciones. Aquí se reutiliza para que la línea de
     // texto y las esferas no puedan contarse cosas distintas.
+    //
+    // Esta línea sustituye al rótulo "NÚMEROS GANADORES" que iba encima de las
+    // esferas: decía lo mismo y con trece tarjetas la frase salía veintiséis
+    // veces en la portada. Ahora sale una vez por tarjeta y además lleva el
+    // número, que es lo que se busca.
     const valoresTexto = numerosParaTexto(datos).filter((v) => String(v).trim() !== '');
     const etiquetaTexto = valoresTexto.length > 1 ? 'Números ganadores' : 'Número ganador';
 
     const contenidoPrincipal = numeros.length > 0
         ? `<div class="numeros-container">
-                <div class="numeros-titulo">NÚMEROS GANADORES</div>
                 <div class="numeros-grid">
                     ${numeros.map((num, i) => {
                         const esTexto = isNaN(num) || String(num).trim() === '';
