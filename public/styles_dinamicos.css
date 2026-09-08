@@ -196,6 +196,27 @@
     min-height: 120px;
 }
 
+/* El número escrito de corrido, bajo las esferas.
+   Las esferas parten el valor en dígitos y el buscador nunca llegaba a leer
+   "260": esta línea es la que lo pone en el texto. Discreta a propósito —
+   la protagonista visual sigue siendo la esfera. */
+.numero-texto {
+    margin: 0.6rem 0 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+.numero-texto strong {
+    color: #6d28d9;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.game-card.resultado-anterior .numero-texto strong {
+    color: #dc2626;
+}
+
 .numeros-titulo {
     font-size: 0.7rem;
     font-weight: 700;

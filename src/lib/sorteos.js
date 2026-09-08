@@ -274,6 +274,21 @@ export function tarjetaHTML(key, datos, referencia = new Date()) {
 
     const numeros = numerosDeSorteo(datos);
 
+    // El número, además de en esferas, escrito de corrido.
+    //
+    // Las esferas parten el valor en dígitos: Jugá 3 sale como tres <div> con
+    // "2", "6" y "0". Para quien mira la pantalla eso es el sorteo; para
+    // cualquier cosa que lea el texto —el buscador que arma el fragmento de
+    // resultado, un asistente que responde la pregunta, un lector de
+    // pantalla— el número "260" sencillamente no existía en la página. Y esa
+    // es justo la palabra por la que llega la gente.
+    //
+    // numerosParaTexto() ya devuelve el valor sin partir, que es lo que usan
+    // el schema y las descripciones. Aquí se reutiliza para que la línea de
+    // texto y las esferas no puedan contarse cosas distintas.
+    const valoresTexto = numerosParaTexto(datos).filter((v) => String(v).trim() !== '');
+    const etiquetaTexto = valoresTexto.length > 1 ? 'Números ganadores' : 'Número ganador';
+
     const contenidoPrincipal = numeros.length > 0
         ? `<div class="numeros-container">
                 <div class="numeros-titulo">NÚMEROS GANADORES</div>
@@ -283,6 +298,9 @@ export function tarjetaHTML(key, datos, referencia = new Date()) {
                         return `<div class="bola ${esTexto ? 'texto' : ''}" style="animation-delay:${(i * 0.1).toFixed(1)}s">${escaparHTML(num)}</div>`;
                     }).join('')}
                 </div>
+                ${valoresTexto.length > 0
+                    ? `<p class="numero-texto">${etiquetaTexto}: <strong>${escaparHTML(valoresTexto.join(' · '))}</strong></p>`
+                    : ''}
             </div>`
         : `<div class="pendiente">${icono('clock', 'w-5 h-5 inline-block mr-2')}Pendiente</div>`;
 
