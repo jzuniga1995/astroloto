@@ -1,11 +1,20 @@
 // ============================================
-// CONFIGURACIÓN
+// RESULTADOS EN EL CLIENTE
 // ============================================
+//
+// El HTML ya llega con el último sorteo escrito por el build. Este script no
+// está para pintarlo de cero, sino para mantenerlo al día sin que el visitante
+// note el relevo: comprueba que lo que llega sea más nuevo que lo que hay, lo
+// funde tarjeta por tarjeta y sólo toca del DOM lo que de verdad cambió.
 
 import { fetchJSON } from './api.js';
 import { icono } from '../lib/iconos.js';
 import {
     seccionesHTML,
+    filtrarSorteos,
+    fusionarSorteos,
+    momentoDelDato,
+    clavesConCambio,
     formatearFechaLarga,
     horaHondurasTexto,
     fechaHondurasISO,
@@ -43,6 +52,8 @@ function obtenerTipoJuego() {
     return 'todos';
 }
 
+const TIPO_JUEGO = obtenerTipoJuego();
+
 // ============================================
 // RELOJ HONDURAS
 // ============================================
@@ -57,6 +68,7 @@ function actualizarReloj() {
 }
 
 function iniciarReloj() {
+    if (relojInterval) return;
     if (document.visibilityState === 'visible') {
         actualizarReloj();
         relojInterval = setInterval(actualizarReloj, 1000);
@@ -68,20 +80,6 @@ function detenerReloj() {
         clearInterval(relojInterval);
         relojInterval = null;
     }
-}
-
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-        detenerReloj();
-    } else {
-        iniciarReloj();
-    }
-});
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', iniciarReloj);
-} else {
-    iniciarReloj();
 }
 
 // ============================================
@@ -126,25 +124,183 @@ function preloadLogos(html) {
 }
 
 // ============================================
+// ESTADO: QUÉ HAY AHORA MISMO EN PANTALLA
+// ============================================
+//
+// `momento` es la marca de tiempo del JSON con el que se pintó lo que se está
+// viendo. Es la pieza que faltaba: sin ella el cliente no podía distinguir una
+// respuesta nueva de una atrasada y aceptaba las dos por igual.
+
+let estado = { momento: 0, sorteos: null };
+
+function leerEstadoEmbebido() {
+    const nodo = document.getElementById('datos-sorteos');
+    if (!nodo) return;
+    try {
+        const datos = JSON.parse(nodo.textContent || '{}');
+        if (datos && datos.sorteos && Object.keys(datos.sorteos).length > 0) {
+            estado = { momento: Number(datos.momento) || 0, sorteos: datos.sorteos };
+        }
+    } catch (error) {
+        // El HTML del build se sigue viendo igual; sólo se pierde la
+        // comparación, así que el primer refresco vuelve a mandar como antes.
+        console.warn('Estado embebido ilegible:', error.message);
+    }
+}
+
+// ============================================
+// REPINTADO QUIRÚRGICO
+// ============================================
+//
+// Antes cada refresco hacía `contenido.innerHTML = html`, y eso rehacía las
+// trece tarjetas aunque no hubiera cambiado ni un número: las esferas repetían
+// su animación de entrada cada minuto y los logos volvían a montarse. Acá se
+// comparan las tarjetas por su clave y sólo se reemplazan las distintas.
+
+function marcarActualizada(tarjeta) {
+    tarjeta.classList.add('recien-actualizada');
+    const limpiar = () => tarjeta.classList.remove('recien-actualizada');
+    // Con `prefers-reduced-motion` la animación no existe y `animationend` no
+    // llega nunca, así que el temporizador es el que quita la clase.
+    tarjeta.addEventListener('animationend', limpiar, { once: true });
+    setTimeout(limpiar, 2500);
+}
+
+function reconciliarGrid(gridActual, gridNueva, destacadas) {
+    let cambios = 0;
+    if (gridActual.className !== gridNueva.className) gridActual.className = gridNueva.className;
+
+    const previas = new Map();
+    Array.from(gridActual.children).forEach((tarjeta, i) => {
+        previas.set(tarjeta.dataset.key || `__${i}`, tarjeta);
+    });
+
+    let anterior = null;
+    for (const nueva of Array.from(gridNueva.children)) {
+        const clave  = nueva.dataset.key;
+        const previa = previas.get(clave);
+        let colocada = previa;
+
+        if (!previa) {
+            colocada = nueva;
+            cambios++;
+        } else {
+            previas.delete(clave);
+            if (previa.outerHTML !== nueva.outerHTML) {
+                previa.replaceWith(nueva);
+                colocada = nueva;
+                cambios++;
+            }
+        }
+
+        const esperado = anterior ? anterior.nextSibling : gridActual.firstChild;
+        if (esperado !== colocada) gridActual.insertBefore(colocada, esperado);
+        if (destacadas.has(clave)) marcarActualizada(colocada);
+        anterior = colocada;
+    }
+
+    previas.forEach(tarjeta => { tarjeta.remove(); cambios++; });
+    return cambios;
+}
+
+function reconciliarSeccion(actual, nueva, destacadas) {
+    const cabActual = actual.querySelector('.sorteo-header');
+    const cabNueva  = nueva.querySelector('.sorteo-header');
+    if (cabActual && cabNueva && cabActual.innerHTML !== cabNueva.innerHTML) {
+        cabActual.innerHTML = cabNueva.innerHTML;
+    }
+
+    const gridActual = actual.querySelector('.sorteo-grid');
+    const gridNueva  = nueva.querySelector('.sorteo-grid');
+    if (!gridActual || !gridNueva) {
+        actual.replaceWith(nueva);
+        return 1;
+    }
+    return reconciliarGrid(gridActual, gridNueva, destacadas);
+}
+
+function aplicarHTML(contenido, html, destacadas = new Set()) {
+    // Sin nada pintado todavía (o con el placeholder estático) no hay qué
+    // comparar: se escribe de una vez.
+    if (!contenido.querySelector('.sorteo-section')) {
+        contenido.innerHTML = html;
+        return true;
+    }
+
+    const molde = document.createElement('div');
+    molde.innerHTML = html;
+
+    const existentes = new Map();
+    contenido.querySelectorAll(':scope > .sorteo-section')
+        .forEach(seccion => existentes.set(seccion.dataset.tanda, seccion));
+
+    let cambios = 0;
+    let anterior = null;
+    for (const seccionNueva of Array.from(molde.querySelectorAll(':scope > .sorteo-section'))) {
+        const tanda = seccionNueva.dataset.tanda;
+        const actual = existentes.get(tanda);
+        let colocada = actual;
+
+        if (!actual) {
+            colocada = seccionNueva;
+            cambios++;
+        } else {
+            existentes.delete(tanda);
+            cambios += reconciliarSeccion(actual, seccionNueva, destacadas);
+            colocada = actual.isConnected ? actual : seccionNueva;
+        }
+
+        const esperado = anterior ? anterior.nextSibling : contenido.firstChild;
+        if (esperado !== colocada) contenido.insertBefore(colocada, esperado);
+        anterior = colocada;
+    }
+
+    existentes.forEach(seccion => { seccion.remove(); cambios++; });
+    return cambios > 0;
+}
+
+// ============================================
 // CARGAR RESULTADOS
 // ============================================
 
 // Momento del último intento de carga: lo usa el refresco al volver a la
 // página para no repetir la petición si acaba de hacerse.
 let ultimaCarga = 0;
+let enVuelo = false;
+
+// Cuando la respuesta viene atrasada no sirve esperar al refresco normal: el
+// CDN de GitHub suelta la copia nueva en unos minutos y hasta entonces hay que
+// insistir. Se reintenta seguido y con la URL forzada —dentro de la misma
+// ventana de 30 s el borde devolvería el mismo JSON— durante un rato acotado.
+const REINTENTO_ATRASADO_MS = 20 * 1000;
+const MAX_REINTENTOS_ATRASADOS = 15;   // ~5 min, que es lo que tarda el CDN
+let reintentosAtrasados = 0;
+let temporizadorAtrasado = null;
+
+function programarReintentoAtrasado() {
+    if (temporizadorAtrasado) return;
+    if (reintentosAtrasados >= MAX_REINTENTOS_ATRASADOS) return;
+    reintentosAtrasados++;
+    temporizadorAtrasado = setTimeout(() => {
+        temporizadorAtrasado = null;
+        cargarResultados({ forzarOrigen: true });
+    }, REINTENTO_ATRASADO_MS);
+}
 
 // `mostrarSkeleton: false` es el refresco de fondo: no borra lo que ya está en
 // pantalla, así que no parpadea el "CARGANDO..." ni se pierde un resultado
 // bueno si la petición falla.
-async function cargarResultados({ mostrarSkeleton = true } = {}) {
+async function cargarResultados({ mostrarSkeleton = true, forzarOrigen = false } = {}) {
     const contenido = document.getElementById('contenido');
     if (!contenido) return;
+    if (enVuelo) return;
+    enVuelo = true;
 
     if (mostrarSkeleton) {
         contenido.innerHTML = `
             <div class="sorteo-section">
                 <h2 class="sorteo-header">
-                    ${icono('loader', 'w-6 h-6 inline-block mr-2 animate-spin')}
+                    ${icono('loader', 'w-6 h-6 inline-block mr-2')}
                     CARGANDO RESULTADOS...
                 </h2>
                 <div class="sorteo-grid">${crearSkeletonCards(3)}</div>
@@ -153,7 +309,19 @@ async function cargarResultados({ mostrarSkeleton = true } = {}) {
     }
 
     try {
-        const data = await fetchJSON(JSON_URL);
+        const data = await fetchJSON(JSON_URL, { unico: forzarOrigen });
+
+        // Puerta de frescura. El HTML del build y la API salen del mismo
+        // archivo pero no lo leen a la vez, así que justo después de publicarse
+        // un sorteo la API puede ir un paso atrás. Antes esa respuesta pisaba
+        // el número nuevo con el anterior hasta el siguiente refresco: eso es
+        // el parpadeo que se veía. Ahora se descarta y se vuelve a preguntar.
+        const momentoNuevo = momentoDelDato(data);
+        if (estado.momento && momentoNuevo && momentoNuevo < estado.momento) {
+            programarReintentoAtrasado();
+            return;
+        }
+        reintentosAtrasados = 0;
 
         const fechaElement = document.getElementById('fechaActual');
         if (fechaElement) {
@@ -161,8 +329,16 @@ async function cargarResultados({ mostrarSkeleton = true } = {}) {
             if (span) span.textContent = formatearFechaLarga();
         }
 
-        const sorteos = data.sorteos || data;
-        const html    = seccionesHTML(sorteos, obtenerTipoJuego());
+        const recibidos = filtrarSorteos(data.sorteos || data, TIPO_JUEGO);
+        const fusion    = fusionarSorteos(estado.sorteos, recibidos);
+        const cambiadas = estado.sorteos ? clavesConCambio(estado.sorteos, fusion) : new Set();
+
+        estado = {
+            momento: Math.max(estado.momento, momentoNuevo || 0),
+            sorteos: fusion,
+        };
+
+        const html = seccionesHTML(fusion, TIPO_JUEGO);
 
         if (!html) {
             if (mostrarSkeleton) {
@@ -177,7 +353,7 @@ async function cargarResultados({ mostrarSkeleton = true } = {}) {
         }
 
         preloadLogos(html);
-        contenido.innerHTML = html;
+        aplicarHTML(contenido, html, cambiadas);
         // El HTML del build ya no manda: a partir de acá el bloque es del cliente.
         contenido.removeAttribute('data-prerender');
 
@@ -195,9 +371,12 @@ async function cargarResultados({ mostrarSkeleton = true } = {}) {
             `;
         }
     } finally {
+        enVuelo = false;
         ultimaCarga = Date.now();
         const loading = document.getElementById('loading');
         if (loading) loading.style.display = 'none';
+        // Que el analizador se entere: su análisis envejece con los sorteos.
+        document.dispatchEvent(new CustomEvent('lotohn:resultados'));
     }
 }
 
@@ -209,12 +388,6 @@ function cargaInicial() {
     if (!contenido) return;
     const yaPintado = contenido.dataset.prerender === 'true';
     cargarResultados({ mostrarSkeleton: !yaPintado });
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', cargaInicial);
-} else {
-    cargaInicial();
 }
 
 // ============================================
@@ -235,7 +408,15 @@ function refrescarSiEstaVieja() {
     cargarResultados({ mostrarSkeleton: false });
 }
 
-document.addEventListener('visibilitychange', refrescarSiEstaVieja);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+        detenerReloj();
+    } else {
+        iniciarReloj();
+        refrescarSiEstaVieja();
+    }
+});
+
 window.addEventListener('pageshow', (e) => {
     if (e.persisted) refrescarSiEstaVieja();   // vuelta desde la bfcache
 });
@@ -273,17 +454,28 @@ function obtenerIntervaloActualizacion() {
 
 function programarSiguienteActualizacion() {
     setTimeout(() => {
-        if (document.getElementById('contenido')) {
+        // Con la pestaña de fondo la petición no le sirve a nadie: al volver,
+        // el visibilitychange ya refresca.
+        if (document.visibilityState === 'visible' && document.getElementById('contenido')) {
             cargarResultados({ mostrarSkeleton: false });
         }
         programarSiguienteActualizacion();
     }, obtenerIntervaloActualizacion());
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.getElementById('contenido')) programarSiguienteActualizacion();
-    });
-} else {
+// ============================================
+// ARRANQUE
+// ============================================
+
+function iniciar() {
+    iniciarReloj();
+    leerEstadoEmbebido();
+    cargaInicial();
     if (document.getElementById('contenido')) programarSiguienteActualizacion();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciar);
+} else {
+    iniciar();
 }

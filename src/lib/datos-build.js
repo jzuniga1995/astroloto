@@ -15,6 +15,8 @@
 //    astro.config.mjs y el render de páginas comparten proceso pero no
 //    necesariamente el mismo grafo de módulos.
 
+import { momentoDelDato } from './sorteos.js';
+
 const FUENTES = [
     // Producción: la API que ya consume el navegador (Cloudflare al frente).
     process.env.LOTO_API_URL || 'https://lotohn.com/api/resultados-v2',
@@ -24,29 +26,17 @@ const FUENTES = [
     'https://raw.githubusercontent.com/jzuniga1995/lotohn/main/resultados_hoy.json',
 ];
 
+// El análisis del día sale del mismo backend y por los mismos dos caminos.
+// Incrustarlo en el build es lo que quita el salto del skeleton: el banner ya
+// llega escrito y el navegador sólo lo pone al día.
+const FUENTES_ANALISIS = [
+    process.env.LOTO_ANALISIS_URL || 'https://lotohn.com/api/analizar',
+    'https://raw.githubusercontent.com/jzuniga1995/lotohn/main/analisis.json',
+];
+
 const TIMEOUT_MS = 8000;
 const CLAVE_CACHE = Symbol.for('lotohn.datos-build');
-
-// "2026-08-18 03:09:33" viene del scraper en UTC, sin sufijo de zona: hay que
-// marcarlo explícitamente o Node lo interpreta como hora local y el
-// article:modified_time sale corrido seis horas.
-function parsearUTC(texto) {
-    if (!texto) return null;
-    const fecha = new Date(String(texto).trim().replace(' ', 'T') + 'Z');
-    return isNaN(fecha.getTime()) ? null : fecha;
-}
-
-// Momento real del dato: lo que dice el JSON, y si no viene, la consulta más
-// reciente entre los sorteos.
-function momentoDelDato(json) {
-    const declarado = parsearUTC(json.fecha_actualizacion);
-    if (declarado) return declarado;
-
-    const consultas = Object.values(json.sorteos || {})
-        .map(s => parsearUTC(s && s.fecha_consulta))
-        .filter(Boolean);
-    return consultas.length ? new Date(Math.max(...consultas.map(d => d.getTime()))) : null;
-}
+const CLAVE_CACHE_ANALISIS = Symbol.for('lotohn.datos-build.analisis');
 
 async function pedir(url) {
     const control = new AbortController();
@@ -71,7 +61,8 @@ async function cargar() {
             if (!sorteos || typeof sorteos !== 'object' || Object.keys(sorteos).length === 0) {
                 throw new Error('respuesta sin sorteos');
             }
-            const actualizado = momentoDelDato(json);
+            const ms = momentoDelDato(json);
+            const actualizado = ms ? new Date(ms) : null;
             console.log(`[lotohn] Resultados embebidos desde ${url}`
                       + ` (${Object.keys(sorteos).length} sorteos`
                       + `${actualizado ? `, dato de ${actualizado.toISOString()}` : ''})`);
@@ -98,4 +89,38 @@ export function obtenerResultados() {
 // que se puede decir de un HTML recién generado.
 export function fechaModificacion({ actualizado }) {
     return (actualizado || new Date()).toISOString();
+}
+
+// ============================================
+// ANÁLISIS IA EN TIEMPO DE BUILD
+// ============================================
+//
+// Mismas reglas que los resultados: una sola petición por build, nunca lanza y
+// si ninguna fuente responde se devuelve null para que el banner lo pinte el
+// navegador como venía haciéndolo.
+
+async function cargarAnalisis() {
+    for (const url of FUENTES_ANALISIS) {
+        try {
+            const json = await pedir(url);
+            if (!json || !json.juegos || Object.keys(json.juegos).length === 0) {
+                throw new Error('respuesta sin juegos');
+            }
+            console.log(`[lotohn] Análisis embebido desde ${url}`
+                      + ` (${Object.keys(json.juegos).length} juegos, fecha ${json.fecha || 's/f'})`);
+            return json;
+        } catch (error) {
+            console.warn(`[lotohn] No se pudo leer ${url}: ${error.message}`);
+        }
+    }
+
+    console.warn('[lotohn] Sin análisis en el build: el banner lo pide el navegador.');
+    return null;
+}
+
+export function obtenerAnalisis() {
+    if (!globalThis[CLAVE_CACHE_ANALISIS]) {
+        globalThis[CLAVE_CACHE_ANALISIS] = cargarAnalisis();
+    }
+    return globalThis[CLAVE_CACHE_ANALISIS];
 }

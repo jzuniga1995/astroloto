@@ -1,433 +1,520 @@
 ---
 // src/components/AnalizadorIA.astro
+//
+// Banner de análisis del día. Cambió de fondo respecto a la versión anterior:
+//
+//  - Se pinta en el build, como los resultados. Antes salía un skeleton y el
+//    contenido aparecía al terminar el fetch, con su salto de layout; ahora el
+//    HTML ya llega escrito y el navegador sólo lo pone al día.
+//  - El HTML lo genera `src/lib/analisis.js`, que usan build y cliente, así que
+//    las dos pinturas no pueden divergir.
+//  - Las sugerencias se leen bien: "11-58-88" son tres esferas de una misma
+//    combinación, y tres sugerencias sueltas son tres filas. Antes Pega 3
+//    mostraba una píldora con el texto "11-58-88" dentro y Jugá 3 juntaba tres
+//    sugerencias distintas en una sola fila, como si fueran una combinación.
+//  - El desbloqueo se recuerda durante la visita. Antes se reseteaba en cada
+//    cambio de pestaña, así que había que pulsarlo cinco veces seguidas.
+import { obtenerAnalisis } from '../lib/datos-build.js';
+import { normalizarAnalisis, analizadorHTML, firmaAnalisis } from '../lib/analisis.js';
+
+const crudo  = await obtenerAnalisis();
+const datos  = crudo ? normalizarAnalisis(crudo) : null;
+const cuerpo = datos ? analizadorHTML(datos) : '';
+const firma  = datos ? firmaAnalisis(datos) : '';
 ---
 
-<div id="analizador-root" aria-label="Analizador IA">
-
-    <!-- Skeleton -->
-    <div class="an-skeleton" id="an-skeleton">
-        <div class="sk-inner">
-            <div class="sk-left">
-                <div class="sk-title"></div>
-                <div class="sk-sub"></div>
+<section
+    id="analizador-root"
+    class="an-root"
+    aria-label="Analizador de números"
+    data-revelado="false"
+    data-firma={firma}
+>
+    {cuerpo ? (
+        <div class="an-cuerpo" set:html={cuerpo} />
+    ) : (
+        <div class="an-cuerpo an-cargando" aria-busy="true">
+            <div class="an-sk an-sk-tit"></div>
+            <div class="an-sk an-sk-sub"></div>
+            <div class="an-sk-tabs">
+                <div class="an-sk an-sk-tab"></div>
+                <div class="an-sk an-sk-tab"></div>
+                <div class="an-sk an-sk-tab"></div>
             </div>
-            <div class="sk-tabs">
-                <div class="sk-tab"></div><div class="sk-tab"></div>
-                <div class="sk-tab"></div><div class="sk-tab"></div>
-            </div>
-            <div class="sk-body">
-                <div class="sk-line w90"></div>
-                <div class="sk-line w70"></div>
-                <div class="sk-line w55"></div>
-            </div>
+            <div class="an-sk an-sk-linea"></div>
+            <div class="an-sk an-sk-linea corta"></div>
         </div>
-    </div>
+    )}
 
-    <!-- Banner principal -->
-    <div class="an-banner" id="an-card" style="display:none">
-
-        <div class="an-bg-orbs" aria-hidden="true">
-            <div class="orb orb1"></div>
-            <div class="orb orb2"></div>
-            <div class="orb orb3"></div>
-        </div>
-
-        <!-- Header -->
-        <div class="an-top">
-            <div class="an-brand">
-                <span class="an-fire">🔥</span>
-                <div>
-                    <div class="an-title">Analizador IA</div>
-                    <div class="an-subtitle" id="an-fecha">Cargando...</div>
-                </div>
-            </div>
-            <div class="an-badges">
-                <span class="badge-ai">🤖 Powered by IA</span>
-                <span class="badge-live">⚡ En vivo</span>
-            </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="an-tabs" id="an-tabs" role="tablist"></div>
-
-        <!-- Panel -->
-        <div class="an-panel" id="an-panel">
-            <!-- Estado bloqueado: teaser sin números -->
-            <div class="an-teaser" id="an-teaser">
-                <span class="teaser-icon">🔒</span>
-                <p class="teaser-txt">El análisis completo con patrones, tendencias y sugerencias está listo.<br>Hacé clic en el botón para desbloquearlo.</p>
-            </div>
-            <!-- Contenido real: solo visible tras ver el anuncio -->
-            <div class="an-cols" id="an-cols" style="display:none">
-                <div class="an-col-text">
-                    <div class="an-text-block">
-                        <span class="block-icon">📊</span>
-                        <p id="an-patrones"></p>
-                    </div>
-                    <div class="an-text-block">
-                        <span class="block-icon">📈</span>
-                        <p id="an-tendencias"></p>
-                    </div>
-                </div>
-                <div class="an-col-sugs" id="an-sugs" style="display:none">
-                    <div class="sugs-header">🎯 Sugerencias del día</div>
-                    <div id="an-combos-wrap"></div>
-                    <div class="sugs-disclaimer" id="an-advertencia"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA -->
-        <div class="an-cta" id="an-cta">
-            <!-- Estado bloqueado (default) -->
-            <div class="an-locked" id="an-locked">
-                <button class="an-btn" id="an-btn" type="button">
-                    🎰 Ver sugerencias de hoy
-                </button>
-                <span class="an-cta-hint">Análisis gratuito actualizado cada día</span>
-            </div>
-            <!-- Estado revelado -->
-            <div class="an-revealed-msg" id="an-revealed-msg" style="display:none">
-                <span class="an-revealed-tag">✅ Sugerencias reveladas</span>
-                <span class="an-cta-hint">Cambiá de juego para ver más análisis</span>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Error -->
-    <div class="an-error" id="an-error" style="display:none">
-        🤖 El análisis no está disponible ahora. Volvé más tarde.
-    </div>
-</div>
-
-<style>
-    #analizador-root * { box-sizing: border-box; }
-    #analizador-root { width: 100%; font-family: inherit; }
-
-    /* Skeleton */
-    .an-skeleton {
-        border-radius: 1.25rem;
-        background: linear-gradient(135deg, #1e1b4b, #4c1d95);
-        padding: 1.25rem 1.5rem;
-    }
-    .sk-inner { display:flex; flex-direction:column; gap:.75rem; }
-    .sk-left  { display:flex; flex-direction:column; gap:.4rem; }
-    .sk-title { height:.9rem; width:8rem; border-radius:.4rem; background:rgba(255,255,255,.15); animation:skp 1.5s ease-in-out infinite; }
-    .sk-sub   { height:.6rem; width:5rem; border-radius:.4rem; background:rgba(255,255,255,.1);  animation:skp 1.5s ease-in-out infinite .1s; }
-    .sk-tabs  { display:flex; gap:.5rem; }
-    .sk-tab   { height:1.7rem; width:5.5rem; border-radius:.5rem; background:rgba(255,255,255,.1); animation:skp 1.5s ease-in-out infinite; }
-    .sk-body  { display:flex; flex-direction:column; gap:.35rem; }
-    .sk-line  { height:.55rem; border-radius:.3rem; background:rgba(255,255,255,.1); animation:skp 1.5s ease-in-out infinite; }
-    .w90{width:90%} .w70{width:70%} .w55{width:55%}
-    @keyframes skp { 0%,100%{opacity:.5} 50%{opacity:1} }
-
-    /* Banner */
-    .an-banner {
-        border-radius: 1.25rem;
-        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 45%, #6d28d9 100%);
-        overflow: hidden;
-        position: relative;
-        box-shadow: 0 8px 32px rgba(109,40,217,.45), 0 2px 8px rgba(0,0,0,.2);
-        animation: ban-in .5s cubic-bezier(.22,1,.36,1) both;
-    }
-    @keyframes ban-in {
-        from { opacity:0; transform:translateY(8px) scale(.99); }
-        to   { opacity:1; transform:translateY(0)   scale(1); }
-    }
-
-    .an-bg-orbs { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
-    .orb { position:absolute; border-radius:50%; filter:blur(40px); opacity:.35; }
-    .orb1 { width:220px; height:220px; background:#a855f7; top:-60px; right:-40px; }
-    .orb2 { width:160px; height:160px; background:#f59e0b; bottom:-50px; left:10%; }
-    .orb3 { width:120px; height:120px; background:#06b6d4; top:30%; right:25%; }
-
-    .an-top {
-        display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem;
-        padding:1rem 1.4rem .6rem; position:relative; z-index:1;
-    }
-    .an-brand { display:flex; align-items:center; gap:.65rem; }
-    .an-fire  { font-size:2rem; line-height:1; filter:drop-shadow(0 0 8px rgba(251,146,60,.8)); animation:fire-flicker 2s ease-in-out infinite; }
-    @keyframes fire-flicker {
-        0%,100% { transform:scale(1)   rotate(-2deg); }
-        50%      { transform:scale(1.1) rotate(2deg);  }
-    }
-    .an-title    { font-size:1.05rem; font-weight:900; color:#fff; text-transform:uppercase; letter-spacing:.08em; text-shadow:0 2px 8px rgba(0,0,0,.4); }
-    .an-subtitle { font-size:.65rem; color:rgba(255,255,255,.65); font-weight:500; margin-top:.05rem; }
-
-    .an-badges { display:flex; gap:.5rem; flex-wrap:wrap; }
-    .badge-ai, .badge-live { font-size:.62rem; font-weight:700; padding:.25rem .7rem; border-radius:2rem; white-space:nowrap; }
-    .badge-ai   { background:rgba(255,255,255,.15); color:#e9d5ff; border:1px solid rgba(255,255,255,.2); }
-    .badge-live { background:linear-gradient(135deg,#f59e0b,#ef4444); color:#fff; border:none;
-                  box-shadow:0 2px 8px rgba(239,68,68,.5); animation:pulse-live 2s ease-in-out infinite; }
-    @keyframes pulse-live { 0%,100%{box-shadow:0 2px 8px rgba(239,68,68,.5)} 50%{box-shadow:0 2px 16px rgba(239,68,68,.8)} }
-
-    .an-tabs { display:flex; gap:.4rem; flex-wrap:wrap; padding:.3rem 1.4rem .6rem; position:relative; z-index:1; }
-
-    .an-panel {
-        margin:0 1rem .5rem; background:rgba(255,255,255,.08);
-        backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.12);
-        border-radius:1rem; padding:1rem 1.1rem .9rem;
-        position:relative; z-index:1;
-        animation:pan-in .25s ease both;
-    }
-    @keyframes pan-in { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-
-    .an-cols { display:flex; gap:1.25rem; flex-wrap:wrap; }
-    .an-col-text { flex:1; min-width:180px; display:flex; flex-direction:column; gap:.6rem; }
-    .an-text-block { display:flex; align-items:flex-start; gap:.5rem; }
-    .block-icon { font-size:1rem; line-height:1.5; flex-shrink:0; }
-    .an-text-block p { font-size:.82rem; color:rgba(255,255,255,.88); line-height:1.6; margin:0; }
-
-    .an-col-sugs { flex-shrink:0; max-width:280px; animation:pan-in .3s ease both; }
-    .sugs-header { font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#fde68a; margin-bottom:.6rem; }
-    .sugs-disclaimer { font-size:.58rem; color:rgba(255,255,255,.45); margin-top:.55rem; font-style:italic; line-height:1.4; }
-
-    /* Combo (una sugerencia) */
-    .an-combo { display:flex; gap:.35rem; flex-wrap:wrap; margin-bottom:.5rem; align-items:center; }
-    .an-combo:last-child { margin-bottom:0; }
-
-    .an-cta {
-        display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
-        padding:.7rem 1.4rem 1rem; position:relative; z-index:1;
-    }
-    .an-btn {
-        display:inline-flex; align-items:center; gap:.4rem;
-        background:linear-gradient(135deg,#f59e0b,#ef4444);
-        color:#fff; font-size:.85rem; font-weight:900;
-        padding:.55rem 1.4rem; border-radius:2rem; border:none; cursor:pointer;
-        box-shadow:0 4px 16px rgba(239,68,68,.5);
-        letter-spacing:.02em; text-transform:uppercase;
-        transition:transform .15s ease, box-shadow .15s ease;
-        animation:cta-pulse 3s ease-in-out infinite;
-    }
-    @keyframes cta-pulse {
-        0%,100% { box-shadow:0 4px 16px rgba(239,68,68,.5); }
-        50%      { box-shadow:0 6px 28px rgba(239,68,68,.75); }
-    }
-    .an-btn:hover  { transform:translateY(-2px) scale(1.03); }
-    .an-btn:active { transform:translateY(0) scale(1); }
-    /* Teaser bloqueado */
-    .an-teaser {
-        display:flex; align-items:center; gap:.75rem;
-        padding:.25rem 0;
-    }
-    .teaser-icon { font-size:1.6rem; flex-shrink:0; opacity:.85; }
-    .teaser-txt {
-        font-size:.82rem; color:rgba(255,255,255,.7);
-        line-height:1.55; margin:0; font-style:italic;
-    }
-
-    .an-locked { display:flex; flex-direction:column; gap:.45rem; align-items:flex-start; }
-    .an-revealed-msg { display:flex; flex-direction:column; gap:.35rem; align-items:flex-start; }
-    .an-revealed-tag {
-        display:inline-flex; align-items:center; gap:.4rem;
-        font-size:.85rem; font-weight:800; color:#4ade80;
-        text-shadow:0 0 12px rgba(74,222,128,.5);
-    }
-    .an-cta-hint { font-size:.62rem; color:rgba(255,255,255,.55); font-style:italic; line-height:1.4; }
-
-    .an-error {
-        font-size:.8rem; color:#9ca3af; padding:.8rem 1rem;
-        border:1px dashed rgba(0,0,0,.1); border-radius:1rem; text-align:center;
-    }
-
-    @media (max-width:600px) {
-        .an-top { padding:.85rem 1rem .5rem; }
-        .an-tabs { padding:.3rem 1rem .5rem; }
-        .an-panel { margin:0 .75rem .4rem; }
-        .an-cta { padding:.6rem 1rem .85rem; }
-        .an-badges { display:none; }
-        .an-col-sugs { max-width:100%; }
-    }
-</style>
+    <p class="an-error" hidden>El análisis no está disponible en este momento. Volvé más tarde.</p>
+</section>
 
 <style is:global>
-    #analizador-root .an-tab-btn {
-        font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em;
-        padding:.3rem .8rem; border-radius:.6rem;
-        border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.08);
-        color:rgba(255,255,255,.65); cursor:pointer;
-        transition:background .15s, color .15s, border-color .15s;
+    /* ============================================
+       ANALIZADOR — contenedor
+       ============================================ */
+    .an-root {
+        --an-oro: #fbbf24;
+        --an-tinta: #1e1b4b;
+        position: relative;
+        display: block;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        color: #fff;
+        background:
+            radial-gradient(90% 120% at 100% 0%, rgba(168, 85, 247, 0.45), transparent 60%),
+            radial-gradient(70% 100% at 0% 100%, rgba(6, 182, 212, 0.25), transparent 55%),
+            linear-gradient(135deg, #1e1b4b 0%, #4c1d95 55%, #5b21b6 100%);
+        box-shadow: 0 10px 30px rgba(76, 29, 149, 0.28);
     }
-    #analizador-root .an-tab-btn:hover { background:rgba(255,255,255,.15); color:#fff; }
-    #analizador-root .an-tab-btn.active {
-        background:linear-gradient(135deg,rgba(251,191,36,.25),rgba(245,158,11,.15));
-        color:#fde68a; border-color:rgba(251,191,36,.55); font-weight:900;
+    /* Filo superior: el mismo recurso que usan las tarjetas de sorteo. */
+    .an-root::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--an-oro), #f472b6 45%, #22d3ee);
+    }
+    .an-root * { box-sizing: border-box; }
+    .an-ico { width: 1rem; height: 1rem; flex-shrink: 0; }
+
+    .an-cuerpo { padding: 1.15rem 1.35rem 1.35rem; }
+
+    /* ============================================
+       Cabecera
+       ============================================ */
+    .an-cabecera { display: flex; align-items: center; gap: 0.7rem; }
+    .an-marca {
+        display: grid;
+        place-items: center;
+        width: 2.35rem;
+        height: 2.35rem;
+        flex-shrink: 0;
+        border-radius: 0.75rem;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: var(--an-oro);
+    }
+    .an-ico-marca { width: 1.15rem; height: 1.15rem; }
+    .an-titulo {
+        margin: 0;
+        font-size: 1.02rem;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        color: #fff;
+        line-height: 1.25;
+    }
+    .an-sub {
+        margin: 0.1rem 0 0;
+        font-size: 0.74rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.62);
     }
 
-    /* Bola numérica — redonda */
-    #analizador-root .an-ball-num {
-        width:2.6rem; height:2.6rem; border-radius:50%; flex-shrink:0;
-        display:flex; align-items:center; justify-content:center;
-        font-size:.92rem; font-weight:900; color:#1e1b4b;
-        background:radial-gradient(circle at 35% 28%, #fff 0%, #fde68a 35%, #f59e0b 70%, #b45309 100%);
-        box-shadow:0 4px 12px rgba(245,158,11,.6), inset 0 -3px 6px rgba(0,0,0,.15), inset 0 2px 5px rgba(255,255,255,.7);
-        animation:ball-pop .45s cubic-bezier(.34,1.56,.64,1) both;
+    /* ============================================
+       Pestañas
+       ============================================ */
+    .an-tabs {
+        display: flex;
+        gap: 0.3rem;
+        margin: 0.95rem 0 0.8rem;
+        padding: 0.25rem;
+        border-radius: 0.8rem;
+        background: rgba(0, 0, 0, 0.22);
+        overflow-x: auto;
+        scrollbar-width: none;
     }
-    /* Bola de texto (signo, multiplicador) — píldora */
-    #analizador-root .an-ball-txt {
-        height:2.6rem; padding:0 .7rem; border-radius:1.3rem; flex-shrink:0;
-        display:flex; align-items:center; justify-content:center;
-        font-size:.75rem; font-weight:900; color:#fff; white-space:nowrap;
-        background:radial-gradient(circle at 35% 28%, rgba(255,255,255,.3) 0%, #7c3aed 50%, #4c1d95 100%);
-        box-shadow:0 4px 12px rgba(124,58,237,.5), inset 0 -3px 6px rgba(0,0,0,.2), inset 0 2px 5px rgba(255,255,255,.3);
-        animation:ball-pop .45s cubic-bezier(.34,1.56,.64,1) both;
+    .an-tabs::-webkit-scrollbar { display: none; }
+    .an-tab {
+        flex: 1 0 auto;
+        white-space: nowrap;
+        padding: 0.42rem 0.85rem;
+        border: none;
+        border-radius: 0.6rem;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.66);
+        font: inherit;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.18s ease, color 0.18s ease;
     }
-    @keyframes ball-pop {
-        from { opacity:0; transform:scale(.2) rotate(-20deg); }
-        to   { opacity:1; transform:scale(1)  rotate(0); }
+    .an-tab:hover { background: rgba(255, 255, 255, 0.09); color: #fff; }
+    .an-tab[aria-selected="true"] {
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--an-tinta);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+    }
+    .an-root :is(.an-tab, .an-btn):focus-visible {
+        outline: 2px solid var(--an-oro);
+        outline-offset: 2px;
+    }
+
+    /* ============================================
+       Panel
+       ============================================ */
+    .an-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+        gap: 1.1rem;
+        align-items: start;
+    }
+    .an-panel[hidden] { display: none !important; }
+    .an-panel:focus-visible { outline: none; }
+
+    .an-lecturas { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
+    .an-lectura { display: flex; gap: 0.55rem; align-items: flex-start; }
+    .an-lectura-ico {
+        display: grid;
+        place-items: center;
+        width: 1.55rem;
+        height: 1.55rem;
+        flex-shrink: 0;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--an-oro);
+    }
+    .an-lectura-tit {
+        margin: 0 0 0.12rem;
+        font-size: 0.66rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: rgba(255, 255, 255, 0.55);
+    }
+    .an-lectura-txt {
+        margin: 0;
+        font-size: 0.85rem;
+        line-height: 1.55;
+        color: rgba(255, 255, 255, 0.92);
+    }
+    .an-muestra {
+        margin: 0.1rem 0 0;
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.45);
+    }
+
+    /* ============================================
+       Sugerencias
+       ============================================ */
+    .an-sugerencias {
+        min-width: 0;
+        padding: 0.85rem 0.9rem;
+        border-radius: 0.9rem;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .an-sug-tit {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin: 0 0 0.6rem;
+        font-size: 0.64rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--an-oro);
+    }
+    .an-sug-caja { position: relative; }
+    .an-sug-lista {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        transition: filter 0.3s ease, opacity 0.3s ease;
+    }
+    .an-sug { display: flex; align-items: center; gap: 0.5rem; }
+    .an-sug-n {
+        flex-shrink: 0;
+        width: 1.05rem;
+        font-size: 0.62rem;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.35);
+        font-variant-numeric: tabular-nums;
+    }
+    .an-esferas { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .an-esfera {
+        display: grid;
+        place-items: center;
+        min-width: 2.1rem;
+        height: 2.1rem;
+        padding: 0 0.45rem;
+        border-radius: 50%;
+        font-size: 0.82rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: var(--an-tinta);
+        background: radial-gradient(circle at 34% 28%, #fff 0%, #fde68a 38%, #f59e0b 72%, #b45309 100%);
+        box-shadow: 0 3px 8px rgba(245, 158, 11, 0.45), inset 0 -2px 4px rgba(0, 0, 0, 0.16);
+        animation: an-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+    .an-esfera.texto {
+        border-radius: 1.05rem;
+        font-size: 0.72rem;
+        color: #fff;
+        background: linear-gradient(135deg, #8b5cf6, #5b21b6);
+        box-shadow: 0 3px 8px rgba(124, 58, 237, 0.45);
+    }
+    @keyframes an-pop {
+        from { opacity: 0; transform: scale(0.4); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+    .an-sin-sugerencias {
+        margin: 0;
+        font-size: 0.78rem;
+        color: rgba(255, 255, 255, 0.55);
+        font-style: italic;
+    }
+
+    /* Candado: las combinaciones están en la página, veladas hasta que se pide
+       verlas. Una sola vez por visita — no una por pestaña, como antes. */
+    .an-root:not([data-revelado="true"]) .an-sug-lista {
+        filter: blur(7px);
+        opacity: 0.6;
+        pointer-events: none;
+        user-select: none;
+    }
+    .an-root[data-revelado="true"] .an-candado { display: none; }
+    .an-candado {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    .an-candado-txt {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin: 0;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.72);
+    }
+    .an-btn {
+        border: none;
+        border-radius: 2rem;
+        padding: 0.45rem 1.05rem;
+        font: inherit;
+        font-size: 0.76rem;
+        font-weight: 800;
+        color: var(--an-tinta);
+        background: linear-gradient(135deg, #fcd34d, #f59e0b);
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .an-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(245, 158, 11, 0.55); }
+    .an-btn:active { transform: translateY(0); }
+
+    /* ============================================
+       Aviso y errores
+       ============================================ */
+    .an-aviso {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.4rem;
+        margin: 0.9rem 0 0;
+        padding-top: 0.7rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.68rem;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.5);
+    }
+    .an-aviso .an-ico { margin-top: 0.1rem; }
+    .an-error {
+        margin: 0;
+        padding: 1.1rem 1.35rem;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+    }
+
+    /* ============================================
+       Skeleton (sólo si el build no pudo leer la API)
+       ============================================ */
+    .an-sk { border-radius: 0.4rem; background: rgba(255, 255, 255, 0.12); animation: an-latido 1.5s ease-in-out infinite; }
+    .an-sk-tit   { height: 0.95rem; width: 11rem; }
+    .an-sk-sub   { height: 0.6rem;  width: 7rem;  margin-top: 0.45rem; }
+    .an-sk-tabs  { display: flex; gap: 0.4rem; margin: 0.9rem 0; }
+    .an-sk-tab   { height: 1.8rem; width: 5.5rem; }
+    .an-sk-linea { height: 0.6rem; width: 100%; margin-top: 0.5rem; }
+    .an-sk-linea.corta { width: 62%; }
+    @keyframes an-latido { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+
+    /* ============================================
+       Responsive
+       ============================================ */
+    @media (max-width: 860px) {
+        .an-panel { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 520px) {
+        .an-cuerpo { padding: 1rem 0.9rem 1.1rem; }
+        .an-titulo { font-size: 0.95rem; }
+        .an-tab { font-size: 0.72rem; padding: 0.38rem 0.7rem; }
+        .an-esfera { min-width: 1.95rem; height: 1.95rem; font-size: 0.78rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .an-root :is(.an-esfera, .an-sk, .an-btn) {
+            animation: none !important;
+            transition: none !important;
+        }
     }
 </style>
 
 <script>
 import { fetchJSON } from '../scripts/api.js';
+import { normalizarAnalisis, analizadorHTML, firmaAnalisis } from '../lib/analisis.js';
 
-(async () => {
-    const skeleton   = document.getElementById('an-skeleton')    as HTMLElement;
-    const card       = document.getElementById('an-card')        as HTMLElement;
-    const errorEl    = document.getElementById('an-error')       as HTMLElement;
-    const tabsEl     = document.getElementById('an-tabs')        as HTMLElement;
-    const patronesEl = document.getElementById('an-patrones')    as HTMLElement;
-    const tendEl     = document.getElementById('an-tendencias')  as HTMLElement;
-    const sugsEl     = document.getElementById('an-sugs')        as HTMLElement;
-    const combosWrap = document.getElementById('an-combos-wrap') as HTMLElement;
-    const advEl      = document.getElementById('an-advertencia') as HTMLElement;
-    const btn        = document.getElementById('an-btn')         as HTMLButtonElement;
-    const panelEl    = document.getElementById('an-panel')       as HTMLElement;
+(() => {
+    const raiz = document.getElementById('analizador-root');
+    if (!raiz) return;
 
-    const LABELS: Record<string,string> = {
-        juga3:'🎲 Jugá 3', pega_3:'🎯 Pega 3', premia2:'⭐ Premia 2',
-        la_diaria:'🌟 La Diaria', super_premio:'🏆 Súper Premio'
-    };
+    const cuerpo = raiz.querySelector('.an-cuerpo') as HTMLElement | null;
+    const errorEl = raiz.querySelector('.an-error') as HTMLElement | null;
+    if (!cuerpo) return;
 
-    let juegosData: Record<string,any> = {};
-    let activeKey = '';
-    let activeRevealed = false;  // se resetea en cada cambio de tab
+    const CLAVE_REVELADO = 'lotohn.analisis.revelado';
+    const REFRESCO_MS = 5 * 60 * 1000;
 
-    const lockedEl  = document.getElementById('an-locked')       as HTMLElement;
-    const revMsgEl  = document.getElementById('an-revealed-msg') as HTMLElement;
-    const teaserEl  = document.getElementById('an-teaser')       as HTMLElement;
-    const colsEl    = document.getElementById('an-cols')         as HTMLElement;
+    let ultimaLectura = 0;
+    let pidiendo = false;
 
-    function crearBola(val: string|number, delay: number): HTMLElement {
-        const s = String(val).trim();
-        const esNum = /^\d+$/.test(s);
-        const el = document.createElement('div');
-        el.className = esNum ? 'an-ball-num' : 'an-ball-txt';
-        el.textContent = s;
-        el.style.animationDelay = `${delay}s`;
-        return el;
+    // ============================================
+    // Desbloqueo — recordado durante la visita
+    // ============================================
+
+    function leerRevelado(): boolean {
+        try { return sessionStorage.getItem(CLAVE_REVELADO) === '1'; } catch { return false; }
     }
 
-    function renderSugerencias(sugs: any[]) {
-        combosWrap.innerHTML = '';
-        if (!sugs.length) { sugsEl.style.display = 'none'; return; }
-        const esAnidado = Array.isArray(sugs[0]);
-        if (esAnidado) {
-            (sugs as any[][]).forEach((combo, ci) => {
-                const row = document.createElement('div');
-                row.className = 'an-combo';
-                combo.forEach((v, ni) => row.appendChild(crearBola(v, ci * 0.15 + ni * 0.08)));
-                combosWrap.appendChild(row);
-            });
-        } else {
-            const chunkSize = sugs.length >= 6 ? 3 : sugs.length;
-            for (let i = 0; i < sugs.length; i += chunkSize) {
-                const row = document.createElement('div');
-                row.className = 'an-combo';
-                sugs.slice(i, i + chunkSize).forEach((v, ni) =>
-                    row.appendChild(crearBola(v, (i / chunkSize) * 0.15 + ni * 0.08)));
-                combosWrap.appendChild(row);
+    function revelar() {
+        raiz.dataset.revelado = 'true';
+        try { sessionStorage.setItem(CLAVE_REVELADO, '1'); } catch { /* modo privado */ }
+    }
+
+    if (leerRevelado()) raiz.dataset.revelado = 'true';
+
+    // ============================================
+    // Pestañas — accesibles de verdad
+    // ============================================
+
+    function tabs(): HTMLButtonElement[] {
+        return Array.from(raiz.querySelectorAll<HTMLButtonElement>('.an-tab'));
+    }
+
+    function activar(id: string, mover = false) {
+        for (const tab of tabs()) {
+            const activo = tab.dataset.id === id;
+            tab.setAttribute('aria-selected', String(activo));
+            tab.tabIndex = activo ? 0 : -1;
+            if (!activo) continue;
+            if (mover) tab.focus();
+            // En móvil la tira de pestañas se desplaza: que la elegida quede a
+            // la vista. `nearest` no mueve nada si ya se veía entera.
+            tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+        raiz.querySelectorAll<HTMLElement>('.an-panel').forEach(panel => {
+            panel.hidden = panel.id !== `an-panel-${id}`;
+        });
+    }
+
+    function idActivo(): string {
+        const actual = raiz.querySelector<HTMLButtonElement>('.an-tab[aria-selected="true"]');
+        return actual?.dataset.id || tabs()[0]?.dataset.id || '';
+    }
+
+    // Delegación: los botones se rehacen en cada repintado, así que los
+    // escuchadores viven en la raíz y no hay que volver a engancharlos.
+    raiz.addEventListener('click', (e) => {
+        const destino = e.target as HTMLElement;
+        const tab = destino.closest<HTMLButtonElement>('.an-tab');
+        if (tab?.dataset.id) { activar(tab.dataset.id); return; }
+        if (destino.closest('[data-accion="revelar"]')) revelar();
+    });
+
+    raiz.addEventListener('keydown', (e) => {
+        const tab = (e.target as HTMLElement).closest<HTMLButtonElement>('.an-tab');
+        if (!tab) return;
+        const lista = tabs();
+        const i = lista.indexOf(tab);
+        let siguiente = -1;
+
+        if (e.key === 'ArrowRight') siguiente = (i + 1) % lista.length;
+        else if (e.key === 'ArrowLeft') siguiente = (i - 1 + lista.length) % lista.length;
+        else if (e.key === 'Home') siguiente = 0;
+        else if (e.key === 'End') siguiente = lista.length - 1;
+        else return;
+
+        e.preventDefault();
+        const id = lista[siguiente]?.dataset.id;
+        if (id) activar(id, true);
+    });
+
+    // ============================================
+    // Datos
+    // ============================================
+
+    function pintar(json: unknown) {
+        const datos = normalizarAnalisis(json);
+        if (datos.juegos.length === 0) throw new Error('sin juegos');
+
+        const firma = firmaAnalisis(datos);
+        // Mismo análisis que el del build: no se toca el DOM. Repintar por
+        // repintar reiniciaría las animaciones de las esferas cada cinco
+        // minutos sin que hubiera cambiado nada.
+        if (firma && firma === raiz.dataset.firma) return;
+
+        cuerpo.innerHTML = analizadorHTML(datos, { activo: idActivo() });
+        cuerpo.classList.remove('an-cargando');
+        cuerpo.removeAttribute('aria-busy');
+        raiz.dataset.firma = firma;
+        if (errorEl) errorEl.hidden = true;
+    }
+
+    async function cargar() {
+        if (pidiendo) return;
+        pidiendo = true;
+        try {
+            pintar(await fetchJSON('/api/analizar'));
+        } catch (e) {
+            console.warn('AnalizadorIA:', (e as Error).message);
+            // Con el análisis del build en pantalla, un fallo de red no borra
+            // nada: sólo se avisa cuando no hay absolutamente nada que mostrar.
+            if (!raiz.querySelector('.an-panel')) {
+                cuerpo.hidden = true;
+                if (errorEl) errorEl.hidden = false;
             }
-        }
-        sugsEl.style.display = 'block';
-    }
-
-    function mostrarBloqueado() {
-        teaserEl.style.display  = 'flex';
-        colsEl.style.display    = 'none';
-        sugsEl.style.display    = 'none';
-        lockedEl.style.display  = 'flex';
-        revMsgEl.style.display  = 'none';
-        btn.innerHTML = '🎰 Ver sugerencias de hoy';
-    }
-
-    function mostrarRevelado(d: any) {
-        patronesEl.textContent = d.patrones   || '';
-        tendEl.textContent     = d.tendencias || '';
-        teaserEl.style.display  = 'none';
-        colsEl.style.display    = 'flex';
-        renderSugerencias(d.sugerencias || []);
-        if (d.advertencia) advEl.textContent = '⚠️ ' + d.advertencia;
-        lockedEl.style.display  = 'none';
-        revMsgEl.style.display  = 'flex';
-    }
-
-    function renderPanel(key: string) {
-        const d = juegosData[key];
-        if (!d) return;
-        panelEl.style.animation = 'none';
-        void panelEl.offsetWidth;
-        panelEl.style.animation = '';
-        if (activeRevealed) {
-            mostrarRevelado(d);
-        } else {
-            mostrarBloqueado();
+        } finally {
+            pidiendo = false;
+            ultimaLectura = Date.now();
         }
     }
 
-    function activarTab(key: string) {
-        // Cambiar tab siempre resetea el estado revelado
-        activeKey      = key;
-        activeRevealed = false;
-        tabsEl.querySelectorAll<HTMLButtonElement>('.an-tab-btn').forEach(b => {
-            b.classList.toggle('active', b.dataset.key === key);
-        });
-        renderPanel(key);
+    function refrescarSiHaceFalta() {
+        if (document.visibilityState !== 'visible') return;
+        if (Date.now() - ultimaLectura < REFRESCO_MS) return;
+        cargar();
     }
 
-    try {
-        const data = await fetchJSON('/api/analizar');
-        if (!data?.juegos) throw new Error('Sin datos');
+    // El análisis envejece con los sorteos: `main.js` avisa cada vez que trae
+    // resultados y este banner se pone al día en la misma tanda.
+    document.addEventListener('lotohn:resultados', refrescarSiHaceFalta);
+    document.addEventListener('visibilitychange', refrescarSiHaceFalta);
 
-        juegosData = data.juegos;
-
-        if (data.fecha) {
-            const [y,m,d] = (data.fecha as string).split('-').map(Number);
-            const dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-            const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-            const f = new Date(y, m-1, d);
-            (document.getElementById('an-fecha') as HTMLElement).textContent =
-                `${dias[f.getDay()]} ${d} de ${meses[m-1]}`;
-        }
-
-        Object.keys(juegosData).forEach(key => {
-            const b = document.createElement('button');
-            b.className = 'an-tab-btn';
-            b.dataset.key = key;
-            b.textContent = LABELS[key] || key;
-            b.setAttribute('role','tab');
-            b.addEventListener('click', () => activarTab(key));
-            tabsEl.appendChild(b);
-        });
-
-        const keys = Object.keys(juegosData);
-        if (keys.length) activarTab(keys[0]);
-
-        // Clic en botón: revela sugerencias del juego activo
-        btn.addEventListener('click', () => {
-            activeRevealed = true;
-            renderPanel(activeKey);
-        });
-
-        skeleton.style.display = 'none';
-        card.style.display     = 'block';
-
-    } catch(e) {
-        console.warn('AnalizadorIA:', (e as Error).message);
-        skeleton.style.display = 'none';
-        errorEl.style.display  = 'block';
+    // Sin contenido del build hay que pedirlo ya; con contenido, la primera
+    // petición puede esperar a que la página termine de cargar.
+    if (raiz.querySelector('.an-panel')) {
+        activar(idActivo());
+        ultimaLectura = Date.now();
+    } else {
+        cargar();
     }
 })();
 </script>

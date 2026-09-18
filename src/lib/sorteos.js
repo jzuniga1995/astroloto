@@ -254,7 +254,7 @@ export function tarjetaHTML(key, datos, referencia = new Date()) {
     const juego = escaparHTML(canonicalizar(normalizarNombre(obtenerJuegoBase(key))));
 
     if (!datos.fecha_sorteo) {
-        return `<div class="game-card resultado-anterior" data-juego="${juego}">
+        return `<div class="game-card resultado-anterior" data-juego="${juego}" data-key="${escaparHTML(key)}">
             <div class="game-header">
                 <div class="game-title-row">
                     <div class="game-name">${escaparHTML(datos.nombre_juego)}</div>
@@ -311,7 +311,7 @@ export function tarjetaHTML(key, datos, referencia = new Date()) {
     const sinResultado = !datos.numero_ganador
         && (!datos.numeros_adicionales || datos.numeros_adicionales.length === 0);
 
-    return `<div class="${clase}" data-juego="${juego}">
+    return `<div class="${clase}" data-juego="${juego}" data-key="${escaparHTML(key)}">
         <div class="game-header">
             <div class="game-title-row">
                 <div class="game-name">${escaparHTML(nombreBase)}</div>
@@ -351,9 +351,151 @@ export function seccionesHTML(sorteos, tipoJuego = 'todos', referencia = new Dat
             ? 'sorteo-grid horizontal'
             : 'sorteo-grid';
 
-        return `<div class="sorteo-section">
+        return `<div class="sorteo-section" data-tanda="${tandaKey}">
             <h2 class="sorteo-header">${icono(info.icono, 'w-6 h-6 inline-block mr-2')}${etiqueta}${estadoTandaHTML(info.horaNum, referencia)}</h2>
             <div class="${claseGrid}">${lista.map(([key, datos]) => tarjetaHTML(key, datos, referencia)).join('')}</div>
         </div>`;
     }).join('');
+}
+
+// ============================================
+// FRESCURA DEL DATO — el sorteo nunca puede ir hacia atrás
+// ============================================
+//
+// El JSON llega por dos caminos que no van al mismo ritmo: el build lo lee al
+// desplegar y el navegador lo pide al Worker, que a su vez lo trae de
+// raw.githubusercontent.com —con su propio CDN, que sirve la copia anterior
+// unos minutos después de cada commit—. El resultado es el parpadeo que se veía
+// al abrir la página recién salido un sorteo: el HTML traía el número nuevo, la
+// primera petición del navegador devolvía el viejo y lo pisaba, y sólo al
+// siguiente refresco volvía el bueno.
+//
+// La regla de acá es sencilla: una respuesta sólo puede reemplazar a lo que ya
+// está en pantalla si es más nueva. Estas funciones no tocan el DOM —igual que
+// el resto del archivo— para que el build y el cliente midan lo mismo.
+
+// "2026-09-18 17:09:51" viene del scraper en UTC, sin sufijo de zona: hay que
+// marcarlo o el motor lo lee como hora local y salen seis horas de diferencia.
+export function parsearUTC(texto) {
+    if (!texto) return null;
+    const fecha = new Date(String(texto).trim().replace(' ', 'T') + 'Z');
+    return isNaN(fecha.getTime()) ? null : fecha;
+}
+
+// Momento en que el backend generó este JSON, en epoch ms. Lo declara
+// `fecha_actualizacion`; si faltara, la consulta más reciente entre los sorteos
+// sirve igual. Devuelve null cuando no hay ninguna fecha utilizable, y quien
+// llama trata ese caso como "no sé si es más nuevo".
+export function momentoDelDato(json) {
+    if (!json || typeof json !== 'object') return null;
+
+    const declarado = parsearUTC(json.fecha_actualizacion);
+    if (declarado) return declarado.getTime();
+
+    const consultas = Object.values(json.sorteos || json)
+        .map(s => parsearUTC(s && s.fecha_consulta))
+        .filter(Boolean)
+        .map(d => d.getTime());
+    return consultas.length ? Math.max(...consultas) : null;
+}
+
+const ORDEN_HORA_SORTEO = {
+    '10:00 AM': 10, '11:00 AM': 11,
+    '2:00 PM':  14, '3:00 PM':  15, '15:00': 15,
+    '9:00 PM':  21, '21:00':    21,
+};
+
+// Número creciente que ordena un sorteo en el tiempo (AAAAMMDDHH). Sirve para
+// decidir, tarjeta por tarjeta, cuál de dos versiones del mismo juego es la
+// posterior.
+export function selloSorteo(datos, referencia = new Date()) {
+    if (!datos || !datos.fecha_sorteo) return 0;
+    const [dia, mes, year] = String(formatearFechaSorteo(datos.fecha_sorteo, referencia))
+        .split('-').map(Number);
+    if (!dia || !mes || !year) return 0;
+    const hora = ORDEN_HORA_SORTEO[datos.hora_sorteo] || 0;
+    return ((year * 100 + mes) * 100 + dia) * 100 + hora;
+}
+
+// ¿Este sorteo ya tiene número cantado?
+export function tieneResultado(datos) {
+    return numerosParaTexto(datos || {}).some(v => String(v).trim() !== '');
+}
+
+// El valor del sorteo como texto plano, para saber si cambió de verdad.
+export function firmaSorteo(datos) {
+    if (!datos) return '';
+    return `${datos.fecha_sorteo || ''}|${datos.hora_sorteo || ''}|`
+         + numerosParaTexto(datos).join('·');
+}
+
+// Combina lo que ya se muestra con lo que acaba de llegar quedándose, juego por
+// juego, con la versión más avanzada. Un sorteo publicado no se pierde nunca:
+// si la respuesta nueva lo trae vacío o de una tanda anterior, gana el que ya
+// estaba. Así una lectura a medias del scraper tampoco borra números buenos.
+export function fusionarSorteos(actual, nuevo, referencia = new Date()) {
+    const tieneActual = actual && Object.keys(actual).length > 0;
+    const tieneNuevo  = nuevo  && Object.keys(nuevo).length  > 0;
+    if (!tieneActual) return { ...(nuevo || {}) };
+    if (!tieneNuevo)  return { ...actual };
+
+    const fusion = { ...actual };
+    for (const [key, datosNuevos] of Object.entries(nuevo)) {
+        const datosActuales = actual[key];
+        if (!datosActuales) {
+            fusion[key] = datosNuevos;
+            continue;
+        }
+
+        const selloNuevo  = selloSorteo(datosNuevos, referencia);
+        const selloActual = selloSorteo(datosActuales, referencia);
+
+        if (selloNuevo > selloActual) { fusion[key] = datosNuevos; continue; }
+        if (selloNuevo < selloActual) { continue; }   // describe un sorteo anterior
+
+        // Mismo sorteo: sólo se pisa si la versión nueva aporta número, o si la
+        // que hay tampoco lo tenía (ahí da igual y conviene el dato reciente).
+        fusion[key] = (tieneResultado(datosNuevos) || !tieneResultado(datosActuales))
+            ? datosNuevos
+            : datosActuales;
+    }
+    return fusion;
+}
+
+// Claves cuyo resultado cambió entre dos versiones del mismo conjunto. El
+// cliente las usa para resaltar sólo las tarjetas que de verdad traen algo
+// nuevo, en vez de repintar la página entera cada minuto.
+export function clavesConCambio(anterior, siguiente) {
+    const cambiadas = new Set();
+    for (const [key, datos] of Object.entries(siguiente || {})) {
+        const previo = anterior && anterior[key];
+        if (!previo) { cambiadas.add(key); continue; }
+        if (firmaSorteo(previo) !== firmaSorteo(datos)) cambiadas.add(key);
+    }
+    return cambiadas;
+}
+
+// Sólo los campos que el render usa. El build incrusta este recorte en la
+// página para que el cliente arranque sabiendo qué hay en pantalla —y pueda
+// compararlo con lo que llegue— sin cargar con `origen`, `url` ni el resto de
+// metadatos del scraper.
+const CAMPOS_RENDER = [
+    'nombre_juego', 'fecha_sorteo', 'hora_sorteo',
+    'numero_ganador', 'numeros_individuales', 'numeros_adicionales',
+];
+
+export function datosMinimos(sorteos) {
+    const recorte = {};
+    for (const [key, datos] of Object.entries(sorteos || {})) {
+        if (!datos || typeof datos !== 'object') continue;
+        const entrada = {};
+        for (const campo of CAMPOS_RENDER) {
+            const valor = datos[campo];
+            if (valor === undefined || valor === null || valor === '') continue;
+            if (Array.isArray(valor) && valor.length === 0) continue;
+            entrada[campo] = valor;
+        }
+        recorte[key] = entrada;
+    }
+    return recorte;
 }
