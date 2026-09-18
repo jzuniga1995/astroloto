@@ -304,6 +304,32 @@
     }
 }
 
+/* ============================================
+   TARJETA RECIÉN ACTUALIZADA
+   ============================================
+   El refresco ya no repinta el bloque entero: sólo se reemplazan las tarjetas
+   cuyo número cambió. Este destello es lo que avisa de ese cambio, y sólo
+   aparece ahí — antes todas las esferas repetían su animación de entrada cada
+   minuto, cambiara algo o no. */
+.game-card.recien-actualizada {
+    animation: card-nueva 2s cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+@keyframes card-nueva {
+    0% {
+        box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.55), 0 4px 12px rgba(124, 58, 237, 0.12);
+        transform: scale(1);
+    }
+    18% {
+        box-shadow: 0 0 0 6px rgba(124, 58, 237, 0.22), 0 12px 28px rgba(124, 58, 237, 0.3);
+        transform: scale(1.015);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(124, 58, 237, 0), 0 4px 12px rgba(124, 58, 237, 0.12);
+        transform: scale(1);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .bola,
     .game-card,

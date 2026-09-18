@@ -32,6 +32,34 @@ así que no pueden divergir. El bloque pre-renderizado lleva
 `data-prerender="true"`; el cliente lo quita al tomar el control, y ese atributo
 es lo que decide si la primera carga muestra skeleton o refresca por detrás.
 
+### El resultado nunca va hacia atrás
+
+El build y el navegador leen el mismo archivo pero no a la vez: el Worker lo
+trae de `raw.githubusercontent.com`, cuyo CDN sirve la copia anterior unos
+minutos después de cada commit. Justo tras publicarse un sorteo eso daba el
+parpadeo clásico —el HTML traía el número nuevo, la primera petición del
+navegador devolvía el viejo y lo pisaba— hasta el siguiente refresco.
+
+Por eso el build incrusta, junto al HTML, un `<script type="application/json"
+id="datos-sorteos">` con el recorte de datos usado y el `momento` en que el
+backend generó ese JSON:
+
+- **Puerta de frescura.** Una respuesta con `fecha_actualizacion` anterior a la
+  que hay en pantalla se descarta y se reintenta cada 20 s (hasta 5 min) con la
+  URL forzada, porque dentro de la misma ventana de 30 s el borde devolvería el
+  mismo JSON viejo.
+- **Fusión por sorteo.** `fusionarSorteos()` se queda, juego por juego, con la
+  versión más avanzada. Un número ya publicado no lo borra una lectura a medias
+  del scraper.
+- **Repintado quirúrgico.** Las tarjetas llevan `data-key` y las secciones
+  `data-tanda`; el cliente sólo reemplaza las que cambiaron y les pone
+  `.recien-actualizada`. El resto ni se toca, así que las esferas no repiten su
+  animación de entrada cada minuto.
+
+**El recorte embebido tiene que reproducir el HTML del build carácter por
+carácter** (`datosMinimos()` guarda exactamente los campos que usa el render).
+Si deja de hacerlo, el primer refresco reemplaza todas las tarjetas sin motivo.
+
 Si el build no logra leer la API cae a un respaldo
 (`raw.githubusercontent.com/jzuniga1995/lotohn/main/resultados_hoy.json`) y, si
 tampoco responde, deja el placeholder de siempre. **Un fallo de red nunca tumba
@@ -50,7 +78,7 @@ El Worker enruta por prefijo y devuelve el archivo del repo `lotohn` sin tocarlo
 | Endpoint | Archivo que sirve | Descripción |
 |----------|-------------------|-------------|
 | `/api/historial` | `historial.json` | Historial acumulado `{ "YYYY-MM-DD": { ... } }` |
-| `/api/analizar` | `analisis.json` | Análisis IA del día `{ fecha, juegos: { patrones, tendencias, sugerencias[] } }` |
+| `/api/analizar` | `analisis.json` | Análisis del día `{ fecha, juegos: { patrones, tendencias, sugerencias[] } }`. También se incrusta en el build |
 | *cualquier otra* | `resultados_hoy.json` | Resultados del día por juego y tanda |
 
 `/api/resultados-v2` cae en el `else`: no es una ruta declarada, es el caso por
@@ -155,7 +183,12 @@ detectan por coincidencia parcial y no por igualdad exacta.
 
 - **`Header.astro`** — Navegación sticky. Nav desktop + menú móvil hamburguesa. Links: Inicio, Jugá 3, Pega 3, Premia 2, La Diaria, Súper Premio, Historial, Estadísticas, Signos.
 - **`Footer.astro`** — Nav de resultados + sección Guías (11 links) + nav legal.
-- **`AnalizadorIA.astro`** — Banner de análisis IA con tabs por juego. Fetch a `/api/analizar`. Sugerencias se revelan al hacer clic.
+- **`AnalizadorIA.astro`** — Banner de análisis con pestañas por juego. Se pinta
+  en el build (`obtenerAnalisis()`) y el navegador lo refresca contra
+  `/api/analizar` cuando `main.js` avisa con el evento `lotohn:resultados`; si la
+  firma del análisis no cambió, no toca el DOM. Pestañas ARIA con navegación por
+  flechas. Las sugerencias se revelan con un clic y **el desbloqueo se recuerda
+  toda la visita** (`sessionStorage`), no una vez por pestaña.
 - **`CoberturaPaises.astro`** — Sección visible de cobertura geográfica (HN · CR · US con ciudades).
 - **`Layout.astro`** — Template base: Google Analytics, PWA (manifest + SW), preload logos, estilos globales.
 - **`ResultadosSorteos.astro`** — `#contenido` con los sorteos ya pintados en el build. Props: `tipoJuego`, `ariaLabel`, `textoCargando`.
@@ -172,6 +205,9 @@ detectan por coincidencia parcial y no por igualdad exacta.
 - **`datos-build.js`** — Lee la API durante el build. Una sola petición por
   build (cacheada en `globalThis`, que es lo que comparten `astro.config.mjs` y
   el render de páginas). Nunca lanza.
+- **`analisis.js`** — Normaliza y pinta el análisis del día. Sin DOM ni `window`:
+  la usan el build y el navegador, igual que `sorteos.js`. Parte las sugerencias
+  (`"11-58-88"` → tres esferas de una misma combinación) y ordena las pestañas.
 - **`iconos.js`** — SVG inline. El sitio nunca cargó el runtime `lucide`, así
   que los `<i data-lucide="…">` que generaba el JS quedaban en un `<i>` vacío y
   el icono no aparecía. **No volver a `data-lucide` en HTML generado.**
@@ -183,7 +219,10 @@ detectan por coincidencia parcial y no por igualdad exacta.
 
 ## Scripts client-side
 
-- **`src/scripts/main.js`** — Fetch `/api/resultados-v2` con `cache: 'no-cache'`. Renderiza cards por tanda. Auto-refresh 1 min en horarios de sorteo, 5 min el resto. Reloj Honduras (UTC-6).
+- **`src/scripts/main.js`** — Fetch `/api/resultados-v2`, puerta de frescura,
+  fusión por sorteo y repintado quirúrgico (ver *El resultado nunca va hacia
+  atrás*). Auto-refresh 1 min en horarios de sorteo, 5 min el resto, y nada
+  mientras la pestaña está de fondo. Reloj Honduras (UTC-6).
 - **`src/scripts/historial.js`** — Tabla interactiva, filtros juego/tanda, paginación 20 filas, exportar XLSX vía SheetJS CDN.
 - **`src/scripts/anuncios.js`** — Carga perezosa de los huecos publicitarios y cierre del ancla de móvil.
 

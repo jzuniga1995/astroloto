@@ -11,16 +11,21 @@
 // de 30 s en lugar de usar Date.now() a secas para que el CDN siga absorbiendo
 // el tráfico: como mucho dos URLs distintas por minuto entre todos los
 // visitantes, y el dato nunca se atrasa más de esos 30 s.
+//
+// `unico: true` rompe esa agrupación para una petición concreta. Se usa cuando
+// ya sabemos que la copia del borde está atrasada —la respuesta anterior era
+// más vieja que lo que hay en pantalla— y reintentar dentro de la misma ventana
+// devolvería exactamente el mismo JSON viejo.
 
 const VENTANA_MS = 30_000;
 
-export function urlFresca(url) {
-    const ventana = Math.floor(Date.now() / VENTANA_MS);
-    return `${url}${url.includes('?') ? '&' : '?'}v=${ventana}`;
+export function urlFresca(url, { unico = false } = {}) {
+    const marca = unico ? Date.now() : Math.floor(Date.now() / VENTANA_MS);
+    return `${url}${url.includes('?') ? '&' : '?'}v=${marca}`;
 }
 
-export async function fetchJSON(url) {
-    const resp = await fetch(urlFresca(url), { cache: 'no-store' });
+export async function fetchJSON(url, opciones = {}) {
+    const resp = await fetch(urlFresca(url, opciones), { cache: 'no-store' });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     return resp.json();
 }
