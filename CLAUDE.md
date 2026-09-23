@@ -188,7 +188,12 @@ detectan por coincidencia parcial y no por igualdad exacta.
   `/api/analizar` cuando `main.js` avisa con el evento `lotohn:resultados`; si la
   firma del análisis no cambió, no toca el DOM. Pestañas ARIA con navegación por
   flechas. Las sugerencias se revelan con un clic y **el desbloqueo se recuerda
-  toda la visita** (`sessionStorage`), no una vez por pestaña.
+  toda la visita** (`sessionStorage`), no una vez por pestaña. Al pie lleva el
+  `<Anuncio formato="enlace" />`, fuera de `.an-cuerpo` porque ese nodo lo
+  reescribe el cliente en cada repintado. **El candado se abre gratis:** el
+  enlace patrocinado es una invitación rotulada, nunca un peaje — condicionar el
+  contenido a un clic en el anuncio es incentivación, y eso cierra la cuenta de
+  la red.
 - **`CoberturaPaises.astro`** — Sección visible de cobertura geográfica (HN · CR · US con ciudades).
 - **`Layout.astro`** — Template base: Google Analytics, PWA (manifest + SW), preload logos, estilos globales.
 - **`ResultadosSorteos.astro`** — `#contenido` con los sorteos ya pintados en el build. Props: `tipoJuego`, `ariaLabel`, `textoCargando`.
@@ -214,8 +219,10 @@ detectan por coincidencia parcial y no por igualdad exacta.
 - **`fechas.js`** — `dateModified` de las guías a partir del último commit de
   git, con la fecha escrita a mano de respaldo si el checkout no trae historial.
 - **`seo.js`** — `PUBLICADO_SITIO`, fijo a propósito.
-- **`anuncios.js`** — Claves y medidas de la red publicitaria, más el interruptor
-  general `ANUNCIOS_ACTIVOS`. Sin DOM ni `window`: la usan el build y el navegador.
+- **`anuncios.js`** — Claves y medidas de la red publicitaria, los interruptores
+  `ANUNCIOS_ACTIVOS` (todo) y `SOCIAL_ACTIVO` (solo la barra social), y
+  `rutaSobria()`, que deja las legales y el formulario sin barra social. Sin DOM
+  ni `window`: la usan el build y el navegador.
 
 ## Scripts client-side
 
@@ -224,7 +231,9 @@ detectan por coincidencia parcial y no por igualdad exacta.
   atrás*). Auto-refresh 1 min en horarios de sorteo, 5 min el resto, y nada
   mientras la pestaña está de fondo. Reloj Honduras (UTC-6).
 - **`src/scripts/historial.js`** — Tabla interactiva, filtros juego/tanda, paginación 20 filas, exportar XLSX vía SheetJS CDN.
-- **`src/scripts/anuncios.js`** — Carga perezosa de los huecos publicitarios y cierre del ancla de móvil.
+- **`src/scripts/anuncios.js`** — Carga perezosa de los huecos publicitarios,
+  cierre del ancla de móvil y carga diferida de la barra social (tras `load`,
+  `RETARDO_SOCIAL` de margen y solo con la pestaña a la vista).
 
 ## Estilos
 
@@ -294,12 +303,14 @@ Todo vive en tres archivos:
 |---------|-------|
 | `src/lib/anuncios.js` | Claves, medidas, formatos. **Único sitio donde tocar nada.** |
 | `src/components/Anuncio.astro` | Un hueco en el flujo de la página |
-| `src/components/AnunciosGlobales.astro` | Rieles laterales, ancla de móvil y script global |
-| `src/scripts/anuncios.js` | Carga perezosa por `IntersectionObserver` |
+| `src/components/AnunciosGlobales.astro` | Rieles laterales, ancla de móvil, script global y permiso de la barra social |
+| `src/scripts/anuncios.js` | Carga perezosa por `IntersectionObserver` + barra social diferida |
 
 **`ANUNCIOS_ACTIVOS = false` en `src/lib/anuncios.js` apaga todo el sitio de un
 golpe:** los huecos dejan de renderizarse y no se pide un solo script de
 terceros. Es la palanca a usar si la indexación vuelve a moverse.
+**`SOCIAL_ACTIVO = false` apaga solo la barra social**, que es el único formato
+flotante del sitio y por tanto el primer sospechoso si algo se mueve.
 
 ### Por qué cada banner va dentro de un iframe
 
@@ -338,17 +349,51 @@ nueva los hereda sin tocar su archivo**. El resto se coloca a mano:
 | `nativo` | — | — | A un tercio del contenido. **Uno por página**: el id del contenedor lo fija el proveedor |
 | `vertical` / `columna` | 160×600 / 160×300 | oculto | Rieles laterales, solo a partir de 1660 px |
 | `ancla` | oculto | 320×50 | Barra inferior de móvil, con X que la cierra por toda la sesión |
+| `enlace` | — | — | Enlace directo de la red. Pie del analizador (solo `/`). **No pide nada a un tercero**: es un `<a>` del sitio |
 
 **El banner nativo es el único que va inline** en el HTML: trae su propio
 contenedor, carga `async` y no usa `atOptions`.
+
+**El `enlace` no es un banner.** Es el Direct Link de la red usado como lo que
+es —un enlace— y no como popunder ni como captura de los clics de la página:
+sale una tarjeta rotulada con `rel="nofollow sponsored noopener"` que solo navega
+si el visitante la toca, y el texto avisa de que abre un anuncio. Cero scripts,
+cero salto de layout, cero redirección automática. El `titulo` y el `detalle` se
+pueden pasar por props, **pero el aviso de que abre un anuncio no se quita.**
+
+### La barra social
+
+El otro script global (`SCRIPT_SOCIAL`) pinta su propio widget flotante en el
+documento de arriba, así que es el único que **no** se puede encerrar en un
+iframe: encerrado no se vería. Lo que lo mantiene a raya son tres condiciones, no
+una:
+
+- **No entra en la carga inicial.** No va en el HTML: `AnunciosGlobales.astro`
+  deja una marca `#anuncioSocial` y `src/scripts/anuncios.js` inyecta el script
+  tras el evento `load`, con `RETARDO_SOCIAL` de margen. El LCP no lo paga.
+- **Ni con la pestaña de fondo.** Si `document.hidden`, espera al
+  `visibilitychange`.
+- **Ni en las rutas sobrias.** Sin la marca en el HTML no se pide nunca, y
+  `rutaSobria()` no la deja salir en legales, formulario ni 404.
+
+`rutaSobria()` quita la extensión antes de comparar: con `build.format: 'file'`
+el `Astro.url.pathname` del build llega como `/privacidad.html`, no como
+`/privacidad`.
 
 Las páginas legales (`privacidad`, `terminos`) y las de formulario se quedan
 solo con los dos huecos del layout: nada de llenar de anuncios una política de
 privacidad.
 
-**Reglas al añadir huecos:** nada de popunders, push, vignettes ni smartlinks —
-son exactamente los formatos que costaron la indexación. Un solo `nativo` por
-página. Y cualquier hueco nuevo se declara con `<Anuncio />`, nunca pegando el
+**Reglas al añadir huecos:** nada de popunders, push ni vignettes — son
+exactamente los formatos que costaron la indexación, y lo que tienen en común es
+que **se mueven solos**: aparecen encima o navegan la pestaña sin que nadie los
+toque. Esa es la línea, no el nombre del formato. El Direct Link entró por eso:
+como `<a>` rotulado que solo navega con un clic, no se mueve solo. Como popunder
+o como `onclick` de la página, sería lo mismo que se quitó en julio.
+
+Un solo `nativo` por página y un solo `enlace` por página. Nunca condicionar
+contenido a un clic en un anuncio: eso es incentivación y la red cierra la
+cuenta. Y cualquier hueco nuevo se declara con `<Anuncio />`, nunca pegando el
 snippet del proveedor en el HTML.
 
 ## Google Analytics

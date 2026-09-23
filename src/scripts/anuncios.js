@@ -12,7 +12,14 @@
 //     que haga falta sin pisarse.
 //   · Un hueco oculto por CSS (rieles en móvil, ancla en escritorio) nunca
 //     intersecta, así que nunca pide un anuncio que nadie va a ver.
-import { ANUNCIOS_ACTIVOS, documentoBanner, medidaPara, PUNTO_MOVIL } from '../lib/anuncios.js';
+//
+// Acá vive también la barra social, que es el único script de la red que corre
+// en la página y no dentro de un iframe (pinta su propio widget flotante, y
+// encerrado no se vería). Se pide lo más tarde posible — ver `pedirSocial()`.
+import {
+    ANUNCIOS_ACTIVOS, documentoBanner, medidaPara, PUNTO_MOVIL,
+    SOCIAL_ACTIVO, SCRIPT_SOCIAL, RETARDO_SOCIAL,
+} from '../lib/anuncios.js';
 
 const CLAVE_ANCLA = 'lotohn:ancla-cerrada';
 
@@ -68,9 +75,45 @@ function prepararAncla() {
     });
 }
 
+// Barra social. Tres condiciones antes de pedirla, y las tres importan:
+//
+//   · La marca `#anuncioSocial` sólo existe en las rutas donde toca. Sin ella no
+//     se pide nada: las legales y el formulario se quedan limpios.
+//   · Se espera al `load` y RETARDO_SOCIAL más, así que ningún recurso de
+//     tercero compite con el primer pintado ni con el LCP.
+//   · Con la pestaña de fondo no se carga: a quien no está mirando no se le
+//     gasta el plan de datos ni se le pone un widget esperando.
+function pedirSocial() {
+    const marca = document.getElementById('anuncioSocial');
+    if (!marca) return;
+    // Consumida: si `arrancar()` volviera a correr, no se duplica el script.
+    marca.remove();
+
+    const script = document.createElement('script');
+    script.src = SCRIPT_SOCIAL;
+    script.async = true;
+    document.body.appendChild(script);
+}
+
+function programarSocial() {
+    if (!SOCIAL_ACTIVO || !document.getElementById('anuncioSocial')) return;
+
+    const cuandoSeVea = () => {
+        if (document.hidden) {
+            document.addEventListener('visibilitychange', cuandoSeVea, { once: true });
+            return;
+        }
+        setTimeout(pedirSocial, RETARDO_SOCIAL);
+    };
+
+    if (document.readyState === 'complete') cuandoSeVea();
+    else window.addEventListener('load', cuandoSeVea, { once: true });
+}
+
 function arrancar() {
     prepararAncla();
     observarHuecos();
+    programarSocial();
 }
 
 if (ANUNCIOS_ACTIVOS) {

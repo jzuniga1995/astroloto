@@ -14,6 +14,11 @@
 //    sugerencias distintas en una sola fila, como si fueran una combinación.
 //  - El desbloqueo se recuerda durante la visita. Antes se reseteaba en cada
 //    cambio de pestaña, así que había que pulsarlo cinco veces seguidas.
+//  - Al pie lleva el enlace patrocinado, con el aviso de que abre un anuncio.
+//    Va FUERA de `.an-cuerpo` a propósito: ese nodo lo reescribe el cliente en
+//    cada repintado, y el hueco no debe desaparecer con él. Y el candado sigue
+//    abriéndose gratis: el enlace es una invitación, no un peaje.
+import Anuncio from './Anuncio.astro';
 import { obtenerAnalisis } from '../lib/datos-build.js';
 import { normalizarAnalisis, analizadorHTML, firmaAnalisis } from '../lib/analisis.js';
 
@@ -47,6 +52,14 @@ const firma  = datos ? firmaAnalisis(datos) : '';
     )}
 
     <p class="an-error" hidden>El análisis no está disponible en este momento. Volvé más tarde.</p>
+
+    <Anuncio
+        formato="enlace"
+        etiqueta={false}
+        class="anuncio--analizador"
+        titulo="Apoyá el sitio: abrí el enlace de nuestro patrocinador"
+        detalle="Al abrirlo verás un anuncio en una pestaña nueva. Las sugerencias de arriba siguen siendo gratis."
+    />
 </section>
 
 <style is:global>
@@ -311,6 +324,45 @@ const firma  = datos ? firmaAnalisis(datos) : '';
     }
     .an-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(245, 158, 11, 0.55); }
     .an-btn:active { transform: translateY(0); }
+
+    /* ============================================
+       Enlace patrocinado — pie del panel
+       ============================================
+       Misma tarjeta de `Anuncio.astro`, repintada para el fondo oscuro: una
+       franja al pie, no un bloque que compita con las sugerencias. Lleva su
+       rótulo dentro del texto, así que no necesita la etiqueta de encima. */
+    .anuncio--analizador {
+        margin: 0;
+        padding: 0 1.35rem 1.2rem;
+        align-items: stretch;
+    }
+    .anuncio--analizador .anuncio-enlace {
+        max-width: none;
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.14);
+        box-shadow: none;
+        color: #fff;
+    }
+    .anuncio--analizador .anuncio-enlace:hover,
+    .anuncio--analizador .anuncio-enlace:focus-visible {
+        background: rgba(255, 255, 255, 0.11);
+        border-color: var(--an-oro);
+        box-shadow: none;
+    }
+    .anuncio--analizador .anuncio-enlace:focus-visible {
+        outline: 2px solid var(--an-oro);
+        outline-offset: 2px;
+    }
+    .anuncio--analizador .anuncio-enlace-texto strong {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #fff;
+    }
+    .anuncio--analizador .anuncio-enlace-texto small {
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.55);
+    }
+    .anuncio--analizador .anuncio-enlace-flecha { color: var(--an-oro); }
 
     /* ============================================
        Aviso y errores

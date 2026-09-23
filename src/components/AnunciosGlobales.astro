@@ -3,7 +3,12 @@
 // Todo lo publicitario que no vive en el flujo de la página: los dos rieles
 // laterales, el ancla inferior de móvil y el script global de la red.
 // Lo pinta `Layout.astro` una sola vez, al final del <body>.
-import { ANUNCIOS_ACTIVOS, SCRIPT_GLOBAL, MEDIDAS, PERMISOS_IFRAME } from '../lib/anuncios.js';
+import { ANUNCIOS_ACTIVOS, SCRIPT_GLOBAL, MEDIDAS, PERMISOS_IFRAME, SOCIAL_ACTIVO, rutaSobria } from '../lib/anuncios.js';
+
+// La barra social no entra en las legales ni en el formulario. La decisión se
+// toma acá, en el build, y viaja como una marca en el HTML: sin marca, el
+// cargador del cliente no pide el script.
+const social = SOCIAL_ACTIVO && !rutaSobria(Astro.url.pathname);
 
 const vertical = MEDIDAS['160x600'];
 const columna  = MEDIDAS['160x300'];
@@ -52,6 +57,12 @@ const ancla    = MEDIDAS['320x50'];
                 title="Publicidad" aria-hidden="true" tabindex="-1"
             ></iframe>
         </div>
+
+        {/* Permiso de la barra social para esta ruta. El script NO va en el
+            HTML: lo pide `anuncios.js` después del `load`, con retardo y solo
+            con la pestaña a la vista, así que la carga inicial no lo paga. En
+            las rutas sobrias esta marca no existe y no se pide nunca. */}
+        {social && <div id="anuncioSocial" hidden></div>}
 
         <script src="../scripts/anuncios.js"></script>
 

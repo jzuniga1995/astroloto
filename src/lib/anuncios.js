@@ -54,6 +54,52 @@ export const NATIVO = {
 export const SCRIPT_GLOBAL =
     'https://pl28763916.profitableratecpmnetwork.com/35/14/fd/3514fdd317f29f6fae7476c399c70d81.js';
 
+// Barra social de la red (el `bb/ee/c0/…js`). Al contrario que los banners, este
+// script pinta su propio widget flotante en el documento de arriba, así que no
+// se puede encerrar en un iframe: encerrado no se vería. Lo que lo mantiene
+// discreto son tres condiciones, todas en `src/scripts/anuncios.js`:
+//
+//   · No se pide en la carga inicial. Entra después del evento `load`, con
+//     RETARDO_SOCIAL de margen y solo si la pestaña está a la vista, así que el
+//     LCP no lo paga y una pestaña de fondo no carga nada.
+//   · No entra en las rutas sobrias (legales, formulario, 404).
+//   · `SOCIAL_ACTIVO = false` lo apaga solo, sin tocar los banners.
+export const SOCIAL_ACTIVO = true;
+
+export const SCRIPT_SOCIAL =
+    'https://pl28763898.profitableratecpmnetwork.com/bb/ee/c0/bbeec0fcb17cd4d4fc49d7e85e3f4f35.js';
+
+// Margen tras `load` antes de pedir la barra social.
+export const RETARDO_SOCIAL = 6000;
+
+// Enlace directo de la red. Se usa como lo que es —un enlace— y nunca como
+// popunder ni como captura de los clics de la página: sale una tarjeta rotulada
+// que el visitante abre si le interesa, en una pestaña nueva. Nada se mueve
+// solo, así que no hay redirección que un rastreador pueda leer como cloaking.
+export const ENLACE_DIRECTO = {
+    url: 'https://www.profitableratecpmnetwork.com/g5k71ecw5d?key=12fd361256fa0e9bd12500dbeb357d90',
+    titulo: 'Enlace patrocinado',
+    detalle: 'Ofertas de nuestro patrocinador. Se abre en una pestaña nueva.',
+};
+
+// Rutas que se quedan solo con los dos huecos del layout: una política de
+// privacidad o un formulario de contacto no se llenan de publicidad. Ni la barra
+// social ni el enlace patrocinado aparecen en ellas.
+export const RUTAS_SOBRIAS = ['/privacidad', '/terminos', '/contacto', '/404'];
+
+// Comparación tolerante con la forma exacta de la ruta. Con `build.format:
+// 'file'` el `Astro.url.pathname` del build llega como `/privacidad.html`, no
+// como `/privacidad`, así que la extensión se quita antes de comparar; igual con
+// la barra final y las mayúsculas. Un detalle de forma no debe decidir si una
+// política de privacidad acaba con publicidad encima.
+export function rutaSobria(ruta) {
+    const limpia = String(ruta || '')
+        .toLowerCase()
+        .replace(/\.html?$/, '')
+        .replace(/^\/+|\/+$/g, '');
+    return RUTAS_SOBRIAS.includes('/' + limpia);
+}
+
 // El iframe va con permisos explícitos: el creativo puede pintarse, abrir su
 // enlace al hacer clic y enviar formularios, pero NO puede navegar la pestaña
 // por su cuenta sin que el usuario haga clic. Eso corta los redirects

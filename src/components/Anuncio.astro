@@ -10,17 +10,28 @@
 // `formato="nativo"` es el otro caso: ese sí va inline porque trae su propio
 // contenedor, carga `async` y no usa `atOptions`. Solo uno por página — el id
 // del contenedor lo fija el proveedor.
-import { ANUNCIOS_ACTIVOS, FORMATOS, MEDIDAS, PERMISOS_IFRAME, NATIVO } from '../lib/anuncios.js';
+//
+// `formato="enlace"` es el enlace directo de la red, y es el único hueco que no
+// pide nada a un tercero: es HTML del sitio, un `<a>` rotulado que solo navega
+// si el visitante lo toca. Cero scripts, cero salto de layout, cero redirección
+// automática.
+import { ANUNCIOS_ACTIVOS, FORMATOS, MEDIDAS, PERMISOS_IFRAME, NATIVO, ENLACE_DIRECTO } from '../lib/anuncios.js';
 
 const {
     formato = 'lider',
     etiqueta = true,
     class: clase = '',
+    // Solo para `formato="enlace"`: el texto de la tarjeta. Por defecto el de
+    // la librería; cada hueco puede decir lo que corresponda en su contexto,
+    // pero el aviso de que abre un anuncio nunca se quita.
+    titulo = ENLACE_DIRECTO.titulo,
+    detalle = ENLACE_DIRECTO.detalle,
 } = Astro.props;
 
 const esNativo = formato === 'nativo';
+const esEnlace = formato === 'enlace';
 const cfg = FORMATOS[formato];
-const mostrar = ANUNCIOS_ACTIVOS && (esNativo || Boolean(cfg));
+const mostrar = ANUNCIOS_ACTIVOS && (esNativo || esEnlace || Boolean(cfg));
 
 const escritorio = cfg?.escritorio ? MEDIDAS[cfg.escritorio] : null;
 const movil = cfg?.movil ? MEDIDAS[cfg.movil] : null;
@@ -36,7 +47,23 @@ const vars = [
 ].filter(Boolean).join(';');
 ---
 
-{mostrar && (esNativo ? (
+{mostrar && (esEnlace ? (
+    <aside class={`anuncio anuncio--enlace ${clase}`} aria-label="Publicidad">
+        {etiqueta && <span class="anuncio-etiqueta">Publicidad</span>}
+        <a
+            class="anuncio-enlace"
+            href={ENLACE_DIRECTO.url}
+            target="_blank"
+            rel="nofollow sponsored noopener"
+        >
+            <span class="anuncio-enlace-texto">
+                <strong>{titulo}</strong>
+                <small>{detalle}</small>
+            </span>
+            <span class="anuncio-enlace-flecha" aria-hidden="true">&rarr;</span>
+        </a>
+    </aside>
+) : esNativo ? (
     <aside class={`anuncio anuncio--nativo ${clase}`} aria-label="Publicidad">
         {etiqueta && <span class="anuncio-etiqueta">Publicidad</span>}
         <div id={NATIVO.contenedor}></div>
@@ -114,4 +141,57 @@ const vars = [
         min-height: 260px;
     }
     .anuncio--nativo > div { width: 100%; }
+
+    /* ---------- Enlace patrocinado ----------
+       Discreto a propósito: una tarjeta del ancho del texto, no un bloque que
+       compita con los resultados. Va rotulada y se abre en otra pestaña. */
+    .anuncio--enlace { width: 100%; }
+
+    .anuncio-enlace {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 420px;
+        padding: 0.7rem 0.9rem;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid #ede9fe;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 6px rgba(76, 29, 149, 0.08);
+        color: #4c1d95;
+        text-decoration: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    .anuncio-enlace:hover,
+    .anuncio-enlace:focus-visible {
+        border-color: #c4b5fd;
+        box-shadow: 0 3px 12px rgba(76, 29, 149, 0.14);
+        transform: translateY(-1px);
+    }
+
+    .anuncio-enlace-texto {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-width: 0;
+    }
+    .anuncio-enlace-texto strong {
+        font-family: var(--font-display, inherit);
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+    .anuncio-enlace-texto small {
+        font-size: 0.72rem;
+        line-height: 1.3;
+        color: #7c6bb0;
+    }
+
+    .anuncio-enlace-flecha {
+        flex: none;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #7c3aed;
+    }
 </style>
