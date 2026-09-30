@@ -1,16 +1,29 @@
 ---
 // src/components/Header.astro
-import { Menu, Home, History } from 'lucide-astro';
+// Dos cabeceras en una: la barra de enlaces de escritorio (lg+) y la barra de
+// app de móvil. La de móvil se funde con la barra de estado del teléfono
+// (`theme-color`), enseña la marca en las vistas de Resultados, el título en
+// las otras pestañas y un botón de volver en las páginas de detalle. En las
+// vistas de Resultados lleva debajo el selector de juegos.
+//
+// La navegación entre secciones en móvil vive abajo, en `NavegacionMovil.astro`.
+import { Home, History, ArrowLeft, Share2 } from 'lucide-astro';
+import { JUEGOS, rutaLimpia, esResultados, esDetalle, tituloBarra } from '../lib/navegacion.js';
 
-const currentPath = Astro.url.pathname;
+const currentPath = rutaLimpia(Astro.url.pathname);
 
 const isActive = (href: string) => {
     if (href === '/') return currentPath === '/';
     return currentPath.startsWith(href);
 };
+
+const resultados = esResultados(currentPath);
+const detalle    = esDetalle(currentPath);
+const titulo     = tituloBarra(currentPath);
 ---
 
-<nav class="bg-white shadow-lg sticky top-0 z-50 w-full">
+<!-- ============ Escritorio (lg+) ============ -->
+<nav class="nav-escritorio hidden lg:block bg-white shadow-lg sticky top-0 z-50 w-full" aria-label="Principal">
     <div class="max-w-7xl mx-auto px-2.5 sm:px-4">
         <div class="flex justify-between items-center py-3 gap-2">
 
@@ -29,30 +42,8 @@ const isActive = (href: string) => {
                 </div>
             </a>
 
-            <!-- ✅ SIGNOS PILL — siempre visible en móvil -->
-            <a
-                href="/signos-la-diaria"
-                class={`lg:hidden relative flex items-center gap-1 px-2 py-1.5 rounded-lg font-semibold overflow-hidden signos-link text-xs flex-shrink-0 ${
-                    isActive('/signos-la-diaria')
-                        ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white'
-                        : 'bg-gradient-to-r from-indigo-950 to-violet-950 text-yellow-300 border border-violet-700'
-                }`}
-            >
-                <span class="star-1">✦</span>
-                <span class="star-2">✧</span>
-                <span>🌙 Signos</span>
-                <span class="badge-new">NEW</span>
-            </a>
-
-            <!-- Botón hamburguesa (móvil) -->
-            <button id="menuBtn" class="lg:hidden flex-shrink-0 flex items-center px-3 py-2 border-2 border-violet-600 text-violet-600 rounded hover:bg-violet-50 transition-colors" aria-label="Menú">
-                <span id="menuIconWrapper">
-                    <Menu class="w-6 h-6" />
-                </span>
-            </button>
-
             <!-- Menú desktop -->
-            <div class="hidden lg:flex items-center gap-2 flex-wrap justify-end">
+            <div class="flex items-center gap-2 flex-wrap justify-end">
                 <a href="/" class={`flex items-center gap-2 px-3 xl:px-4 py-2 rounded-lg text-sm xl:text-base font-semibold transition-all shadow-md hover:shadow-lg ${isActive('/') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-violet-50 hover:text-violet-700'}`}>
                     <Home class="w-4 h-4" /><span>Inicio</span>
                 </a>
@@ -97,44 +88,51 @@ const isActive = (href: string) => {
             </div>
         </div>
 
-        <!-- Menú móvil desplegable -->
-        <div id="mobileMenu" class="hidden lg:hidden pb-4">
-            <div class="flex flex-col gap-2">
-                <a href="/" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
-                    <Home class="w-4 h-4" /><span>Inicio</span>
-                </a>
-                <a href="/juga-3" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/juga-3') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
-                    <span>Jugá 3</span>
-                </a>
-                <a href="/pega-3" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/pega-3') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
-                    <span>Pega 3</span>
-                </a>
-                <a href="/premia-2" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/premia-2') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
-                    <span>Premia 2</span>
-                </a>
-                <a href="/la-diaria" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/la-diaria') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
-                    <span>La Diaria</span>
-                </a>
-                <a href="/loto-super-premio" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/loto-super-premio') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
-                    <span>Súper Premio</span>
-                </a>
-                <!-- ✅ HISTORIAL MÓVIL -->
-                <a href="/historial" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/historial') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
-                    <History class="w-4 h-4" /><span>Historial</span>
-                </a>
-                <!-- ✅ ESTADÍSTICAS MÓVIL -->
-                <a href="/estadisticas" class={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all ${isActive('/estadisticas') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-violet-50 text-gray-700 hover:bg-violet-100'}`}>
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                    <span>Estadísticas</span>
-                </a>
-                <a href="/signos-la-diaria" class={`relative flex items-center gap-2 px-4 py-3 rounded-lg font-semibold overflow-hidden signos-link transition-all ${isActive('/signos-la-diaria') ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md' : 'bg-gradient-to-r from-indigo-950 to-violet-950 text-yellow-300 border border-violet-700'}`}>
-                    <span>🌙 Signos La Diaria</span>
-                    <span class="badge-new">NUEVO</span>
-                </a>
-            </div>
-        </div>
     </div>
 </nav>
+
+<!-- ============ Móvil y tableta (< lg): barra de app ============ -->
+<header class="app-barra" data-app-barra>
+    <div class="app-barra-fila">
+        {detalle ? (
+            <>
+                <a href="/" class="app-btn app-atras" data-atras aria-label="Volver">
+                    <ArrowLeft />
+                </a>
+                <p class="app-titulo">{titulo}</p>
+            </>
+        ) : titulo ? (
+            <p class="app-titulo app-titulo--raiz">{titulo}</p>
+        ) : (
+            <a href="/" class="app-marca" aria-label="LotoHN, resultados de hoy">
+                <svg class="app-marca-icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+                    <polyline points="17 2 12 7 7 2"/>
+                    <circle cx="12" cy="14" r="3"/>
+                </svg>
+                <span class="app-marca-texto">Loto<span>HN</span></span>
+            </a>
+        )}
+
+        <div class="app-acciones">
+            <!-- Solo aparece cuando el navegador ofrece instalar (Android/Chrome). -->
+            <button type="button" class="app-instalar" data-instalar hidden>Instalar</button>
+            <!-- Solo aparece si hay Web Share o portapapeles. -->
+            <button type="button" class="app-btn" data-compartir aria-label="Compartir esta página" hidden>
+                <Share2 />
+            </button>
+        </div>
+    </div>
+
+    {resultados && (
+        <nav class="app-chips" aria-label="Resultados por juego">
+            <a href="/" class="app-chip" aria-current={currentPath === '/' ? 'page' : undefined}>Todos</a>
+            {JUEGOS.map(j => (
+                <a href={j.href} class="app-chip" aria-current={currentPath === j.href ? 'page' : undefined}>{j.nombre}</a>
+            ))}
+        </nav>
+    )}
+</header>
 
 
 <style>
@@ -174,29 +172,186 @@ const isActive = (href: string) => {
 
 </style>
 
-<script>
-    const menuBtn         = document.getElementById('menuBtn');
-    const mobileMenu      = document.getElementById('mobileMenu');
-    const menuIconWrapper = document.getElementById('menuIconWrapper');
-    const ICON_CLOSE = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
-    const ICON_OPEN  = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>';
 
-    let isOpen = false;
 
-    if (menuBtn && mobileMenu && menuIconWrapper) {
-        menuBtn.addEventListener('click', () => {
-            isOpen = !isOpen;
-            mobileMenu.classList.toggle('hidden');
-            menuIconWrapper.innerHTML = isOpen ? ICON_CLOSE : ICON_OPEN;
-        });
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                isOpen = false;
-                mobileMenu.classList.add('hidden');
-                menuIconWrapper.innerHTML = ICON_OPEN;
-            });
-        });
-    }
+<style is:global>
+  /* ============================================
+     BARRA DE APP (móvil y tableta, < 1024 px)
+     ============================================
+     Violeta y pegada arriba: con `theme-color` del mismo tono, la barra de
+     estado del teléfono y la del navegador se funden con ella, que es lo que
+     hace que la web se sienta como una app instalada. En iOS instalada la
+     barra de estado es translúcida, así que el relleno superior es el área
+     segura del notch. */
+  .app-barra {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    color: #fff;
+    background: linear-gradient(180deg, var(--app-violeta, #6d28d9) 0%, #7c3aed 100%);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    view-transition-name: app-barra;
+  }
 
-</script>
+  @media (max-width: 1023px) {
+    .app-barra { display: block; }
+  }
 
+  .app-barra--elevada { box-shadow: 0 2px 16px rgba(76, 29, 149, 0.3); }
+
+  /* Al bajar se esconde y al subir vuelve, como en una app. La franja del
+     notch se queda: sin ella el texto pasaría por debajo del reloj. */
+  .app-barra--oculta {
+    transform: translateY(calc(-100% + env(safe-area-inset-top, 0px)));
+  }
+
+  .app-barra-fila {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: 56px;
+    padding: 0 0.25rem 0 0.5rem;
+  }
+
+  .app-marca {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+    border-radius: 999px;
+    color: #fff;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app-marca-icono { width: 30px; height: 30px; flex: none; }
+  .app-marca-texto {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .app-marca-texto span { color: #fde047; }
+
+  .app-titulo {
+    margin: 0;
+    min-width: 0;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .app-titulo--raiz {
+    padding-left: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+  }
+
+  .app-acciones {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex: none;
+  }
+
+  .app-btn {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 999px;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.15s ease, transform 0.12s ease;
+  }
+  .app-btn[hidden] { display: none; }
+  .app-btn svg { width: 22px; height: 22px; }
+  .app-btn:active { background: rgba(255, 255, 255, 0.2); transform: scale(0.92); }
+  .app-btn:focus-visible,
+  .app-marca:focus-visible,
+  .app-chip:focus-visible,
+  .app-instalar:focus-visible {
+    outline: 2px solid #fde047;
+    outline-offset: 2px;
+  }
+
+  .app-instalar {
+    height: 32px;
+    padding: 0 0.85rem;
+    border: 0;
+    border-radius: 999px;
+    background: #fde047;
+    color: #3b0764;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .app-instalar[hidden] { display: none; }
+  .app-instalar:active { transform: scale(0.95); }
+
+  /* ---------- Selector de juegos ---------- */
+  .app-chips {
+    position: relative;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0.1rem 0.75rem 0.7rem;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-x: contain;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 22px), transparent);
+            mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 22px), transparent);
+  }
+  .app-chips::-webkit-scrollbar { display: none; }
+
+  .app-chip {
+    flex: none;
+    padding: 0.42rem 0.95rem;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-size: 0.86rem;
+    font-weight: 700;
+    white-space: nowrap;
+    color: #f5f3ff;
+    background: rgba(255, 255, 255, 0.15);
+    text-decoration: none;
+    scroll-snap-align: center;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.15s ease, transform 0.12s ease;
+  }
+  .app-chip:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.28); }
+  .app-chip[aria-current] {
+    color: #5b21b6;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(30, 10, 60, 0.18);
+  }
+
+  /* ---------- Escritorio en modo app (iPad instalado) ----------
+     La barra de estado translúcida dejaría el reloj en blanco sobre blanco:
+     se le pinta una franja violeta del alto del área segura. */
+  nav.nav-escritorio {
+    padding-top: env(safe-area-inset-top, 0px);
+    box-shadow: inset 0 env(safe-area-inset-top, 0px) 0 var(--app-violeta, #6d28d9),
+                0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    view-transition-name: nav-escritorio;
+  }
+</style>

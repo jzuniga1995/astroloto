@@ -181,7 +181,14 @@ detectan por coincidencia parcial y no por igualdad exacta.
 
 ## Componentes
 
-- **`Header.astro`** — Navegación sticky. Nav desktop + menú móvil hamburguesa. Links: Inicio, Jugá 3, Pega 3, Premia 2, La Diaria, Súper Premio, Historial, Estadísticas, Signos.
+- **`Header.astro`** — Dos cabeceras. En escritorio (lg+) la barra blanca de
+  enlaces de siempre. En móvil y tableta (< 1024 px) la **barra de app**
+  violeta (ver *App en móvil*): marca en las vistas de Resultados, título en
+  las otras pestañas, botón de volver en las páginas de detalle, y debajo el
+  selector de juegos (Todos · Jugá 3 · … · Súper Premio) sólo en Resultados.
+- **`NavegacionMovil.astro`** — Barra de pestañas inferior (Resultados,
+  Historial, Estadísticas, Signos, Más), hoja «Más» (`<dialog>`), aviso flotante
+  e indicador de «desliza para actualizar». Lo pinta `Layout.astro` una vez.
 - **`Footer.astro`** — Nav de resultados + sección Guías (11 links) + nav legal.
 - **`AnalizadorIA.astro`** — Banner de análisis con pestañas por juego. Se pinta
   en el build (`obtenerAnalisis()`) y el navegador lo refresca contra
@@ -195,7 +202,11 @@ detectan por coincidencia parcial y no por igualdad exacta.
   contenido a un clic en el anuncio es incentivación, y eso cierra la cuenta de
   la red.
 - **`CoberturaPaises.astro`** — Sección visible de cobertura geográfica (HN · CR · US con ciudades).
-- **`Layout.astro`** — Template base: Google Analytics, PWA (manifest + SW), preload logos, estilos globales.
+- **`Layout.astro`** — Template base: Google Analytics, PWA (manifest + SW),
+  preload logos, speculation rules, transiciones entre páginas, variables de la
+  app de móvil (`--tab-alto`, `--tab-hueco`) y estilos globales. **Único sitio**
+  donde van `theme-color` y las metas `apple-mobile-web-app-*`: las páginas no
+  los repiten.
 - **`ResultadosSorteos.astro`** — `#contenido` con los sorteos ya pintados en el build. Props: `tipoJuego`, `ariaLabel`, `textoCargando`.
 - **`SchemaResultados.astro`** — JSON-LD `WebPage` + `ItemList` con los resultados y el `dateModified` real.
 - **`FechasSEO.astro`** — `article:published_time` / `article:modified_time`.
@@ -219,6 +230,9 @@ detectan por coincidencia parcial y no por igualdad exacta.
 - **`fechas.js`** — `dateModified` de las guías a partir del último commit de
   git, con la fecha escrita a mano de respaldo si el checkout no trae historial.
 - **`seo.js`** — `PUBLICADO_SITIO`, fijo a propósito.
+- **`navegacion.js`** — Listas de juegos, guías y páginas informativas, y qué
+  pestaña, título y tipo de barra le toca a cada ruta (`pestanaActiva()`,
+  `tituloBarra()`, `esDetalle()`). Sin DOM ni `window`.
 - **`anuncios.js`** — Claves y medidas de la red publicitaria, los interruptores
   `ANUNCIOS_ACTIVOS` (todo) y `SOCIAL_ACTIVO` (solo la barra social), y
   `rutaSobria()`, que deja las legales y el formulario sin barra social. Sin DOM
@@ -230,6 +244,12 @@ detectan por coincidencia parcial y no por igualdad exacta.
   fusión por sorteo y repintado quirúrgico (ver *El resultado nunca va hacia
   atrás*). Auto-refresh 1 min en horarios de sorteo, 5 min el resto, y nada
   mientras la pestaña está de fondo. Reloj Honduras (UTC-6).
+- **`src/scripts/app.js`** — Comportamiento de app en móvil: hoja «Más»
+  (arrastrar para cerrar, Escape/atrás de Android), barra superior que se
+  esconde al bajar, tocar la pestaña actual sube arriba, volver, compartir,
+  instalar, ocultar pestañas con el teclado abierto y «desliza para
+  actualizar» con la app instalada (emite `lotohn:refrescar`; `main.js` pone
+  su petición en `detail.tareas`, y sin tareas se recarga la página).
 - **`src/scripts/historial.js`** — Tabla interactiva, filtros juego/tanda, paginación 20 filas, exportar XLSX vía SheetJS CDN.
 - **`src/scripts/anuncios.js`** — Carga perezosa de los huecos publicitarios,
   cierre del ancla de móvil y carga diferida de la barra social (tras `load`,
@@ -242,8 +262,43 @@ detectan por coincidencia parcial y no por igualdad exacta.
 
 ## PWA
 
-- `public/manifest.webmanifest` — Instalable. Shortcuts a Jugá 3, La Diaria e Historial.
+- `public/manifest.webmanifest` — Instalable. `theme_color` igual al violeta de
+  la barra de app (`#6d28d9`). Shortcuts a La Diaria, Jugá 3, Pega 3 e Historial.
 - `public/sw.js` — Service worker **mínimo**. Sin caché offline — garantiza datos frescos en cada visita.
+
+## App en móvil (< 1024 px)
+
+En móvil y tableta el sitio se comporta como una app instalada. Todo es
+**progresivo**: sin JavaScript las pestañas y los chips son enlaces normales y
+«Más» es un enlace a `#pie`, donde el footer tiene los mismos enlaces.
+
+- **Barra de app** (`Header.astro`) pegada arriba, violeta, con `theme-color`
+  del mismo tono para que la barra de estado se funda con ella. En iOS
+  instalada la barra de estado es `black-translucent` y el relleno superior
+  es `env(safe-area-inset-top)` (viewport con `viewport-fit=cover`). Se
+  esconde al bajar y vuelve al subir; la franja del notch se queda.
+- **Barra de pestañas** fija abajo. Los juegos no son pestañas: son vistas de
+  Resultados, que marca `aria-current="true"` en ellas. Las páginas que no son
+  pestaña (guías, legales, contacto, 404) cuelgan de «Más» y llevan botón de
+  volver: `history.back()` si se llegó desde el sitio, el inicio si no.
+- **Hoja «Más»** = `<dialog>` modal: el velo es el propio dialog, el botón atrás
+  de Android y Escape llegan como `cancel`. Al volver desde la bfcache se cierra.
+- **El ancla de publicidad se apoya encima de la barra de pestañas**
+  (`bottom: var(--tab-hueco)`), nunca pegada a los botones de navegación.
+- **Transiciones entre páginas** con `@view-transition` (sin router de
+  cliente: los scripts siguen corriendo en cada carga como siempre). Las
+  barras tienen `view-transition-name` propio y se quedan quietas.
+- **Speculation rules** con `prefetch` `moderate`: se baja el HTML al apoyar
+  el dedo en un enlace. Sólo prefetch, nunca prerender — un prerender contaría
+  visitas en Analytics y pediría anuncios.
+- `html, body` usan `overflow-x: clip` y no `hidden`: con `hidden` en los dos
+  el body se vuelve contenedor de scroll y el `sticky` de las cabeceras no se
+  pega. **No volver a `hidden`.**
+- Los `:hover` que levantan cosas van dentro de `@media (hover: hover)`: en
+  táctil el hover se queda pegado tras el toque.
+- Nada que se desplace en horizontal usa `scrollIntoView`: también mueve la
+  página en vertical. Con él el inicio saltaba solo hasta el analizador al
+  cargar.
 
 ## SEO — Patrón por página
 

@@ -469,8 +469,16 @@ import { normalizarAnalisis, analizadorHTML, firmaAnalisis } from '../lib/analis
             if (!activo) continue;
             if (mover) tab.focus();
             // En móvil la tira de pestañas se desplaza: que la elegida quede a
-            // la vista. `nearest` no mueve nada si ya se veía entera.
-            tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            // la vista. Se mueve sólo la tira, en horizontal: `scrollIntoView`
+            // también desplazaba la página, y como esto corre al cargar, en
+            // móvil el inicio saltaba solo hasta el analizador.
+            const tira = tab.parentElement;
+            if (tira) {
+                const t = tab.getBoundingClientRect();
+                const c = tira.getBoundingClientRect();
+                if (t.left < c.left) tira.scrollLeft += t.left - c.left;
+                else if (t.right > c.right) tira.scrollLeft += t.right - c.right;
+            }
         }
         raiz.querySelectorAll<HTMLElement>('.an-panel').forEach(panel => {
             panel.hidden = panel.id !== `an-panel-${id}`;

@@ -94,9 +94,13 @@
     will-change: transform;
 }
 
-.game-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.2);
+/* Solo con ratón: en pantallas táctiles el :hover se queda pegado tras el
+   toque y la tarjeta quedaba levantada. */
+@media (hover: hover) {
+    .game-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.2);
+    }
 }
 
 /* ============================================

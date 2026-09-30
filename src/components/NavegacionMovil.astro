@@ -1,0 +1,509 @@
+---
+// src/components/NavegacionMovil.astro
+// La parte de «app» del sitio en móvil y tableta (< 1024 px):
+//
+//   · Barra de pestañas fija abajo: Resultados, Historial, Estadísticas,
+//     Signos y Más. Son enlaces de verdad, así que funcionan sin JavaScript.
+//   · Hoja «Más» que sube desde abajo (un <dialog> modal): juegos, guías y
+//     páginas del sitio. Sin JavaScript el botón «Más» es un enlace al pie,
+//     donde están los mismos enlaces.
+//   · Aviso flotante (compartir, instalar) e indicador de «desliza para
+//     actualizar», que solo se usa con la app instalada.
+//
+// En escritorio nada de esto se ve. Lo pinta `Layout.astro` una vez; el
+// comportamiento está en `src/scripts/app.js`.
+import { Home, History, BarChart3, Moon, LayoutGrid, X, ChevronRight, BookOpen, Info, Mail, FileText, Shield, Download, Share, RotateCw } from 'lucide-astro';
+import { JUEGOS, GUIAS, INFO, rutaLimpia, pestanaActiva } from '../lib/navegacion.js';
+
+const ruta = rutaLimpia(Astro.url.pathname);
+const activa = pestanaActiva(ruta);
+
+// `page` cuando la pestaña ES la página; `true` cuando la página cuelga de
+// ella (un juego dentro de Resultados, una guía dentro de Más).
+const actual = (id: string, href: string) =>
+    activa !== id ? undefined : ruta === href ? 'page' : 'true';
+
+const ICONOS_INFO = { info: Info, correo: Mail, documento: FileText, escudo: Shield };
+---
+
+<nav class="tab-barra" aria-label="Secciones">
+    <a href="/" class="tab" aria-current={actual('resultados', '/')}>
+        <span class="tab-icono"><Home /></span>
+        <span class="tab-texto">Resultados</span>
+    </a>
+    <a href="/historial" class="tab" aria-current={actual('historial', '/historial')}>
+        <span class="tab-icono"><History /></span>
+        <span class="tab-texto">Historial</span>
+    </a>
+    <a href="/estadisticas" class="tab" aria-current={actual('estadisticas', '/estadisticas')}>
+        <span class="tab-icono"><BarChart3 /></span>
+        <span class="tab-texto">Estadísticas</span>
+    </a>
+    <a href="/signos-la-diaria" class="tab" aria-current={actual('signos', '/signos-la-diaria')}>
+        <span class="tab-icono">
+            <Moon />
+            {activa !== 'signos' && <span class="tab-punto" aria-hidden="true"></span>}
+        </span>
+        <span class="tab-texto">Signos</span>
+    </a>
+    <a href="#pie" class="tab" data-abrir-menu aria-haspopup="dialog" aria-controls="menuApp" aria-current={activa === 'mas' ? 'true' : undefined}>
+        <span class="tab-icono"><LayoutGrid /></span>
+        <span class="tab-texto">Más</span>
+    </a>
+</nav>
+
+<dialog id="menuApp" class="hoja" aria-labelledby="menuAppTitulo">
+    <div class="hoja-panel">
+        <div class="hoja-arrastre" data-arrastre>
+            <span class="hoja-asa" aria-hidden="true"></span>
+            <div class="hoja-cabecera">
+                <p id="menuAppTitulo" class="hoja-titulo">Menú</p>
+                <button type="button" class="hoja-cerrar" data-cerrar-menu aria-label="Cerrar menú">
+                    <X />
+                </button>
+            </div>
+        </div>
+
+        <div class="hoja-cuerpo">
+            <p class="hoja-seccion">Resultados de hoy</p>
+            <div class="hoja-juegos">
+                {JUEGOS.map(j => (
+                    <a href={j.href} class="hoja-juego" aria-current={ruta === j.href ? 'page' : undefined}>
+                        <img src={j.logo} alt="" width="44" height="44" loading="lazy" decoding="async" />
+                        <span>{j.nombre}</span>
+                    </a>
+                ))}
+            </div>
+
+            <!-- Instalar: solo cuando el navegador lo permite (Android) o con
+                 instrucciones en iPhone. Instalada, no aparece. -->
+            <div class="hoja-instalar" data-instalar-bloque hidden>
+                <span class="hoja-instalar-icono"><Download /></span>
+                <div class="hoja-instalar-texto">
+                    <strong>Instala LotoHN</strong>
+                    <small data-instalar-ayuda>Abre los resultados desde tu pantalla de inicio, como una app.</small>
+                    <small data-instalar-ios hidden>
+                        Toca <Share class="hoja-ios-icono" role="img" aria-label="Compartir" /> y luego
+                        «Agregar a inicio».
+                    </small>
+                </div>
+                <button type="button" class="hoja-instalar-boton" data-instalar hidden>Instalar</button>
+            </div>
+
+            <p class="hoja-seccion">Guías</p>
+            <ul class="hoja-lista">
+                {GUIAS.map(g => (
+                    <li>
+                        <a href={g.href} class="hoja-fila" aria-current={ruta === g.href ? 'page' : undefined}>
+                            <BookOpen class="hoja-fila-icono" />
+                            <span>{g.nombre}</span>
+                            <ChevronRight class="hoja-fila-chev" />
+                        </a>
+                    </li>
+                ))}
+            </ul>
+
+            <p class="hoja-seccion">LotoHN</p>
+            <ul class="hoja-lista">
+                {INFO.map(p => {
+                    const Icono = ICONOS_INFO[p.icono];
+                    return (
+                        <li>
+                            <a href={p.href} class="hoja-fila" aria-current={ruta === p.href ? 'page' : undefined}>
+                                <Icono class="hoja-fila-icono" />
+                                <span>{p.nombre}</span>
+                                <ChevronRight class="hoja-fila-chev" />
+                            </a>
+                        </li>
+                    );
+                })}
+            </ul>
+
+            <p class="hoja-nota">Resultados informativos. Verifica siempre con los canales oficiales de Loto Honduras.</p>
+        </div>
+    </div>
+</dialog>
+
+<div class="app-aviso" role="status" aria-live="polite" hidden></div>
+
+<div class="app-refresco" aria-hidden="true">
+    <span class="app-refresco-circulo"><RotateCw /></span>
+</div>
+
+<script src="../scripts/app.js"></script>
+
+<style is:global>
+    /* ============================================
+       BARRA DE PESTAÑAS (móvil y tableta)
+       ============================================ */
+    .tab-barra {
+        display: none;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 55;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        height: calc(var(--tab-alto) + env(safe-area-inset-bottom, 0px));
+        padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+        background: rgba(255, 255, 255, 0.94);
+        -webkit-backdrop-filter: saturate(180%) blur(18px);
+                backdrop-filter: saturate(180%) blur(18px);
+        border-top: 1px solid rgba(124, 58, 237, 0.12);
+        box-shadow: 0 -4px 22px rgba(76, 29, 149, 0.08);
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        transition: transform 0.22s ease;
+        view-transition-name: tab-barra;
+    }
+
+    @media (max-width: 1023px) {
+        .tab-barra { display: grid; }
+    }
+
+    /* Con el teclado abierto la barra estorba (en Android sube pegada a él). */
+    .teclado-abierto .tab-barra { transform: translateY(110%); }
+
+    .tab {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        min-width: 0;
+        color: #6b7280;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-icono {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 56px;
+        max-width: 100%;
+        height: 30px;
+        border-radius: 999px;
+        transition: background-color 0.2s ease, transform 0.12s ease;
+    }
+    .tab-icono svg { width: 22px; height: 22px; }
+
+    .tab-texto {
+        max-width: 100%;
+        padding: 0 1px;
+        font-family: var(--font-display);
+        font-size: 0.66rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    /* Teléfonos de 320–359 px: «Estadísticas» no cabe a tamaño normal. */
+    @media (max-width: 359px) {
+        .tab-texto { font-size: 0.6rem; }
+        .tab-icono { width: 48px; }
+    }
+
+    .tab[aria-current] { color: var(--app-violeta, #6d28d9); }
+    .tab[aria-current] .tab-icono { background: #ede9fe; }
+    .tab[aria-current] .tab-icono svg { stroke-width: 2.4; }
+    .tab:active .tab-icono { transform: scale(0.88); background: #f3e8ff; }
+    .tab:focus-visible { outline: none; }
+    .tab:focus-visible .tab-icono { outline: 2px solid #7c3aed; outline-offset: 1px; }
+
+    /* Punto de «nuevo» sobre Signos (sustituye a la píldora NEW de antes). */
+    .tab-punto {
+        position: absolute;
+        top: 3px;
+        right: 13px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #f59e0b;
+        box-shadow: 0 0 0 2px #fff;
+    }
+
+    /* ============================================
+       HOJA «MÁS»
+       ============================================
+       El <dialog> ocupa toda la pantalla y hace de velo; el panel sube desde
+       abajo. Tocar fuera del panel (el propio dialog) lo cierra. */
+    .hoja {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        overflow: hidden;
+        background: rgba(20, 6, 45, 0);
+        transition: background-color 0.28s ease;
+        overscroll-behavior: contain;
+    }
+    .hoja::backdrop { background: transparent; }
+    .hoja.abierta { background: rgba(20, 6, 45, 0.45); }
+
+    html.hoja-abierta { overflow: hidden; }
+
+    .hoja-panel {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        max-height: 88vh;
+        max-height: 88dvh;
+        margin: 0 auto;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background: #fff;
+        border-radius: 22px 22px 0 0;
+        box-shadow: 0 -12px 40px rgba(20, 6, 45, 0.25);
+        transform: translateY(100%);
+        transition: transform 0.34s cubic-bezier(0.2, 0.9, 0.25, 1);
+        will-change: transform;
+    }
+    .hoja.abierta .hoja-panel { transform: translateY(0); }
+    .hoja.arrastrando .hoja-panel { transition: none; }
+
+    @media (min-width: 640px) {
+        .hoja-panel { max-width: 560px; }
+    }
+
+    .hoja-arrastre {
+        flex: none;
+        padding: 0.5rem 1rem 0.25rem;
+        touch-action: none;
+        cursor: grab;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    .hoja-asa {
+        display: block;
+        width: 40px;
+        height: 5px;
+        margin: 0 auto 0.4rem;
+        border-radius: 999px;
+        background: #ddd6fe;
+    }
+    .hoja-cabecera {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .hoja-titulo {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #2e1065;
+    }
+    .hoja-cerrar {
+        width: 38px;
+        height: 38px;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 999px;
+        background: #f5f3ff;
+        color: #5b21b6;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .hoja-cerrar svg { width: 20px; height: 20px; }
+    .hoja-cerrar:active { transform: scale(0.92); background: #ede9fe; }
+
+    .hoja-cuerpo {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 1rem 1.25rem;
+    }
+
+    .hoja-seccion {
+        margin: 1.1rem 0 0.5rem 0.25rem;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #8b5cf6;
+    }
+
+    .hoja-juegos {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.35rem;
+    }
+    .hoja-juego {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.55rem 0.15rem;
+        border-radius: 16px;
+        color: #374151;
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1.15;
+        text-align: center;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background-color 0.15s ease, transform 0.12s ease;
+    }
+    .hoja-juego img {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(76, 29, 149, 0.18);
+        object-fit: contain;
+    }
+    .hoja-juego:active { background: #f5f3ff; transform: scale(0.95); }
+    .hoja-juego[aria-current] { background: #f5f3ff; color: #5b21b6; }
+
+    .hoja-lista {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-radius: 16px;
+        background: #faf5ff;
+        overflow: hidden;
+    }
+    .hoja-lista li + li .hoja-fila { border-top: 1px solid #ede9fe; }
+    .hoja-fila {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-height: 48px;
+        padding: 0.7rem 0.9rem;
+        color: #1f2937;
+        font-size: 0.93rem;
+        font-weight: 600;
+        text-decoration: none;
+        -webkit-tap-highlight-color: transparent;
+        transition: background-color 0.12s ease;
+    }
+    .hoja-fila:active { background: #ede9fe; }
+    .hoja-fila[aria-current] { color: #5b21b6; font-weight: 800; }
+    .hoja-fila-icono { width: 20px; height: 20px; flex: none; color: #7c3aed; }
+    .hoja-fila-chev { width: 18px; height: 18px; flex: none; margin-left: auto; color: #c4b5fd; }
+
+    .hoja-instalar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding: 0.85rem 0.9rem;
+        border-radius: 16px;
+        color: #fff;
+        background: linear-gradient(135deg, #5b21b6, #7c3aed 60%, #a21caf);
+        box-shadow: 0 6px 18px rgba(91, 33, 182, 0.28);
+    }
+    .hoja-instalar[hidden] { display: none; }
+    .hoja-instalar-icono {
+        flex: none;
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.16);
+    }
+    .hoja-instalar-icono svg { width: 22px; height: 22px; }
+    .hoja-instalar-texto {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        min-width: 0;
+        font-size: 0.9rem;
+    }
+    .hoja-instalar-texto strong { font-family: var(--font-display); font-weight: 800; }
+    .hoja-instalar-texto small { font-size: 0.75rem; line-height: 1.35; color: #ede9fe; }
+    .hoja-instalar-texto small[hidden] { display: none; }
+    .hoja-ios-icono { display: inline-block; width: 15px; height: 15px; vertical-align: -2px; }
+    .hoja-instalar-boton {
+        flex: none;
+        margin-left: auto;
+        padding: 0.5rem 0.9rem;
+        border: 0;
+        border-radius: 999px;
+        background: #fde047;
+        color: #3b0764;
+        font-family: var(--font-display);
+        font-size: 0.82rem;
+        font-weight: 800;
+        cursor: pointer;
+    }
+    .hoja-instalar-boton[hidden] { display: none; }
+    .hoja-instalar-boton:active { transform: scale(0.95); }
+
+    .hoja-nota {
+        margin: 1.1rem 0.25rem 0;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: #9ca3af;
+        text-align: center;
+    }
+
+    /* ============================================
+       AVISO FLOTANTE (snackbar)
+       ============================================ */
+    .app-aviso {
+        position: fixed;
+        left: 50%;
+        bottom: calc(var(--tab-hueco, 0px) + var(--ancla-hueco, 0px) + 14px);
+        z-index: 70;
+        max-width: calc(100% - 32px);
+        padding: 0.7rem 1.1rem;
+        border-radius: 12px;
+        background: #1e1033;
+        color: #fff;
+        font-size: 0.88rem;
+        font-weight: 600;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        transform: translate(-50%, 12px);
+        opacity: 0;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        pointer-events: none;
+    }
+    .app-aviso[hidden] { display: none; }
+    .app-aviso.visible { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ============================================
+       DESLIZA PARA ACTUALIZAR (solo app instalada)
+       ============================================ */
+    /* Sale desde debajo de la barra superior (z-index menor que ella); el
+       `top` exacto lo pone `app.js` al empezar el gesto. */
+    .app-refresco {
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 0px) + 56px);
+        left: 50%;
+        z-index: 45;
+        pointer-events: none;
+        transform: translate(-50%, -64px);
+        opacity: 0;
+    }
+    .app-refresco.soltando { transition: transform 0.25s ease, opacity 0.25s ease; }
+    .app-refresco-circulo {
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border-radius: 999px;
+        background: #fff;
+        color: #7c3aed;
+        box-shadow: 0 4px 14px rgba(76, 29, 149, 0.28);
+    }
+    .app-refresco-circulo svg { width: 20px; height: 20px; }
+    .app-refresco.listo .app-refresco-circulo { color: #fff; background: #7c3aed; }
+    .app-refresco.cargando .app-refresco-circulo svg { animation: spin 0.8s linear infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hoja, .hoja-panel, .tab-barra, .app-aviso { transition: none; }
+    }
+</style>

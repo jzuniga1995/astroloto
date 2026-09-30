@@ -1,15 +1,19 @@
 {
+  "id": "/",
   "name": "LotoHN - Resultados Lotería Honduras",
   "short_name": "LotoHN",
   "description": "Resultados en vivo de Jugá 3, Pega 3, Premia 2, La Diaria y Súper Premio Honduras",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "background_color": "#f5f3ff",
-  "theme_color": "#7c3aed",
+  "theme_color": "#6d28d9",
   "lang": "es-HN",
+  "dir": "ltr",
   "categories": ["news", "entertainment"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192.png",
@@ -32,19 +36,28 @@
   ],
   "shortcuts": [
     {
-      "name": "Jugá 3",
-      "url": "/juga-3",
-      "description": "Ver resultados Jugá 3"
-    },
-    {
       "name": "La Diaria",
       "url": "/la-diaria",
-      "description": "Ver resultados La Diaria"
+      "description": "Ver resultados La Diaria",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Jugá 3",
+      "url": "/juga-3",
+      "description": "Ver resultados Jugá 3",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Pega 3",
+      "url": "/pega-3",
+      "description": "Ver resultados Pega 3",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     },
     {
       "name": "Historial",
       "url": "/historial",
-      "description": "Historial de resultados"
+      "description": "Historial de resultados",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

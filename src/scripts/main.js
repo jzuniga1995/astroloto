@@ -421,6 +421,14 @@ window.addEventListener('pageshow', (e) => {
     if (e.persisted) refrescarSiEstaVieja();   // vuelta desde la bfcache
 });
 
+// «Desliza para actualizar» de la app instalada (`app.js`). Se entrega la
+// promesa para que el indicador gire hasta que lleguen los datos; sin
+// resultados en la página, `app.js` recarga en su lugar.
+document.addEventListener('lotohn:refrescar', (e) => {
+    if (!document.getElementById('contenido')) return;
+    e.detail?.tareas?.push(cargarResultados({ mostrarSkeleton: false }));
+});
+
 // ============================================
 // ACTUALIZACIÓN AUTOMÁTICA
 // ============================================

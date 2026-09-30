@@ -93,26 +93,36 @@ const ancla    = MEDIDAS['320x50'];
         .anuncio-riel { display: flex; }
     }
 
-    /* ---------- Ancla inferior (móvil) ---------- */
+    /* ---------- Ancla inferior (móvil) ----------
+       Se apoya encima de la barra de pestañas (`--tab-hueco`, definida en
+       `Layout.astro`), nunca debajo ni tapándola: un anuncio pegado a los
+       botones de navegación acumula toques sin querer. */
     .anuncio-ancla {
         display: none;
         position: fixed;
         left: 0;
         right: 0;
-        bottom: 0;
+        bottom: var(--tab-hueco, 0px);
         z-index: 60;
         justify-content: center;
         align-items: center;
         padding: 3px 0;
         background: rgba(255, 255, 255, 0.96);
         border-top: 1px solid #ede9fe;
+        border-bottom: 1px solid #ede9fe;
         box-shadow: 0 -2px 12px rgba(76, 29, 149, 0.12);
+        transition: bottom 0.22s ease;
     }
 
     @media (max-width: 799px) {
         .anuncio-ancla { display: flex; }
-        /* Le devuelve al final de la página el espacio que tapa el ancla. */
-        body.con-ancla { padding-bottom: 62px; }
+        /* Le devuelve al final de la página el espacio que tapan el ancla y
+           la barra de pestañas. `--ancla-hueco` también lo usa el aviso
+           flotante para no caer encima del anuncio. */
+        body.con-ancla {
+            --ancla-hueco: 62px;
+            padding-bottom: calc(var(--tab-hueco, 0px) + var(--ancla-hueco));
+        }
     }
 
     .anuncio-ancla-cerrar {

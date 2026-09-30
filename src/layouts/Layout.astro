@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Anuncio from '../components/Anuncio.astro';
 import AnunciosGlobales from '../components/AnunciosGlobales.astro';
+import NavegacionMovil from '../components/NavegacionMovil.astro';
 const { bodyClass = '' } = Astro.props;
 ---
 
@@ -11,7 +12,10 @@ const { bodyClass = '' } = Astro.props;
 <html lang="es-HN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- `viewport-fit=cover`: la barra de app llega hasta el notch y la de
+         pestañas hasta la línea de inicio; los rellenos usan el área segura. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-B9L2HSP4B6"></script>
@@ -27,10 +31,13 @@ const { bodyClass = '' } = Astro.props;
     <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#7c3aed">
+    <!-- Mismo violeta que la barra de app de móvil: la barra de estado y la
+         del navegador se funden con ella. Único sitio donde se declaran;
+         las páginas no los repiten. -->
+    <meta name="theme-color" content="#6d28d9">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="LotoHN">
     
     <!-- Preconexiones -->
@@ -51,6 +58,23 @@ const { bodyClass = '' } = Astro.props;
     <!-- Estilos dinámicos -->
     <link rel="stylesheet" href="/styles_dinamicos.css">
     
+    <!-- Precarga del HTML de la página a la que se va: en móvil arranca al
+         apoyar el dedo en el enlace, en escritorio al pasar el ratón. Sólo
+         `prefetch` (baja el documento, no ejecuta nada): ni cuenta visitas en
+         Analytics ni pide anuncios. -->
+    <script type="speculationrules" is:inline>
+    {
+      "prefetch": [{
+        "where": { "and": [
+          { "href_matches": "/*" },
+          { "not": { "href_matches": "/api/*" } },
+          { "not": { "selector_matches": "[target=_blank], [rel~=nofollow]" } }
+        ] },
+        "eagerness": "moderate"
+      }]
+    }
+    </script>
+
     <!-- Registro Service Worker (PWA instalable, sin caché offline) -->
     <script is:inline>
       if ('serviceWorker' in navigator) {
@@ -105,6 +129,9 @@ const { bodyClass = '' } = Astro.props;
     </div>
     
     <Footer />
+
+    <!-- Móvil: barra de pestañas, hoja «Más» y gestos de app -->
+    <NavegacionMovil />
     
     <!-- Scripts globales -->
     <script src="../scripts/main.js"></script>
@@ -121,9 +148,84 @@ const { bodyClass = '' } = Astro.props;
         --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
     }
 
+    /* `clip` y no `hidden`: con `hidden` en html y body a la vez, el body se
+       vuelve contenedor de scroll y el `position: sticky` de la cabecera deja
+       de pegarse (se iba con la página). `hidden` queda para navegadores
+       viejos sin `clip`. */
     html, body {
         overflow-x: hidden;
         max-width: 100%;
+    }
+    @supports (overflow: clip) {
+        html, body { overflow-x: clip; }
+    }
+
+    /* ---------- App de móvil ----------
+       --tab-alto: alto útil de la barra de pestañas.
+       --tab-hueco: lo que ocupa de verdad abajo (con la línea de inicio del
+       iPhone). El ancla de publicidad y el aviso flotante se apoyan encima. */
+    :root {
+        --app-violeta: #6d28d9;
+        --tab-alto: 0px;
+        --tab-hueco: 0px;
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    @media (max-width: 1023px) {
+        :root {
+            --tab-alto: 62px;
+            --tab-hueco: calc(var(--tab-alto) + env(safe-area-inset-bottom, 0px));
+            /* Un ancla #... no queda tapada por la barra de arriba ni el foco
+               del teclado por la de abajo. */
+            scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 72px);
+            scroll-padding-bottom: calc(var(--tab-hueco) + 16px);
+        }
+        /* Con el teclado abierto la barra de pestañas se esconde. */
+        :root.teclado-abierto { --tab-hueco: 0px; }
+
+        body {
+            padding-bottom: var(--tab-hueco);
+            /* En horizontal el notch cae a un lado. */
+            padding-left: env(safe-area-inset-left, 0px);
+            padding-right: env(safe-area-inset-right, 0px);
+        }
+    }
+
+    /* Toques como en una app: sin el recuadro gris de WebKit ni el retraso
+       del doble toque. */
+    a, button, [role="tab"], summary, label {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    /* Instalada, el rebote de arriba no tiene sentido: arrastrar hacia abajo
+       actualiza (ver `src/scripts/app.js`). */
+    @media (display-mode: standalone) {
+        html { overscroll-behavior-y: none; }
+    }
+
+    /* ---------- Transiciones entre páginas ----------
+       Navegar entre páginas funde el contenido y deja quietas las barras de
+       arriba y abajo, como en una app. Chrome y Safari 18.2+; el resto navega
+       igual que siempre. */
+    @view-transition {
+        navigation: auto;
+    }
+    ::view-transition-old(root) {
+        animation: vt-sale 0.14s ease-in both;
+    }
+    ::view-transition-new(root) {
+        animation: vt-entra 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+    @keyframes vt-sale {
+        to { opacity: 0; }
+    }
+    @keyframes vt-entra {
+        from { opacity: 0; transform: translateY(10px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        @view-transition { navigation: none; }
     }
 
     body {
