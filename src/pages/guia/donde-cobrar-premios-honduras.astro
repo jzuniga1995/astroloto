@@ -2,6 +2,7 @@
 // src/pages/guia/donde-cobrar-premios-honduras.astro
 import Layout from '../../layouts/Layout.astro';
 import Anuncio from '../../components/Anuncio.astro';
+import PromoBanner from '../../components/PromoBanner.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -208,6 +209,8 @@ const schemaArticulo = `
     <h3>¿Qué pasa si el boleto está mojado o dañado?</h3>
     <p>Si el boleto está dañado pero aún es legible y verificable, probablemente podés cobrar. Si está completamente ilegible, será difícil cobrarlo. Por eso es vital cuidar bien el boleto.</p>
 </section>
+
+<PromoBanner />
 
 <section class="guia-section">
     <h2>🔗 También Te Puede Interesar</h2>

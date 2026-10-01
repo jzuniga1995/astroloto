@@ -2,6 +2,7 @@
 // src/pages/guia/loto-honduras-desde-estados-unidos.astro
 import Layout from '../../layouts/Layout.astro';
 import Anuncio from '../../components/Anuncio.astro';
+import PromoBanner from '../../components/PromoBanner.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -194,6 +195,8 @@ const schemaArticulo = `
     <h3>¿Puedo comprar lotería hondureña desde EE.UU.?</h3>
     <p>El boleto debe comprarse en una agencia física en Honduras. Si tenés familia en Honduras, pueden comprarlo por vos y tú verificar el resultado en LotoHN.</p>
 </section>
+
+<PromoBanner />
 
 <section class="guia-section">
     <h2>🔗 También Te Puede Interesar</h2>

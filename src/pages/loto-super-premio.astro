@@ -2,6 +2,7 @@
 // src/pages/loto-super-premio.astro
 import Layout from '../layouts/Layout.astro';
 import Anuncio from '../components/Anuncio.astro';
+import PromoBanner from '../components/PromoBanner.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Trophy, Calendar, Clock, Gem, Target, Award, CheckCircle, BarChart3, Lightbulb, Users, Heart, ShieldCheck,HelpCircle, Gift, Phone, AlertTriangle, Dice3, Clover,  Check } from 'lucide-astro';
 import ResultadosSorteos from '../components/ResultadosSorteos.astro';
@@ -375,6 +376,8 @@ const horaISO    = fechaHondurasISO();
             </table>
         </div>
         <p class="text-sm text-gray-600 italic mb-6"><em>Nota: Los montos de premios son aproximados y varían según el pozo acumulado y número de ganadores en cada categoría.</em></p>
+
+        <PromoBanner />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
             <Lightbulb class="w-7 h-7 text-violet-600" />

@@ -212,6 +212,8 @@ detectan por coincidencia parcial y no por igualdad exacta.
 - **`FechasSEO.astro`** — `article:published_time` / `article:modified_time`.
 - **`Anuncio.astro`** — Un hueco publicitario. Prop `formato` (ver *Monetización*).
 - **`AnunciosGlobales.astro`** — Rieles laterales, ancla de móvil y script global de la red. Lo pinta `Layout.astro` una vez.
+- **`PromoBanner.astro`** — Banner propio de EmprendeHN (ver *Promoción propia:
+  EmprendeHN*). Sin `id` pinta el que le toca a la página.
 
 ## Librerías compartidas (`src/lib/`)
 
@@ -237,6 +239,9 @@ detectan por coincidencia parcial y no por igualdad exacta.
   `ANUNCIOS_ACTIVOS` (todo) y `SOCIAL_ACTIVO` (solo la barra social), y
   `rutaSobria()`, que deja las legales y el formulario sin barra social. Sin DOM
   ni `window`: la usan el build y el navegador.
+- **`banners.js`** — Los 4 banners de EmprendeHN (`{ id, image, alt, campaign }`),
+  la URL de registro con UTM, el interruptor `PROMO_ACTIVA` y `bannerDeRuta()`.
+  Sin DOM ni `window`.
 
 ## Scripts client-side
 
@@ -450,6 +455,36 @@ Un solo `nativo` por página y un solo `enlace` por página. Nunca condicionar
 contenido a un clic en un anuncio: eso es incentivación y la red cierra la
 cuenta. Y cualquier hueco nuevo se declara con `<Anuncio />`, nunca pegando el
 snippet del proveedor en el HTML.
+
+### Promoción propia: EmprendeHN
+
+Aparte de la red, el sitio promociona EmprendeHN (directorio gratuito de
+negocios de Honduras). El único objetivo es que se registren negocios: cada
+banner lleva a `https://emprendehn.com/registro` con
+`utm_source=lotohn&utm_medium=banner&utm_campaign=<campaña>`, y el clic manda
+`banner_click` a Analytics con `banner_campaign` y `banner_id`.
+
+- Son imágenes del propio sitio (`public/logos/emprendehn-*.webp`, a 480, 800 y
+  1264 px) dentro de un `<a>` rotulado «Para emprendedores», con
+  `rel="noopener sponsored"`. Cero scripts de terceros.
+- Clases y atributos con prefijo `promo-emprendehn`. **Nada de `.anuncio` ni de
+  sus contenedores**: los scripts de la red no deben tocarlos y los bloqueadores
+  que buscan `.anuncio` no deben esconderlos.
+- El banner de cada página sale fijo del build (`bannerDeRuta()`: rota en el
+  orden de secciones del sitio, con un hash para rutas fuera de esa lista).
+  Nunca se sortea en el cliente: la imagen cambiaría después de pintarse.
+- **Uno por página**, como una tarjeta más: siempre después de los resultados y
+  con al menos una sección de contenido entre él y cualquier anuncio de la red.
+  Inicio: entre los resultados y el analizador. Juegos: dentro del artículo,
+  entre el `nativo` y el `medio`. Estadísticas y guías: justo antes de los
+  enlaces relacionados.
+- Sin banner: historial (no hay hueco a una sección de distancia de la red),
+  la guía de estrategias (la sección de antes es «Juego responsable»), signos,
+  legales, contacto y 404.
+- `PROMO_ACTIVA = false` en `src/lib/banners.js` los quita todos.
+
+La regla de la sección de por medio vale en los dos sentidos: un hueco nuevo de
+la red tampoco se pega a un `<PromoBanner />`.
 
 ## Google Analytics
 

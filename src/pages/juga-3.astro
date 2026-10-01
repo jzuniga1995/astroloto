@@ -2,6 +2,7 @@
 // src/pages/juga-3.astro
 import Layout from '../layouts/Layout.astro';
 import Anuncio from '../components/Anuncio.astro';
+import PromoBanner from '../components/PromoBanner.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Dice3, Calendar, Clock, Target, Star, CheckCircle, Gamepad2, CircleDollarSign, Calculator, Flame, Snowflake, Wallet, TrendingUp, OctagonX, Repeat, Clock4, MapPin, AlertTriangle, GraduationCap, Lightbulb, Clover,Check,} from 'lucide-astro';
 import ResultadosSorteos from '../components/ResultadosSorteos.astro';
@@ -361,6 +362,8 @@ const horaISO    = fechaHondurasISO();
         <p class="text-gray-700 leading-relaxed mb-6">
             <strong>Importante:</strong> Los pagos exactos pueden variar ligeramente según la agencia. Siempre pregunta las condiciones antes de apostar.
         </p>
+
+        <PromoBanner />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-6 mt-8 flex items-center gap-2">
             <TrendingUp class="w-7 h-7 text-violet-600" />

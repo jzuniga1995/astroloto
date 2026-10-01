@@ -2,6 +2,7 @@
 // src/pages/premia-2.astro
 import Layout from '../layouts/Layout.astro';
 import Anuncio from '../components/Anuncio.astro';
+import PromoBanner from '../components/PromoBanner.astro';
 import CoberturaPaises from '../components/CoberturaPaises.astro';
 import { Award, Calendar, Clock, Dice6, Target, Gamepad2, CircleDollarSign, TrendingUp, Clock4, MapPin, HelpCircle, Trophy, Lightbulb, Clover, Dice3, Star, Coins, BarChart2, BarChart4, MessageCircleQuestion, BookOpen, PieChart, Sparkles, ShieldCheck, Phone, CheckSquare, User, Briefcase, UserRound, Users2, Flame, AlertCircle, Minus, Snowflake, Binary, FlipHorizontal, ListOrdered, Layers, Clock3, Store, Tv, CheckCircle, Check, RefreshCw as RefreshCwIcon } from 'lucide-astro';
 import ResultadosSorteos from '../components/ResultadosSorteos.astro';
@@ -822,6 +823,8 @@ const horaISO    = fechaHondurasISO();
                 </li>
             </ul>
         </div>
+
+        <PromoBanner />
 
         <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 flex items-center gap-2">
             <BookOpen class="w-7 h-7 text-purple-600" />

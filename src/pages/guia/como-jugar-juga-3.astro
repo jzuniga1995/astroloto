@@ -2,6 +2,7 @@
 // src/pages/guia/como-jugar-juga-3.astro
 import Layout from '../../layouts/Layout.astro';
 import Anuncio from '../../components/Anuncio.astro';
+import PromoBanner from '../../components/PromoBanner.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -296,6 +297,8 @@ const schemaArticulo = `
     <h3>¿Dónde veo los resultados de Jugá 3?</h3>
     <p>Podés ver los resultados en tiempo real en <a href="/juga-3" style="color:#7c3aed;font-weight:600;">la página de Jugá 3 de LotoHN</a>, disponible desde cualquier país.</p>
 </section>
+
+<PromoBanner />
 
 <!-- RELACIONADOS -->
 <section class="guia-section">

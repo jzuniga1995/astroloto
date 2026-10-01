@@ -2,6 +2,7 @@
 // src/pages/guia/loto-honduras-desde-costa-rica.astro
 import Layout from '../../layouts/Layout.astro';
 import Anuncio from '../../components/Anuncio.astro';
+import PromoBanner from '../../components/PromoBanner.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -192,6 +193,8 @@ const schemaArticulo = `
     <h3>¿Hay diferencia horaria que afecte los sorteos?</h3>
     <p>No. Honduras y Costa Rica están en la misma zona UTC-6. Los sorteos ocurren a la misma hora en ambos países.</p>
 </section>
+
+<PromoBanner />
 
 <section class="guia-section">
     <h2>🔗 También Te Puede Interesar</h2>

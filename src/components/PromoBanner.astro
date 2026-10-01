@@ -1,0 +1,160 @@
+---
+// src/components/PromoBanner.astro
+// Un banner de EmprendeHN (ver `src/lib/banners.js`). Es promoción propia, no un
+// hueco de la red: imagen servida desde el sitio, un `<a>` rotulado y ningún
+// script de terceros. Por eso no comparte nada con `Anuncio.astro` —ni clases,
+// ni contenedores, ni el cargador perezoso—: los scripts de la red y los
+// bloqueadores que buscan `.anuncio` no lo ven.
+//
+// Sin `id` elige el banner que le toca a la página (`bannerDeRuta()`), fijo en
+// el build. Con `id` se fuerza uno.
+//
+// Va en el flujo, como una tarjeta más y siempre después de los resultados.
+// Reglas de colocación en CLAUDE.md (*Promoción propia: EmprendeHN*).
+import { PROMO_ACTIVA, ANCHO, ALTO, bannerPorId, bannerDeRuta, urlDestino, srcsetDe } from '../lib/banners.js';
+
+const { id, class: clase = '' } = Astro.props;
+
+const banner = id ? bannerPorId(id) : bannerDeRuta(Astro.url.pathname);
+const mostrar = PROMO_ACTIVA && Boolean(banner);
+---
+
+{mostrar && (
+    <aside class:list={['promo-emprendehn', clase]} aria-label="Para emprendedores">
+        <span class="promo-emprendehn-etiqueta">Para emprendedores</span>
+        <a
+            class="promo-emprendehn-enlace"
+            href={urlDestino(banner)}
+            target="_blank"
+            rel="noopener sponsored"
+            data-promo-emprendehn={banner.id}
+            data-campaign={banner.campaign}
+        >
+            <img
+                class="promo-emprendehn-img"
+                src={banner.image}
+                srcset={srcsetDe(banner)}
+                sizes="(min-width: 720px) 640px, 100vw"
+                width={ANCHO}
+                height={ALTO}
+                alt={banner.alt}
+                loading="lazy"
+                decoding="async"
+            />
+        </a>
+    </aside>
+)}
+
+<script>
+    // Clic en un banner → evento de Analytics con la campaña. El registro se
+    // abre en otra pestaña, así que esta sigue viva para mandarlo. Sin gtag
+    // (bloqueado) no pasa nada: los UTM del enlace siguen midiendo.
+    function medir(evento) {
+        const objetivo = evento.target;
+        const enlace = objetivo instanceof Element
+            ? objetivo.closest('a[data-promo-emprendehn]')
+            : null;
+        if (!enlace || typeof window.gtag !== 'function') return;
+        window.gtag('event', 'banner_click', {
+            banner_campaign: enlace.dataset.campaign,
+            banner_id: enlace.dataset.promoEmprendehn,
+            link_url: enlace.href,
+        });
+    }
+
+    document.addEventListener('click', medir);
+    // Clic central: también abre el registro en otra pestaña.
+    document.addEventListener('auxclick', (e) => { if (e.button === 1) medir(e); });
+</script>
+
+<style>
+    /* Mismo ritmo que el resto de la página: el margen de los huecos de
+       publicidad y el borde, radio y sombra de las tarjetas de resultados
+       (`.game-card`). 100 % de ancho en móvil; en escritorio, centrado y con
+       tope de 640 px (unas dos tarjetas de resultados). El hueco bajo la
+       etiqueta es algo mayor que el de los anuncios: la tarjeta sube 3 px en
+       hover y el halo no debe pisar el rótulo. */
+    .promo-emprendehn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 640px;
+        margin: 1.5rem auto;
+    }
+
+    /* Mismo estilo que la etiqueta «Publicidad» de los anuncios. */
+    .promo-emprendehn-etiqueta {
+        font-size: 0.625rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #a78bfa;
+        line-height: 1;
+    }
+
+    .promo-emprendehn-enlace {
+        position: relative;
+        display: block;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #ede9fe;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.12);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    /* El texto va dentro de la imagen: nunca se recorta ni se deforma. El alto
+       queda reservado por width/height + aspect-ratio (sin salto al cargar). */
+    .promo-emprendehn-img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1264 / 848;
+        border-radius: calc(1rem - 1px);
+    }
+
+    /* Pulso muy sutil: un halo naranja que respira. Anima solo la opacidad
+       de una capa aparte, así que no repinta la imagen. */
+    .promo-emprendehn-enlace::after {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: inherit;
+        pointer-events: none;
+        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.4), 0 0 22px rgba(249, 115, 22, 0.3);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        animation: promo-emprendehn-pulso 3.6s ease-in-out infinite;
+    }
+
+    @keyframes promo-emprendehn-pulso {
+        0%, 100% { opacity: 0; }
+        50%      { opacity: 0.5; }
+    }
+
+    /* Solo con ratón: en táctil el :hover se queda pegado tras el toque. */
+    @media (hover: hover) {
+        .promo-emprendehn-enlace:hover {
+            transform: translateY(-3px);
+            border-color: #fdba74;
+            box-shadow: 0 10px 28px rgba(249, 115, 22, 0.28);
+        }
+        .promo-emprendehn-enlace:hover::after {
+            animation: none;
+            opacity: 1;
+        }
+    }
+
+    .promo-emprendehn-enlace:focus-visible {
+        outline: 3px solid #f97316;
+        outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .promo-emprendehn-enlace { transition: none; }
+        .promo-emprendehn-enlace:hover { transform: none; }
+        .promo-emprendehn-enlace::after { animation: none; }
+    }
+</style>

@@ -2,6 +2,7 @@
 // src/pages/guia/como-jugar-premia-2.astro
 import Layout from '../../layouts/Layout.astro';
 import Anuncio from '../../components/Anuncio.astro';
+import PromoBanner from '../../components/PromoBanner.astro';
 import { modificadoDePagina } from '../../lib/fechas.js';
 
 // dateModified salía de una constante escrita a mano que envejecía sola.
@@ -207,6 +208,8 @@ const schemaArticulo = `
     <h3>¿Dónde veo los resultados?</h3>
     <p>En <a href="/premia-2" style="color:#7c3aed;font-weight:600;">LotoHN Premia 2</a>, disponible en tiempo real desde Honduras, Costa Rica y Estados Unidos.</p>
 </section>
+
+<PromoBanner />
 
 <section class="guia-section">
     <h2>🔗 También Te Puede Interesar</h2>
