@@ -1,9 +1,9 @@
 ---
 // src/components/AnunciosGlobales.astro
 // Todo lo publicitario que no vive en el flujo de la página: los dos rieles
-// laterales, el ancla inferior de móvil y el script global de la red.
+// laterales, el ancla inferior de móvil y el permiso de la barra social.
 // Lo pinta `Layout.astro` una sola vez, al final del <body>.
-import { ANUNCIOS_ACTIVOS, SCRIPT_GLOBAL, MEDIDAS, PERMISOS_IFRAME, SOCIAL_ACTIVO, rutaSobria } from '../lib/anuncios.js';
+import { ANUNCIOS_ACTIVOS, MEDIDAS, PERMISOS_IFRAME, SOCIAL_ACTIVO, rutaSobria } from '../lib/anuncios.js';
 
 // La barra social no entra en las legales ni en el formulario. La decisión se
 // toma acá, en el build, y viaja como una marca en el HTML: sin marca, el
@@ -65,11 +65,6 @@ const ancla    = MEDIDAS['320x50'];
         {social && <div id="anuncioSocial" hidden></div>}
 
         <script src="../scripts/anuncios.js"></script>
-
-        {/* Script global de la red. Va al final del <body> a propósito: si
-            hiciera `document.write()` escribiría al final del documento en vez
-            de borrar la página. */}
-        <script src={SCRIPT_GLOBAL} is:inline></script>
     </>
 )}
 

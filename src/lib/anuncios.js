@@ -50,9 +50,10 @@ export const NATIVO = {
     contenedor: 'container-c053bb82e7e2a6d39cd34a6acda6a322',
 };
 
-// Script global de la red (una sola vez, al final del <body>).
-export const SCRIPT_GLOBAL =
-    'https://pl28763916.profitableratecpmnetwork.com/35/14/fd/3514fdd317f29f6fae7476c399c70d81.js';
+// Aquí iba el script global de la red (`pl28763916…/35/14/fd/…js`): era un
+// popunder. Corría en el documento de arriba, sin sandbox, y abría una pestaña
+// con el primer clic en cualquier página. Se quitó en octubre de 2026, con la
+// portada perdiendo el 80 % de las impresiones en Google. No volver a ponerlo.
 
 // Barra social de la red (el `bb/ee/c0/…js`). Al contrario que los banners, este
 // script pinta su propio widget flotante en el documento de arriba, así que no

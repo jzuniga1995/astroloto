@@ -211,7 +211,7 @@ detectan por coincidencia parcial y no por igualdad exacta.
 - **`SchemaResultados.astro`** — JSON-LD `WebPage` + `ItemList` con los resultados y el `dateModified` real.
 - **`FechasSEO.astro`** — `article:published_time` / `article:modified_time`.
 - **`Anuncio.astro`** — Un hueco publicitario. Prop `formato` (ver *Monetización*).
-- **`AnunciosGlobales.astro`** — Rieles laterales, ancla de móvil y script global de la red. Lo pinta `Layout.astro` una vez.
+- **`AnunciosGlobales.astro`** — Rieles laterales, ancla de móvil y permiso de la barra social. Lo pinta `Layout.astro` una vez.
 - **`PromoBanner.astro`** — Banner propio de EmprendeHN (ver *Promoción propia:
   EmprendeHN*). Sin `id` pinta el que le toca a la página.
 
@@ -363,7 +363,7 @@ Todo vive en tres archivos:
 |---------|-------|
 | `src/lib/anuncios.js` | Claves, medidas, formatos. **Único sitio donde tocar nada.** |
 | `src/components/Anuncio.astro` | Un hueco en el flujo de la página |
-| `src/components/AnunciosGlobales.astro` | Rieles laterales, ancla de móvil, script global y permiso de la barra social |
+| `src/components/AnunciosGlobales.astro` | Rieles laterales, ancla de móvil y permiso de la barra social |
 | `src/scripts/anuncios.js` | Carga perezosa por `IntersectionObserver` + barra social diferida |
 
 **`ANUNCIOS_ACTIVOS = false` en `src/lib/anuncios.js` apaga todo el sitio de un
@@ -423,7 +423,7 @@ pueden pasar por props, **pero el aviso de que abre un anuncio no se quita.**
 
 ### La barra social
 
-El otro script global (`SCRIPT_SOCIAL`) pinta su propio widget flotante en el
+El único script de la red que corre fuera de un iframe (`SCRIPT_SOCIAL`) pinta su propio widget flotante en el
 documento de arriba, así que es el único que **no** se puede encerrar en un
 iframe: encerrado no se vería. Lo que lo mantiene a raya son tres condiciones, no
 una:
@@ -450,6 +450,15 @@ que **se mueven solos**: aparecen encima o navegan la pestaña sin que nadie los
 toque. Esa es la línea, no el nombre del formato. El Direct Link entró por eso:
 como `<a>` rotulado que solo navega con un clic, no se mueve solo. Como popunder
 o como `onclick` de la página, sería lo mismo que se quitó en julio.
+
+**El popunder ya se coló una vez.** Con la vuelta de la publicidad (agosto de
+2026) entró un «script global» de la red (`pl28763916…/35/14/fd/…js`) al final
+del `<body>` de todas las páginas, sin iframe ni sandbox: era el popunder. En
+los tres meses siguientes la portada perdió el 80 % de las impresiones en
+Google con la posición media casi igual, mientras Bing seguía mandando
+tráfico. Se quitó en octubre de 2026. Ningún script del proveedor va suelto en
+el documento salvo la barra social, y antes de pegar una URL nueva de la red
+hay que confirmar en el panel qué formato es.
 
 Un solo `nativo` por página y un solo `enlace` por página. Nunca condicionar
 contenido a un clic en un anuncio: eso es incentivación y la red cierra la
